@@ -101,6 +101,16 @@
         <!-- Main Map -->
         <section class="map-container" id="map"></section>
 
+        <!-- Weather Widget -->
+        <aside class="weather-widget glass-panel">
+            <span class="material-symbols-rounded weather-icon">partly_cloudy_day</span>
+            <span class="weather-info-text">Fresno, CA</span>
+            <span class="weather-dot">•</span>
+            <span class="weather-info-text">Partly Cloudy</span>
+            <span class="weather-dot">•</span>
+            <span class="weather-info-temp">72°F</span>
+        </aside>
+
         <!-- Right Floating Panel: Control Center -->
         <aside class="control-center glass-panel">
             <div class="control-header" id="control-toggle">
@@ -113,8 +123,16 @@
                 <div class="control-section">
                     <label class="section-label">Alert Threshold</label>
                     <div class="slider-container">
-                        <input type="range" id="threshold-slider" min="1" max="500" value="50" class="modern-slider">
-                        <span class="slider-value" id="threshold-value">50</span>
+                        <input type="range" id="threshold-slider" min="0" max="100" value="70" class="modern-slider">
+                        <span class="slider-value" id="threshold-value">70</span>
+                    </div>
+                    <div class="threshold-recommendation">
+                        <span class="material-symbols-rounded">psychology</span>
+                        Recommended: 25
+                        <div class="tooltip-wrapper">
+                            <span class="material-symbols-rounded info-icon">info</span>
+                            <div class="tooltip-content">AI recommends a threshold of 25 for this period based on current crop stage (hull split) and temperature forecasting.</div>
+                        </div>
                     </div>
                 </div>
 
@@ -196,7 +214,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" id="btn-export-pdf">Export as PDF</button>
+                <button class="btn btn-black" id="btn-export-pdf">Export as PDF</button>
             </div>
         </div>
     </div>

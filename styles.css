@@ -266,10 +266,44 @@ body {
     background: var(--status-green-bg);
 }
 
+/* Weather Widget */
+.weather-widget {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 320px;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: var(--border-radius-lg);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.weather-icon {
+    font-size: 24px !important;
+    color: #F08C00;
+}
+.weather-info-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+.weather-dot {
+    color: var(--border-subtle);
+    font-size: 14px;
+    font-weight: 700;
+}
+.weather-info-temp {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
 /* Control Center - Right Panel */
 .control-center {
     position: absolute;
-    top: 16px;
+    top: 80px;
     right: 16px;
     width: 320px;
     border-radius: var(--border-radius-lg);
@@ -354,6 +388,66 @@ body {
     font-weight: 600;
     width: 30px;
     text-align: right;
+}
+
+/* Tooltip & Recommendation */
+.threshold-recommendation {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-top: 12px;
+    color: var(--brand-primary);
+    background: rgba(15, 90, 71, 0.05);
+    padding: 10px 12px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(15, 90, 71, 0.1);
+}
+.threshold-recommendation > .material-symbols-rounded:first-child {
+    font-size: 18px;
+}
+.tooltip-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+.info-icon {
+    color: var(--text-secondary);
+    cursor: help;
+    font-size: 16px !important;
+}
+.tooltip-content {
+    position: absolute;
+    bottom: 100%;
+    right: -10px;
+    margin-bottom: 8px;
+    width: 220px;
+    background: #111815;
+    color: #FFF;
+    font-size: 11px;
+    padding: 12px;
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+.tooltip-wrapper:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-4px);
+}
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 14px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #111815 transparent transparent transparent;
 }
 
 /* Accordion */
@@ -563,6 +657,15 @@ canvas {
     background: #32BCA0;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(43, 160, 130, 0.3);
+}
+.btn-black {
+    background: #111815;
+    color: #FFF;
+}
+.btn-black:hover {
+    background: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 .btn-secondary {
     background: var(--bg-card);

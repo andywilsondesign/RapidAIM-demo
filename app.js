@@ -221,13 +221,23 @@ function renderRankingList() {
             item.style.border = '1px solid var(--brand-light)';
         }
 
+        // Trend calculation
+        const currentCount = state.pestType === 'female-now' ? block.trend_female[13] : block.trend_male[13];
+        const prevCount = state.pestType === 'female-now' ? block.trend_female[12] : block.trend_male[12];
+        let arrowIcon = 'remove';
+        if (currentCount > prevCount) arrowIcon = 'trending_up';
+        else if (currentCount < prevCount) arrowIcon = 'trending_down';
+
         item.innerHTML = `
             <div class="ranking-item-info">
                 <h3>${block.name}</h3>
                 <p>${block.ranchName}</p>
                 <p style="margin-top:4px;">Count: ${count} | Sensors: ${block.sensors.length}</p>
             </div>
-            <div class="status-badge ${statusClass}">${statusText}</div>
+            <div class="status-badge ${statusClass}" style="display:flex; align-items:center; gap:2px;">
+                ${statusText}
+                <span class="material-symbols-rounded" style="font-size:14px;">${arrowIcon}</span>
+            </div>
         `;
         item.addEventListener('click', () => {
             selectBlock(block.id);
@@ -332,6 +342,13 @@ function selectSensor(blockId, sensorId) {
     renderDetailView(state.selectedItem);
 }
 
+const hexToRgba = (hex, alpha) => {
+    const r = parseInt(hex.slice(1, 3), 16),
+          g = parseInt(hex.slice(3, 5), 16),
+          b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 function selectRanch(ranchId, fromBlockId) {
     state.selectedItem = { type: 'ranch', id: ranchId, fromBlockId: fromBlockId };
     
@@ -382,7 +399,7 @@ function renderDetailView(selection) {
         chartHoverType = 'line';
         
         dynamicActions.innerHTML = `
-            <button class="btn btn-primary" id="btn-generate-report" style="margin-bottom:8px;">
+            <button class="btn btn-black" id="btn-generate-report" style="margin-bottom:8px;">
                 <span class="material-symbols-rounded">summarize</span>
                 Block AI Report
             </button>
@@ -428,7 +445,7 @@ function renderDetailView(selection) {
         chartHoverType = 'line';
 
         dynamicActions.innerHTML = `
-            <button class="btn btn-primary" id="btn-generate-report" style="margin-bottom:8px;">
+            <button class="btn btn-black" id="btn-generate-report" style="margin-bottom:8px;">
                 <span class="material-symbols-rounded">summarize</span>
                 Ranch AI Report
             </button>
@@ -488,6 +505,14 @@ function renderDetailView(selection) {
         else chartColor = '#2B8A3E';
     }
 
+    const statCard = document.querySelector('.stat-card.primary');
+    if (statCard) {
+        statCard.style.background = `linear-gradient(135deg, ${hexToRgba(chartColor, 0.1)}, ${hexToRgba(chartColor, 0.05)})`;
+        statCard.style.borderColor = hexToRgba(chartColor, 0.3);
+        const statValue = document.getElementById('detail-count');
+        if (statValue) statValue.style.color = chartColor;
+    }
+
     renderCharts(trendData, hourlyData, chartHoverType, chartColor);
 }
 
@@ -508,14 +533,6 @@ function renderCharts(trendData, hourlyData, chartType = 'line', primaryColor = 
         d.setDate(d.getDate() - (13 - i));
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     });
-
-    // Helper for hex to rgba
-    const hexToRgba = (hex, alpha) => {
-        const r = parseInt(hex.slice(1, 3), 16),
-              g = parseInt(hex.slice(3, 5), 16),
-              b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    };
 
     trendChartInstance = new Chart(trendCtx, {
         type: chartType,
