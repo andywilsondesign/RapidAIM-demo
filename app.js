@@ -399,13 +399,16 @@ function renderDetailView(selection) {
         chartHoverType = 'line';
         
         dynamicActions.innerHTML = `
-            <button class="btn btn-black" id="btn-generate-report" style="margin-bottom:8px;">
-                <span class="material-symbols-rounded">summarize</span>
-                Block AI Report
+            <button class="btn btn-black" style="margin-bottom:8px; font-size:15px; padding:14px;">
+                <span class="material-symbols-rounded">person_search</span> Assign Scouting
             </button>
-            <button class="btn btn-secondary"><span class="material-symbols-rounded">edit</span> Edit Block</button>
-            <button class="btn btn-secondary" style="margin-bottom:12px;"><span class="material-symbols-rounded">add_notes</span> Add Notes</button>
-            <button class="btn btn-secondary" id="btn-view-ranch"><span class="material-symbols-rounded">visibility</span> View Ranch Details</button>
+            <div class="btn-group" style="margin-bottom:12px;">
+                <button class="btn btn-secondary"><span class="material-symbols-rounded">build_circle</span> Create Work Order</button>
+                <button class="btn btn-secondary" id="btn-generate-report"><span class="material-symbols-rounded">summarize</span> AI Report</button>
+            </div>
+            
+            <button class="btn btn-ghost"><span class="material-symbols-rounded" style="font-size:18px;">edit</span> Edit Block</button>
+            <button class="btn btn-ghost" id="btn-view-ranch"><span class="material-symbols-rounded" style="font-size:18px;">visibility</span> View Ranch Details</button>
         `;
         document.getElementById('btn-generate-report').addEventListener('click', window.promptReportModal);
         document.getElementById('btn-view-ranch').addEventListener('click', () => selectRanch(block.ranchId, block.id));
@@ -445,12 +448,15 @@ function renderDetailView(selection) {
         chartHoverType = 'line';
 
         dynamicActions.innerHTML = `
-            <button class="btn btn-black" id="btn-generate-report" style="margin-bottom:8px;">
-                <span class="material-symbols-rounded">summarize</span>
-                Ranch AI Report
+            <button class="btn btn-black" style="margin-bottom:8px; font-size:15px; padding:14px;">
+                <span class="material-symbols-rounded">person_search</span> Assign Scouting
             </button>
-            <button class="btn btn-secondary"><span class="material-symbols-rounded">edit_square</span> Edit Ranch</button>
-            <button class="btn btn-secondary"><span class="material-symbols-rounded">note_add</span> Add Notes</button>
+            <div class="btn-group" style="margin-bottom:12px;">
+                <button class="btn btn-secondary"><span class="material-symbols-rounded">build_circle</span> Create Work Order</button>
+                <button class="btn btn-secondary" id="btn-generate-report"><span class="material-symbols-rounded">summarize</span> AI Report</button>
+            </div>
+            
+            <button class="btn btn-ghost"><span class="material-symbols-rounded" style="font-size:18px;">edit_square</span> Edit Ranch</button>
         `;
         document.getElementById('btn-generate-report').addEventListener('click', window.promptReportModal);
 
@@ -486,8 +492,14 @@ function renderDetailView(selection) {
         `;
 
         dynamicActions.innerHTML = `
-            <button class="btn btn-secondary"><span class="material-symbols-rounded">build</span> Edit Sensor</button>
-            <button class="btn btn-secondary"><span class="material-symbols-rounded">add_notes</span> Add Notes</button>
+            <button class="btn btn-black" style="margin-bottom:8px; font-size:15px; padding:14px;">
+                <span class="material-symbols-rounded">person_search</span> Assign Scouting
+            </button>
+            <button class="btn btn-secondary" style="margin-bottom:12px;">
+                <span class="material-symbols-rounded">build_circle</span> Create Work Order
+            </button>
+            
+            <button class="btn btn-ghost"><span class="material-symbols-rounded" style="font-size:18px;">build</span> Edit Sensor</button>
         `;
     }
 
@@ -495,6 +507,60 @@ function renderDetailView(selection) {
     document.getElementById('detail-subtitle').textContent = subtitle;
     document.getElementById('detail-pest-name').textContent = name;
     document.getElementById('detail-count').textContent = count;
+
+    const statusPill = document.getElementById('detail-status-pill');
+    const trendIndicator = document.getElementById('stat-trend-indicator');
+    const benchmarkElement = document.getElementById('stat-benchmark');
+
+    if (trendIndicator) {
+        trendIndicator.className = 'stat-trend hidden';
+        trendIndicator.innerHTML = '';
+    }
+    if (benchmarkElement) {
+        benchmarkElement.className = 'stat-benchmark hidden';
+        benchmarkElement.textContent = '';
+    }
+
+    if (statusPill) {
+        statusPill.className = 'status-pill hidden';
+        if (count !== 'OFFLINE') {
+            statusPill.classList.remove('hidden');
+            let isHighRisk = false;
+            let isLowRisk = false;
+
+            if (count > 70) {
+                statusPill.textContent = 'STATUS: URGENT ACTION';
+                statusPill.classList.add('red');
+                isHighRisk = true;
+            } else if (count >= 40) {
+                statusPill.textContent = 'STATUS: MONITOR';
+                statusPill.classList.add('amber');
+            } else {
+                statusPill.textContent = 'STATUS: STABLE';
+                statusPill.classList.add('green');
+                isLowRisk = true;
+            }
+
+            if (trendIndicator && (selection.type === 'block' || selection.type === 'ranch')) {
+                trendIndicator.classList.remove('hidden');
+                if (isHighRisk) {
+                    trendIndicator.innerHTML = '<span class="material-symbols-rounded">trending_up</span> (↑ 18% vs Last Week)';
+                    trendIndicator.classList.add('trend-up');
+                } else if (isLowRisk) {
+                    trendIndicator.innerHTML = '<span class="material-symbols-rounded">trending_down</span> (↓ 5% vs Last Week)';
+                    trendIndicator.classList.add('trend-down');
+                } else {
+                    trendIndicator.innerHTML = '<span class="material-symbols-rounded">trending_flat</span> (Flat vs Last Week)';
+                    trendIndicator.classList.add('trend-flat');
+                }
+
+                if (benchmarkElement && selection.type === 'block') {
+                    benchmarkElement.classList.remove('hidden');
+                    benchmarkElement.textContent = 'Farm Average: 45';
+                }
+            }
+        }
+    }
 
     let chartColor = '#2BA082'; // Default brand color for sensors
     // Distinguish risk color for block vs ranch

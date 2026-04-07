@@ -61,7 +61,10 @@
                         <span class="material-symbols-rounded">arrow_back</span>
                         <span id="back-btn-text">Back to Ranking</span>
                     </button>
-                    <h2 id="detail-title">Block/Sensor Info</h2>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                        <h2 id="detail-title" style="margin-bottom:0;">Block/Sensor Info</h2>
+                        <span id="detail-status-pill" class="status-pill hidden"></span>
+                    </div>
                     <p id="detail-subtitle" class="subtitle">Details</p>
                 </div>
                 <div class="detail-content">
@@ -69,6 +72,8 @@
                         <div class="stat-info">
                             <h3 id="detail-pest-name">Female Navel Orangeworm</h3>
                             <p class="stat-label">Current Count</p>
+                            <div id="stat-trend-indicator" class="stat-trend hidden"></div>
+                            <div id="stat-benchmark" class="stat-benchmark hidden"></div>
                         </div>
                         <div class="stat-value" id="detail-count">0</div>
                     </div>
