@@ -1,0 +1,18 @@
+.mapWrapper {
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-bg-base);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure Leaflet controls don't conflict with our custom UI */
+:global(.leaflet-control-container) {
+  z-index: 1000;
+}
+
+/* Base styles for the custom div icon markers */
+:global(.custom-marker) {
+  background: transparent;
+  border: none;
+}

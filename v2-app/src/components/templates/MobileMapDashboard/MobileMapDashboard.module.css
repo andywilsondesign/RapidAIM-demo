@@ -1,0 +1,91 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 375px; /* Mobile width for preview */
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-bg-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg); /* simulate device */
+}
+
+.topbar {
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.mapContainer {
+  flex: 1;
+  position: relative;
+  background-color: #E0E0E0;
+}
+
+.mapPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-base);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-bold);
+}
+
+.fabs {
+  position: absolute;
+  right: var(--spacing-4);
+  bottom: calc(150px + var(--spacing-4)); /* above bottom sheet */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  z-index: 10;
+}
+
+.fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  padding: 0;
+  box-shadow: var(--shadow-md);
+}
+
+.bottomSheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  background-color: var(--color-bg-panel);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  background-color: var(--color-border-subtle);
+  border-radius: 2px;
+  margin: var(--spacing-2) auto;
+}
+
+.sheetHeader {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.sheetContent {
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  overflow-y: auto;
+}

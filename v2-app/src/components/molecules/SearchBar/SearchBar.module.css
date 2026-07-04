@@ -1,0 +1,19 @@
+.searchBar {
+  position: relative;
+  width: 100%;
+}
+
+.icon {
+  position: absolute;
+  left: var(--spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-size: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input {
+  padding-left: calc(var(--spacing-6) + var(--spacing-3)) !important;
+}

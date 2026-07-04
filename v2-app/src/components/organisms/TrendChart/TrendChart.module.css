@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: var(--spacing-3);
+}
+
+.chartWrapper {
+  flex: 1;
+  position: relative;
+  min-height: 200px;
+}

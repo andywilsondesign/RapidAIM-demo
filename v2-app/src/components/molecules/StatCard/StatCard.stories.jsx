@@ -1,0 +1,34 @@
+import React from 'react';
+import { StatCard } from './StatCard';
+
+export default {
+  title: 'Molecules/StatCard',
+  component: StatCard,
+  argTypes: {
+    label: { control: 'text' },
+    value: { control: 'text' },
+    trend: { control: 'number' },
+  },
+};
+
+const Template = (args) => <StatCard {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  label: 'Active Sensors',
+  value: '24',
+};
+
+export const WithPositiveTrend = Template.bind({});
+WithPositiveTrend.args = {
+  label: 'Pest Detections',
+  value: '1,024',
+  trend: 12,
+};
+
+export const WithNegativeTrend = Template.bind({});
+WithNegativeTrend.args = {
+  label: 'Pest Detections',
+  value: '840',
+  trend: -5,
+};
