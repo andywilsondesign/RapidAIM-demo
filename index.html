@@ -26,9 +26,35 @@
             <span class="material-symbols-rounded search-icon">search</span>
             <input type="text" placeholder="Search ranch, block or sensor..." class="search-input">
         </div>
-        <div class="user-profile">
-            <div class="user-avatar">
-                <span class="material-symbols-rounded">person</span>
+        <div class="top-bar-right" style="display:flex; align-items:center; gap:16px; position:relative;">
+            <!-- Mobile Preview Link -->
+            <a href="mobile.html" target="_blank" class="btn" style="width:auto; padding:8px 14px; background:var(--status-green-bg); color:var(--brand-primary); border:1px solid rgba(43,138,62,0.2); border-radius:18px; font-size:12px; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:6px; cursor:pointer; transition:var(--transition-smooth);">
+                <span class="material-symbols-rounded" style="font-size:16px;">smartphone</span>
+                <span>Mobile View</span>
+            </a>
+            <!-- Task icon with red dot if there are active scoutings -->
+            <button class="topbar-icon-btn" id="btn-tasks-list" title="Scouting Tasks" style="background:none; border:none; color:var(--text-secondary); cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; transition:var(--transition-smooth); outline:none;">
+                <span class="material-symbols-rounded" style="font-size:24px;">assignment</span>
+                <span class="tasks-badge-dot hidden" id="tasks-badge-dot" style="position:absolute; top:4px; right:4px; width:8px; height:8px; background-color:#E03131; border-radius:50%; border:1px solid #FFF;"></span>
+            </button>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <span class="material-symbols-rounded">person</span>
+                </div>
+            </div>
+            
+            <!-- Tasks list dropdown -->
+            <div class="tasks-dropdown-content glass-panel hidden" id="tasks-dropdown" style="position:absolute; top:48px; right:0; width:320px; max-height:400px; background:#FFF; border:1px solid var(--border-subtle); border-radius:12px; box-shadow:var(--shadow-glass); z-index:10000; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; animation: fadeIn 0.3s ease-out;">
+                <div class="tasks-dropdown-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+                    <h3 style="font-size:14px; font-weight:700; color:var(--brand-primary); margin:0;">Active Scouting Tasks</h3>
+                    <span class="tasks-count-pill" id="tasks-count-pill" style="font-size:10px; background:var(--border-subtle); color:var(--text-secondary); padding:2px 8px; border-radius:10px; font-weight:600;">0 Tasks</span>
+                </div>
+                <div class="tasks-list" id="tasks-list-container" style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="no-tasks-state" id="no-tasks-state" style="text-align:center; padding:24px 8px; color:var(--text-secondary);">
+                        <span class="material-symbols-rounded" style="font-size:36px; color:var(--border-subtle); margin-bottom:8px;">task_alt</span>
+                        <p style="font-size:12px; margin:0;">No active field assignments</p>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -39,16 +65,6 @@
             <div class="panel-state-ranking active" id="ranking-view">
                 <div class="panel-header">
                     <h2>Pest Pressure Ranking</h2>
-                    <div class="filters">
-                        <select id="filter-pest" class="modern-select">
-                            <option value="female-now">Female Navel Orangeworm</option>
-                            <option value="male-now">Male Navel Orangeworm</option>
-                        </select>
-                        <select id="filter-farm" class="modern-select">
-                            <option value="all">All Farms</option>
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
                 </div>
                 <div class="ranking-list" id="ranking-list">
                     <!-- Populated dynamically -->
@@ -68,7 +84,8 @@
                     <p id="detail-subtitle" class="subtitle">Details</p>
                 </div>
                 <div class="detail-content">
-                    <div class="stat-card primary">
+                    <div id="standard-detail-content">
+                        <div class="stat-card primary">
                         <div class="stat-info">
                             <h3 id="detail-pest-name">Female Navel Orangeworm</h3>
                             <p class="stat-label">Current Count</p>
@@ -81,12 +98,40 @@
                     <div id="sensor-meta" class="sensor-meta-grid hidden">
                         <!-- Populated by JS -->
                     </div>
+
+                    <!-- Dynamic Action Buttons stacked under data card, above charts -->
+                    <div class="action-buttons" id="dynamic-actions">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Last 7 Day Detections Table (Ranch only) -->
+                    <div id="detections-grid-container" class="detections-grid-container hidden">
+                        <!-- Dynamically populated ranch blocks detections grid -->
+                    </div>
                     
+                    <!-- Dynamic Day Trend Chart with history navigation -->
                     <div class="chart-container">
-                        <div class="chart-header">
-                            <h4 id="trend-chart-title">14-Day Trend</h4>
+                        <div class="chart-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h4 id="trend-chart-title">Day Trend</h4>
+                            <div class="chart-navigation" id="trend-chart-nav">
+                                <button class="icon-btn-sm" id="btn-chart-prev" title="View Historic Data">
+                                    <span class="material-symbols-rounded" style="font-size:16px;">chevron_left</span>
+                                </button>
+                                <span class="chart-nav-label" id="chart-nav-label">14 Days</span>
+                                <button class="icon-btn-sm" id="btn-chart-next" disabled title="View Recent Data">
+                                    <span class="material-symbols-rounded" style="font-size:16px;">chevron_right</span>
+                                </button>
+                            </div>
                         </div>
                         <canvas id="trendChart"></canvas>
+                    </div>
+
+                    <!-- New Chart: 3-Day Avg & 7-Day Rolling -->
+                    <div class="chart-container" id="avg-rolling-chart-container">
+                        <div class="chart-header">
+                            <h4>3-Day Avg & 7-Day Rolling</h4>
+                        </div>
+                        <canvas id="avgRollingChart"></canvas>
                     </div>
 
                     <div class="chart-container" id="hourly-chart-container">
@@ -95,9 +140,10 @@
                         </div>
                         <canvas id="hourlyChart"></canvas>
                     </div>
-
-                    <div class="action-buttons" id="dynamic-actions">
-                        <!-- Populated dynamically -->
+                    </div>
+                    
+                    <div id="organisation-detail-content" class="hidden" style="display:flex; flex-direction:column; gap:20px; padding:0 4px 20px 4px;">
+                        <!-- Dynamically populated organization details -->
                     </div>
                 </div>
             </div>
@@ -126,7 +172,32 @@
             
             <div class="control-content" id="control-content">
                 <div class="control-section">
-                    <label class="section-label">Alert Threshold</label>
+                    <label class="section-label">Pest Type</label>
+                    <select id="filter-pest" class="modern-select">
+                        <option value="female-now">Female Navel Orangeworm</option>
+                        <option value="male-now">Male Navel Orangeworm</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <label class="section-label">Organisation</label>
+                    <select id="filter-organisation" class="modern-select">
+                        <option value="org-all">All Organisations</option>
+                        <option value="org-rapid">RapidAIM Growers Co.</option>
+                        <option value="org-apex">Apex Agriculture</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <label class="section-label">Ranch</label>
+                    <select id="filter-farm" class="modern-select">
+                        <option value="all">All Ranches</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <label class="section-label">Threshold</label>
                     <div class="slider-container">
                         <input type="range" id="threshold-slider" min="0" max="100" value="70" class="modern-slider">
                         <span class="slider-value" id="threshold-value">70</span>
@@ -153,29 +224,9 @@
                             Heatmap (Pest Pressure)
                         </label>
                         <label class="checkbox-layer">
-                            <input type="checkbox" id="layer-boundaries" checked>
-                            <span class="checkmark"></span>
-                            Area Boundaries
-                        </label>
-                        <label class="checkbox-layer">
                             <input type="checkbox" id="layer-sensors" checked>
                             <span class="checkmark"></span>
                             Sensors
-                        </label>
-                        <label class="checkbox-layer">
-                            <input type="checkbox" id="layer-soil">
-                            <span class="checkmark"></span>
-                            Soil Type
-                        </label>
-                        <label class="checkbox-layer">
-                            <input type="checkbox" id="layer-ndvi">
-                            <span class="checkmark"></span>
-                            NDVI
-                        </label>
-                        <label class="checkbox-layer">
-                            <input type="checkbox" id="layer-temp">
-                            <span class="checkmark"></span>
-                            Temperature
                         </label>
                     </div>
                 </div>
@@ -184,7 +235,7 @@
                     <label class="section-label">Legend</label>
                     <div class="legend-item">
                         <div class="legend-color high"></div>
-                        <span>High Risk (≥ Threshold)</span>
+                        <span>High Risk</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color med"></div>
@@ -222,6 +273,77 @@
                 <button class="btn btn-black" id="btn-export-pdf">Export as PDF</button>
             </div>
         </div>
+    </div>
+
+    <!-- Modal for Assign Scouting -->
+    <div class="modal-overlay hidden" id="scouting-modal" style="display:flex; align-items:center; justify-content:center; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:9999; animation: fadeIn 0.3s ease-out;">
+        <div class="scouting-modal-content glass-panel" style="background:#FFF; color:#111; width:95%; max-width:600px; border-radius:16px; border: 1px solid var(--border-subtle); overflow:hidden; box-shadow:var(--shadow-glass); display:flex; flex-direction:column; animation: slideUp 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);">
+            <div class="modal-header" style="background:#1e3f20; color:#FFF; padding:20px; display:flex; justify-content:space-between; align-items:center;">
+                <h2 style="margin:0; font-size:18px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-rounded">assignment_add</span> Create Scouting Assignment
+                </h2>
+                <button class="icon-btn" id="btn-close-scouting-modal" style="color:#FFF; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding:24px; display:flex; flex-direction:column; gap:20px;">
+                <!-- Top Banner with dynamic context badges -->
+                <div class="scouting-context-banner" style="background:#F4F7F6; padding:12px 16px; border-radius:10px; border:1px solid rgba(30, 63, 32, 0.1); display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                    <span class="scouting-badge block-badge" id="scouting-badge-entity" style="background:#1e3f20; color:#FFF; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;">Block: Sierra Orchards Block 1</span>
+                    <span class="scouting-badge status-badge" id="scouting-badge-status" style="background:#E03131; color:#FFF; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;">Status: High Risk</span>
+                    <span class="scouting-badge pest-badge" id="scouting-badge-pest" style="background:#2BA082; color:#FFF; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600;">Pest Category: Female Navel Orangeworm</span>
+                </div>
+                
+                <!-- Form Inputs -->
+                <div class="scouting-form-group" style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+                    <label style="font-weight:600; font-size:13px; color:#1e3f20;">Assignment Type</label>
+                    <div class="segmented-control" id="scouting-type-segmented" style="display:flex; background:#F4F7F6; border-radius:8px; padding:4px; gap:4px;">
+                        <button class="segmented-btn active" data-type="Pest Scouting" style="flex:1; border:none; background:#FFF; color:#1e3f20; padding:10px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.05); transition:all 0.2s; outline:none;">Pest Scouting</button>
+                        <button class="segmented-btn" data-type="Trap Maintenance" style="flex:1; border:none; background:transparent; color:#4A5B53; padding:10px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; outline:none;">Trap Maintenance</button>
+                        <button class="segmented-btn" data-type="Sensor Repair" style="flex:1; border:none; background:transparent; color:#4A5B53; padding:10px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; outline:none;">Sensor Repair</button>
+                    </div>
+                </div>
+
+                <div class="scouting-form-row" style="display:flex; gap:16px;">
+                    <div class="scouting-form-group" style="flex:1; display:flex; flex-direction:column; gap:6px; text-align:left;">
+                        <label style="font-weight:600; font-size:13px; color:#1e3f20;">Assignee</label>
+                        <select id="scouting-assignee" class="modern-select" style="width:100%; background:#FFF; border:1px solid var(--border-subtle); padding:10px 14px; border-radius:8px; font-size:13px; outline:none;">
+                            <option value="John Doe">John Doe (Field Lead)</option>
+                            <option value="Jane Smith">Jane Smith (Technician)</option>
+                            <option value="Marcus Vance">Marcus Vance (Scout)</option>
+                            <option value="Elena Rostova">Elena Rostova (Agronomist)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="scouting-form-group" style="flex:1; display:flex; flex-direction:column; gap:6px; text-align:left;">
+                        <label style="font-weight:600; font-size:13px; color:#1e3f20;">Priority Level</label>
+                        <div class="priority-group" id="scouting-priority-segmented" style="display:flex; background:#F4F7F6; border-radius:8px; padding:4px; gap:4px;">
+                            <button class="priority-btn" data-priority="Low" style="flex:1; border:none; background:transparent; color:#4A5B53; padding:10px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; outline:none;">Low</button>
+                            <button class="priority-btn" data-priority="Medium" style="flex:1; border:none; background:transparent; color:#4A5B53; padding:10px; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; outline:none;">Medium</button>
+                            <button class="priority-btn active" data-priority="Urgent" style="flex:1; border:none; background:#F8D7DA; color:#721C24; padding:10px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid #F5C6CB; box-shadow:0 2px 4px rgba(0,0,0,0.05); transition:all 0.2s; outline:none;">Urgent</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scouting-form-group" style="display:flex; flex-direction:column; gap:6px; text-align:left;">
+                    <label style="font-weight:600; font-size:13px; color:#1e3f20;">Special Field Notes</label>
+                    <textarea id="scouting-notes" placeholder="Add specific block coordinates, row directions, or hardware diagnostic anomalies to look out for..." style="width:100%; height:90px; padding:12px; border-radius:8px; border:1px solid var(--border-subtle); outline:none; font-family:inherit; font-size:13px; resize:none; transition:border-color 0.2s;"></textarea>
+                </div>
+            </div>
+            
+            <div class="modal-footer" style="padding:16px 24px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; background:#F4F7F6;">
+                <button class="btn-ghost" id="btn-close-scouting-modal-footer" style="width:auto; padding:10px 20px; color:#4A5B53; font-weight:500; font-size:13px; background:none; border:none; cursor:pointer;">Cancel / Close</button>
+                <button class="btn" id="btn-dispatch-scouting" style="width:auto; padding:12px 24px; background:#1e3f20; color:#FFF; font-weight:600; font-size:13px; border-radius:8px; border:none; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; gap:8px;">
+                    <span>🚀 Dispatch Task to Field App</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Organization Dashboard Overlay View -->
+    <div id="organisation-dashboard-view" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f4f7f6; z-index: 9999; display: flex; flex-direction: column; overflow: hidden; font-family: 'Inter', sans-serif;">
+        <!-- Populated dynamically by app.js -->
     </div>
 
     <!-- Scripts -->

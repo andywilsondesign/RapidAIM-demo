@@ -13,7 +13,7 @@ const RANCH_LOCATIONS = {
     'R3': { lat: 36.6000, lng: -119.7800 }
 };
 
-function generateTrendData(days = 14) {
+function generateTrendData(days = 30) {
     const data = [];
     let current = Math.floor(Math.random() * 50);
     for (let i = 0; i < days; i++) {
@@ -100,8 +100,8 @@ export function generateMockData() {
                     lng: sLng,
                     female_count: isOffline ? 0 : fCount,
                     male_count: isOffline ? 0 : mCount,
-                    trend_female: isOffline ? [] : generateTrendData(14),
-                    trend_male: isOffline ? [] : generateTrendData(14),
+                    trend_female: isOffline ? [] : generateTrendData(30),
+                    trend_male: isOffline ? [] : generateTrendData(30),
                     hourly_female: isOffline ? [] : generateHourlyData(),
                     hourly_male: isOffline ? [] : generateHourlyData()
                 });
@@ -117,8 +117,8 @@ export function generateMockData() {
                 sensors: sensors,
                 female_count: totalFemale,
                 male_count: totalMale,
-                trend_female: generateTrendData(14),
-                trend_male: generateTrendData(14),
+                trend_female: generateTrendData(30),
+                trend_male: generateTrendData(30),
                 hourly_female: generateHourlyData(),
                 hourly_male: generateHourlyData()
             });
