@@ -2,14 +2,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* Variants */

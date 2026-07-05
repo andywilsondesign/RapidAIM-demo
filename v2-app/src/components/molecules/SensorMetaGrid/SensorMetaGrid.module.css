@@ -7,9 +7,47 @@
 .item {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1);
-  padding: var(--spacing-3);
+  gap: var(--spacing-2);
+  min-width: 0;
+  padding: var(--spacing-4);
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-base);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.valueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  min-width: 0;
+}
+
+.valueRow > :first-child {
+  min-width: 0;
+}
+
+.indicator {
+  display: inline-flex;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-status-green-bg);
+  color: var(--color-status-green);
+}
+
+.indicatorIcon {
+  font-size: var(--font-size-base);
+}
+
+.item--positive {
+  border-color: rgba(46, 125, 50, 0.18);
 }

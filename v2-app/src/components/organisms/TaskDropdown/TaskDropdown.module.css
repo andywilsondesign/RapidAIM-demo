@@ -20,11 +20,11 @@
 }
 
 .count {
-  padding: 2px 8px;
+  padding: var(--spacing-1) var(--spacing-2);
   border-radius: 999px;
   background: var(--color-bg-base);
   color: var(--color-text-secondary);
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
 }
 

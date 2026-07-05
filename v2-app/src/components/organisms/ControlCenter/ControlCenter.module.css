@@ -1,4 +1,5 @@
 .panel {
+  position: relative;
   width: 320px;
   min-width: 0;
   background-color: var(--color-bg-panel);
@@ -6,12 +7,31 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
+}
+
+.panel::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 48px;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
 }
 
 .header {
+  flex: 0 0 auto;
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--spacing-8);
 }
 
 .section {

@@ -70,8 +70,8 @@ const pageGroups = [
 
 const flatPages = pageGroups.flatMap((group) => group.pages);
 
-export const HandoffIndex = () => {
-  const [activePageId, setActivePageId] = useState(flatPages[0].id);
+export const HandoffIndex = ({ initialPageId = flatPages[0].id }) => {
+  const [activePageId, setActivePageId] = useState(initialPageId);
   const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
   const activePage = useMemo(
     () => flatPages.find((page) => page.id === activePageId) || flatPages[0],
@@ -197,12 +197,12 @@ function BlockDetailPanel() {
     >
       <StatCard label={selectedBlock.pestName} value={selectedBlock.currentCount} trend={selectedBlock.trend} />
       <Typography variant="caption" color="secondary">{selectedBlock.benchmark}</Typography>
+      <StickyActionRow />
       <DetectionGrid
         rows={sensorDetectionGrid}
         title="Sensor 7 Day Detections"
         firstColumnLabel="Sensor"
       />
-      <ActionRow />
       <ChartStack />
     </Panel>
   );
@@ -221,7 +221,7 @@ function RanchDetailPanel() {
         <StatCard label="Active Sensors" value={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors}`} />
       </div>
       <Typography variant="body-sm" color="secondary">{selectedRanch.summary}</Typography>
-      <ActionRow />
+      <StickyActionRow />
       <DetectionGrid rows={detectionGrid} />
       <ChartStack compact />
     </Panel>
@@ -237,13 +237,13 @@ function SensorDetailPanel() {
       backLabel="Back to Block"
     >
       <StatCard label="Current Count" value={selectedSensor.count} trend={18} />
+      <StickyActionRow />
       <SensorMetaGrid items={[
-        { label: 'Status', value: selectedSensor.status },
-        { label: 'Battery', value: `${selectedSensor.battery}%` },
-        { label: 'Signal', value: selectedSensor.signal },
-        { label: 'Last Sync', value: selectedSensor.lastSync },
+        { label: 'Status', value: selectedSensor.status, tone: 'positive' },
+        { label: 'Battery', value: `${selectedSensor.battery}%`, tone: 'positive' },
+        { label: 'Signal', value: selectedSensor.signal, tone: 'positive' },
+        { label: 'Last Sync', value: selectedSensor.lastSync, tone: 'positive' },
       ]} />
-      <ActionRow />
       <ChartStack compact />
     </Panel>
   );
@@ -260,6 +260,14 @@ function ActionRow() {
         <span className="material-symbols-rounded">summarize</span>
         AI Report
       </Button>
+    </div>
+  );
+}
+
+function StickyActionRow() {
+  return (
+    <div className={styles.stickyActionRow}>
+      <ActionRow />
     </div>
   );
 }
@@ -436,17 +444,17 @@ function Panel({ title, eyebrow, badge, backLabel, children }) {
     <section className={styles.panel}>
       <div className={styles.panelHeader}>
         <div className={styles.panelTitleGroup}>
-          {backLabel && (
-            <button className={styles.backButton} type="button" aria-label={backLabel}>
-              <span className="material-symbols-rounded">arrow_back</span>
-            </button>
-          )}
-          <div>
-            {eyebrow && <Typography variant="caption" color="secondary">{eyebrow}</Typography>}
+          <div className={styles.panelTitleRow}>
+            {backLabel && (
+              <button className={styles.backButton} type="button" aria-label={backLabel}>
+                <span className="material-symbols-rounded">arrow_back</span>
+              </button>
+            )}
             <Typography variant="h3">{title}</Typography>
           </div>
+          {eyebrow && <Typography variant="caption" color="secondary" className={styles.panelSubtitle}>{eyebrow}</Typography>}
         </div>
-        {badge && <Badge variant={badge}>{badge} Risk</Badge>}
+        {badge && <Badge variant={badge} className={styles.panelBadge}>{badge} Risk</Badge>}
       </div>
       <div className={styles.panelBody}>{children}</div>
     </section>

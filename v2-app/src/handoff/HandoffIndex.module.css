@@ -132,15 +132,15 @@
 .desktopShell {
   display: flex;
   min-width: 1120px;
-  min-height: 760px;
+  min-height: 100vh;
   flex-direction: column;
   background: var(--color-bg-base);
 }
 
 .desktopMain {
   position: relative;
-  height: 690px;
-  min-height: 690px;
+  height: calc(100vh - 64px);
+  min-height: 560px;
   overflow: hidden;
   background: #dce5df;
 }
@@ -193,32 +193,61 @@
 }
 
 .panel {
+  position: relative;
   display: flex;
   height: 100%;
   flex-direction: column;
   background: var(--color-bg-panel);
 }
 
+.panel::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 48px;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
+}
+
 .panelHeader {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-3);
+  gap: var(--spacing-4);
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .panelTitleGroup {
   display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-2);
+  flex: 1;
   min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.panelTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-width: 0;
+}
+
+.panelSubtitle {
+  padding-left: calc(var(--spacing-8) + var(--spacing-3));
+}
+
+.panelBadge {
+  align-self: flex-start;
+  margin-top: var(--spacing-1);
 }
 
 .backButton {
   display: inline-flex;
-  width: 30px;
-  height: 30px;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -236,16 +265,17 @@
 }
 
 .backButton span {
-  font-size: 18px;
+  font-size: var(--font-size-base);
 }
 
 .panelBody {
+  position: relative;
   display: flex;
   flex: 1;
   min-height: 0;
   flex-direction: column;
   gap: var(--spacing-4);
-  padding: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-8);
   overflow: auto;
 }
 
@@ -257,8 +287,21 @@
 
 .actionRow {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-2);
+}
+
+.stickyActionRow {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-right: calc(var(--spacing-4) * -1);
+  margin-left: calc(var(--spacing-4) * -1);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
 }
 
 .chartStack {
