@@ -1,0 +1,33 @@
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.header,
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.notes {
+  padding: var(--spacing-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+}
+
+.footer {
+  justify-content: flex-start;
+  color: var(--color-text-secondary);
+}
+
+.footer span {
+  font-size: 15px;
+}

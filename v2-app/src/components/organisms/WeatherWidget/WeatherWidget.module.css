@@ -1,0 +1,23 @@
+.widget {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: max-content;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon {
+  color: var(--color-brand-primary);
+  font-size: 18px;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-border-subtle);
+}

@@ -10,8 +10,6 @@ export const StatCard = ({
   className = '',
 }) => {
   const isPositive = trend > 0;
-  const isNegative = trend < 0;
-  
   return (
     <div className={`${styles.card} ${className}`}>
       <Typography variant="body-sm" color="secondary" className={styles.label}>

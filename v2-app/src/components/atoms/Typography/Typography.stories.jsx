@@ -20,8 +20,6 @@ export default {
   },
 };
 
-const Template = (args) => <Typography {...args} />;
-
 export const Headers = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
     <Typography variant="h1">Header 1</Typography>

@@ -18,7 +18,10 @@ export const AccountForm = ({
   return (
     <form 
       className={`${styles.form} ${className}`} 
-      onSubmit={(e) => { e.preventDefault(); onSubmit && onSubmit(); }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (onSubmit) onSubmit();
+      }}
     >
       <div className={styles.header}>
         <Typography variant="h3">Account Settings</Typography>

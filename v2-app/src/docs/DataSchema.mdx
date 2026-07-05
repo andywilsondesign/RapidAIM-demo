@@ -1,96 +1,95 @@
-import { Meta, Source } from '@storybook/blocks';
+# RapidAim UI Data Schema
 
-<Meta title="Documentation/Data Schema" />
-
-# RapidAIM UI Data Schema
-
-This document defines the schema representing dynamic data versus static layout text for the RapidAIM front-end components.
+This document defines the schema representing dynamic data versus static layout text for the RapidAim frontend handoff components.
 
 ## Core Entities
 
-### 1. Ranch (Organization Level)
+### Ranch
+
 Represents an agricultural property managed by an organization.
 
-<Source
-  language="typescript"
-  dark
-  code={`interface Ranch {
-  id: string; // e.g. "R1"
-  name: string; // e.g. "Sunshine Valley Ranch"
-  urgencyLevel: 'STABLE' | 'MONITOR' | 'WARNING' | 'CRITICAL';
+```ts
+interface Ranch {
+  id: string;
+  name: string;
+  organization: string;
+  riskLevel: 'low' | 'medium' | 'high';
   currentCount: number;
-  totalBlocks: number;
   activeSensors: number;
-  uptimePercentage: number;
-  trendPercentage: number; // e.g. 24 (positive implies increase)
-  description: string; // AI generated insight or manual note
-}`}
-/>
+  totalSensors: number;
+  blocks: number;
+  acreage: number;
+  trend: number;
+  summary: string;
+}
+```
 
-### 2. Block (Field Level)
-Represents a specific block within a Ranch.
+### Block
 
-<Source
-  language="typescript"
-  dark
-  code={`interface Block {
+Represents a field block within a ranch.
+
+```ts
+interface Block {
   id: string;
+  name: string;
   ranchId: string;
-  name: string; // e.g. "Block 4"
-  pestPressureRisk: 'LOW' | 'MEDIUM' | 'HIGH';
-  pestCategory: 'female-now' | 'male-now' | 'citrus-gall-wasp';
-  currentPestCount: number;
-  historicalData: {
-    dayTrend: number[]; // 14 or 30 day history of counts
-    hourlyDistribution: number[]; // 24 hour activity counts
-  };
-}`}
-/>
+  ranchName: string;
+  crop: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  currentCount: number;
+  activeSensors: number;
+  totalSensors: number;
+  pestName: string;
+  trend: number;
+  benchmark: string;
+  polygon: [number, number][];
+}
+```
 
-### 3. Sensor (Hardware Level)
-Represents an individual trap or hardware sensor in the field.
+### Sensor
 
-<Source
-  language="typescript"
-  dark
-  code={`interface Sensor {
+Represents an individual field sensor or trap.
+
+```ts
+interface Sensor {
   id: string;
+  name: string;
   blockId: string;
-  status: 'ONLINE' | 'OFFLINE' | 'NEEDS_MAINTENANCE';
-  coordinates: { lat: number, lng: number };
-  lastSyncTime: string; // ISO timestamp
-}`}
-/>
+  blockName: string;
+  ranchName: string;
+  lat: number;
+  lng: number;
+  severity: 'low' | 'medium' | 'high';
+  count: number;
+  battery: number;
+  signal: string;
+  status: string;
+  lastSync: string;
+}
+```
 
-### 4. Task (Scouting / Maintenance)
-Represents a work order or scouting assignment.
+### Task
 
-<Source
-  language="typescript"
-  dark
-  code={`interface Task {
+Represents a scouting or maintenance assignment.
+
+```ts
+interface Task {
   id: string;
+  entityName: string;
   type: 'Pest Scouting' | 'Trap Maintenance' | 'Sensor Repair';
-  assigneeName: string;
+  assignee: string;
   priority: 'Low' | 'Medium' | 'Urgent';
-  targetEntityId: string; // Refers to Block or Sensor ID
-  notes: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'COMPLETED';
-}`}
-/>
+  status: string;
+  notes?: string;
+}
+```
 
-## Component Mapping (Dynamic vs Static)
+## Handoff Rule
 
-When building components, standard labels remain **static** (hardcoded in the UI or localized), whereas the data driving them is **dynamic** (passed via props).
+Static labels, layout, and interaction affordances belong in the component system. Variable values should come from deterministic fixtures or production data later.
 
-### StatCard Molecule
-- **Static:** The label (e.g., "Current Count", "Uptime").
-- **Dynamic:** The title (e.g., "Female Navel Orangeworm"), value (e.g., \`98\`), and trend (e.g., \`+24%\`).
+The current shared fixture source is:
 
-### Alerts (Global & Inline)
-- **Static:** Form field structure, error icon.
-- **Dynamic:** The specific error message (e.g., "Email is required", "Service currently degraded in region X"), Alert severity (\`info\`, \`warning\`, \`error\`, \`success\`).
-
-### Account Settings Form
-- **Static:** Input labels ("Organization Name", "Email Address").
-- **Dynamic:** User inputs (bound to state), validation state (true/false).
+```txt
+src/fixtures/rapidAimFixtures.js
+```

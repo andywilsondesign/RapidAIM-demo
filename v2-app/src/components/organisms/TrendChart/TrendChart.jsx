@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
@@ -45,11 +45,11 @@ export const TrendChart = ({
   // High risk: #E53935 (Red)
   // Medium risk: #FB8C00 (Amber)
   // Low risk: #43A047 (Green)
-  const getColorForValue = (val) => {
+  const getColorForValue = useCallback((val) => {
     if (val >= threshold * 2) return '#E53935';
     if (val >= threshold) return '#FB8C00';
     return '#43A047';
-  };
+  }, [threshold]);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -91,7 +91,7 @@ export const TrendChart = ({
         ],
       });
     }
-  }, [data, labels, type, threshold]);
+  }, [data, labels, type, threshold, getColorForValue]);
 
   const options = {
     responsive: true,

@@ -19,9 +19,7 @@ const Template = (args) => (
   </div>
 );
 
-// Helper to generate some dummy data
 const generateLabels = (count, prefix = 'Day') => Array.from({ length: count }, (_, i) => `${prefix} ${i + 1}`);
-const generateData = (count) => Array.from({ length: count }, () => Math.floor(Math.random() * 80));
 
 export const DefaultBar = Template.bind({});
 DefaultBar.args = {
@@ -46,6 +44,6 @@ HourlyTrend.args = {
   type: 'bar',
   title: '24-Hour Hourly Detections',
   labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
-  data: Array.from({ length: 24 }, (_, i) => (i > 8 && i < 18 ? Math.floor(Math.random() * 40) : Math.floor(Math.random() * 10))),
+  data: [6, 8, 12, 14, 16, 9, 5, 4, 6, 12, 18, 24, 28, 32, 30, 26, 21, 18, 14, 12, 10, 16, 20, 18],
   threshold: 25,
 };

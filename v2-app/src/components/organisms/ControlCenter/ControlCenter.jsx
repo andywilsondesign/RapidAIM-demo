@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Select } from '../../atoms/Select/Select';
 import { Checkbox } from '../../atoms/Checkbox/Checkbox';
-import { Input } from '../../atoms/Input/Input';
 import { FormField } from '../../molecules/FormField/FormField';
 import styles from './ControlCenter.module.css';
 
@@ -65,19 +64,19 @@ export const ControlCenter = ({ className = '' }) => {
         <div className={styles.legend}>
           <div className={styles.legendItem}>
             <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-red)' }} />
-            <Typography variant="caption">High Risk</Typography>
+            <Typography variant="body-sm">High Risk</Typography>
           </div>
           <div className={styles.legendItem}>
             <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-amber)' }} />
-            <Typography variant="caption">Medium Risk</Typography>
+            <Typography variant="body-sm">Medium Risk</Typography>
           </div>
           <div className={styles.legendItem}>
             <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-green)' }} />
-            <Typography variant="caption">Low Risk</Typography>
+            <Typography variant="body-sm">Low Risk</Typography>
           </div>
           <div className={styles.legendItem}>
             <span className="material-symbols-rounded" style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>build</span>
-            <Typography variant="caption">Offline Sensor</Typography>
+            <Typography variant="body-sm">Offline Sensor</Typography>
           </div>
         </div>
       </div>

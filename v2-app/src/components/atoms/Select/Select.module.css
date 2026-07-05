@@ -6,6 +6,7 @@
 
 .select {
   display: block;
+  min-width: 0;
   appearance: none;
   padding: var(--spacing-3) var(--spacing-6) var(--spacing-3) var(--spacing-4);
   font-family: var(--font-family-base);
@@ -17,6 +18,9 @@
   transition: var(--transition-base);
   outline: none;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .select:focus {
