@@ -7,6 +7,8 @@ export const StatCard = ({
   label,
   value,
   trend,
+  trendLabel,
+  benchmark,
   className = '',
 }) => {
   const isPositive = trend > 0;
@@ -30,6 +32,20 @@ export const StatCard = ({
           </div>
         )}
       </div>
+      {(trendLabel || benchmark) && (
+        <div className={styles.meta}>
+          {trendLabel && (
+            <Typography variant="caption" weight="semibold" className={`${styles.metaLine} ${isPositive ? styles['metaLine--negative'] : styles['metaLine--positive']}`}>
+              {trendLabel}
+            </Typography>
+          )}
+          {benchmark && (
+            <Typography variant="caption" color="secondary" className={styles.metaLine}>
+              {benchmark}
+            </Typography>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -38,5 +54,7 @@ StatCard.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   trend: PropTypes.number,
+  trendLabel: PropTypes.string,
+  benchmark: PropTypes.string,
   className: PropTypes.string,
 };

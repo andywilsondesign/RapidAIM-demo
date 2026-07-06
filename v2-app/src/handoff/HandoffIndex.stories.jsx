@@ -1,5 +1,6 @@
 import React from 'react';
 import { HandoffIndex } from './HandoffIndex';
+import { HierarchyBreadcrumb } from './HandoffBreadcrumb';
 
 export default {
   title: 'Handoff/StaticPages',
@@ -11,9 +12,9 @@ export default {
 
 export const HandoffWorkspace = {};
 
-export const DesktopRanking = {
+export const DesktopOrganizationDetail = {
   args: {
-    initialPageId: 'desktop-ranking',
+    initialPageId: 'desktop-organization',
   },
 };
 
@@ -71,14 +72,28 @@ export const MobileOverlays = {
   },
 };
 
-export const OrganizationDashboard = {
-  args: {
-    initialPageId: 'organization',
-  },
-};
-
 export const AccountSettings = {
   args: {
     initialPageId: 'account',
   },
+};
+
+export const LongHierarchyBreadcrumb = {
+  render: () => (
+    <div style={{
+      position: 'relative',
+      width: 430,
+      height: 92,
+      background: '#dce5df',
+      padding: 20,
+    }}>
+      <HierarchyBreadcrumb
+        items={[
+          { label: 'RapidAim Growers Cooperative International West Coast Division' },
+          { label: 'Sierra Orchards North Valley Experimental Ranch' },
+          { label: 'Block 4 - Northeast Almond Trial Zone' },
+        ]}
+      />
+    </div>
+  ),
 };

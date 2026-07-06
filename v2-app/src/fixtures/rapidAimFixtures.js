@@ -49,11 +49,12 @@ export const blocks = [
     crop: 'Almonds',
     riskLevel: 'high',
     currentCount: 124,
-    activeSensors: 11,
-    totalSensors: 12,
+    activeSensors: 12,
+    totalSensors: 14,
     pestName: 'Female Navel Orangeworm',
-    trend: 24,
-    benchmark: '52% above 14-day ranch average',
+    trend: 18,
+    trendLabel: 'up 18% since last week',
+    benchmark: 'Farm average: 45',
     polygon: [
       [36.650, -119.804],
       [36.650, -119.795],
@@ -154,7 +155,8 @@ export const sensors = [
 export const chartSeries = {
   dayLabels: ['Jun 22', 'Jun 23', 'Jun 24', 'Jun 25', 'Jun 26', 'Jun 27', 'Jun 28', 'Jun 29', 'Jun 30', 'Jul 1', 'Jul 2', 'Jul 3', 'Jul 4', 'Jul 5'],
   blockTrend: [12, 18, 21, 24, 29, 35, 44, 52, 65, 72, 84, 96, 112, 124],
-  rollingAverage: [16, 18, 20, 23, 27, 32, 38, 45, 53, 61, 70, 82, 94, 106],
+  rolling3Day: [17, 19, 21, 25, 29, 36, 44, 54, 63, 74, 84, 97, 111, 124],
+  rolling7Day: [14, 16, 18, 21, 25, 30, 36, 43, 52, 62, 72, 83, 94, 106],
   hourlyLabels: ['0:00', '2:00', '4:00', '6:00', '8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'],
   hourlyDistribution: [14, 18, 21, 12, 5, 4, 6, 8, 12, 19, 28, 31],
   organizationLabels: ['Day 1', 'Day 5', 'Day 10', 'Day 15', 'Day 20', 'Day 25', 'Day 30'],
@@ -169,9 +171,9 @@ export const detectionGrid = [
 ];
 
 export const sensorDetectionGrid = [
-  { block: 'Sensor S4-A', days: [18, 21, 24, 29, 35, 40, 45] },
-  { block: 'Sensor S4-B', days: [12, 14, 18, 19, 22, 25, 27] },
-  { block: 'Sensor S4-C', days: [4, 6, 8, 8, 8, 8, 8] },
+  { block: 'Sensor S4-A', status: 'high', days: [18, 21, 24, 31, 42, 55, 68] },
+  { block: 'Sensor S4-B', status: 'medium', days: [12, 14, 18, 28, 36, 44, 52] },
+  { block: 'Sensor S4-C', status: 'low', days: [4, 6, 8, 8, 8, 8, 8] },
 ];
 
 export const tasks = [

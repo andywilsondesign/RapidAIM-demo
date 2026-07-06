@@ -33,9 +33,21 @@ DefaultBar.args = {
 export const RollingLine = Template.bind({});
 RollingLine.args = {
   type: 'line',
-  title: '7-Day Rolling Average (Line)',
+  title: '3-Day Avg & 7-Day Rolling',
   labels: generateLabels(14),
-  data: [10, 15, 20, 25, 30, 45, 55, 60, 50, 40, 25, 20, 15, 12],
+  series: [
+    {
+      label: '3-Day Avg',
+      data: [12, 16, 18, 24, 31, 42, 51, 58, 54, 44, 31, 24, 18, 14],
+      color: '#2563EB',
+    },
+    {
+      label: '7-Day Rolling',
+      data: [10, 13, 16, 20, 25, 32, 39, 45, 47, 42, 36, 30, 24, 20],
+      color: '#C2410C',
+      dashed: true,
+    },
+  ],
   threshold: 25,
 };
 

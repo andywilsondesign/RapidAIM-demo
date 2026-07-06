@@ -9,45 +9,68 @@ const getCellClass = (count) => {
   return styles.low;
 };
 
+const defaultDayLabels = ['W', 'T', 'F', 'S', 'S', 'M', 'Last Night'];
+
 export const DetectionGrid = ({
   rows,
   title = 'Last 7 Day Detections',
   firstColumnLabel = 'Block',
+  dayLabels = defaultDayLabels,
+  showStatus = false,
+  timezone,
   className = '',
 }) => (
   <div className={`${styles.wrapper} ${className}`}>
     <div className={styles.header}>
       <Typography variant="body-sm" weight="semibold">{title}</Typography>
+      {timezone && (
+        <Typography variant="caption" color="secondary" className={styles.timezone}>
+          <span className="material-symbols-rounded">info</span>
+          {timezone}
+        </Typography>
+      )}
     </div>
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>{firstColumnLabel}</th>
-          {['D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'Today'].map((day) => (
-            <th key={day}>{day}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <tr key={row.block}>
-            <td>{row.block}</td>
-            {row.days.map((count, index) => (
-              <td className={getCellClass(count)} key={`${row.block}-${index}`}>{count}</td>
+    <div className={styles.tableViewport}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            {showStatus && <th className={styles.statusColumn} aria-label="Status" />}
+            <th className={styles.nameColumn}>{firstColumnLabel}</th>
+            {dayLabels.map((day, index) => (
+              <th className={styles.dayColumn} key={`${day}-${index}`}>{day}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.block}>
+              {showStatus && (
+                <td className={styles.statusColumn}>
+                  <span className={`${styles.statusDot} ${styles[`statusDot--${row.status || 'low'}`]}`} />
+                </td>
+              )}
+              <td className={styles.nameColumn}>{row.block}</td>
+              {row.days.map((count, index) => (
+                <td className={`${styles.dayColumn} ${getCellClass(count)}`} key={`${row.block}-${index}`}>{count}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 );
 
 DetectionGrid.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.shape({
     block: PropTypes.string.isRequired,
+    status: PropTypes.oneOf(['high', 'medium', 'low']),
     days: PropTypes.arrayOf(PropTypes.number).isRequired,
   })).isRequired,
   title: PropTypes.string,
   firstColumnLabel: PropTypes.string,
+  dayLabels: PropTypes.arrayOf(PropTypes.string),
+  showStatus: PropTypes.bool,
+  timezone: PropTypes.string,
   className: PropTypes.string,
 };

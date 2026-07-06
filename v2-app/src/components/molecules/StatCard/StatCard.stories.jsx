@@ -8,6 +8,8 @@ export default {
     label: { control: 'text' },
     value: { control: 'text' },
     trend: { control: 'number' },
+    trendLabel: { control: 'text' },
+    benchmark: { control: 'text' },
   },
 };
 
@@ -24,6 +26,8 @@ WithPositiveTrend.args = {
   label: 'Pest Detections',
   value: '1,024',
   trend: 12,
+  trendLabel: 'up 12% since last week',
+  benchmark: 'Farm average: 45',
 };
 
 export const WithNegativeTrend = Template.bind({});

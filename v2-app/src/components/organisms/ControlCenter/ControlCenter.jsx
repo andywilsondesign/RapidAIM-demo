@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Select } from '../../atoms/Select/Select';
@@ -7,13 +7,25 @@ import { FormField } from '../../molecules/FormField/FormField';
 import styles from './ControlCenter.module.css';
 
 export const ControlCenter = ({ className = '' }) => {
-  return (
-    <aside className={`${styles.panel} ${className}`}>
-      <div className={styles.header}>
-        <Typography variant="h4">Map Controls</Typography>
-      </div>
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-      <div className={styles.body}>
+  return (
+    <aside
+      className={`${styles.panel} ${isCollapsed ? styles.collapsed : ''} ${className}`}
+      style={isCollapsed ? { bottom: 'auto', height: 'auto' } : undefined}
+    >
+      <button
+        className={styles.header}
+        type="button"
+        aria-expanded={!isCollapsed}
+        onClick={() => setIsCollapsed((current) => !current)}
+      >
+        <span className="material-symbols-rounded">layers</span>
+        <Typography variant="h4">Map Controls</Typography>
+        <span className={`material-symbols-rounded ${styles.toggleIcon}`}>expand_more</span>
+      </button>
+
+      {!isCollapsed && <div className={styles.body}>
         <div className={styles.section}>
           <Typography variant="h6" className={styles.sectionTitle}>Filters</Typography>
           <div className={styles.controls}>
@@ -81,7 +93,7 @@ export const ControlCenter = ({ className = '' }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </aside>
   );
 };

@@ -11,6 +11,11 @@
   z-index: 1000;
 }
 
+:global(.leaflet-bottom.leaflet-right) {
+  right: calc(320px + var(--spacing-8));
+  bottom: var(--spacing-5);
+}
+
 /* Base styles for the custom div icon markers */
 :global(.custom-marker) {
   background: transparent;

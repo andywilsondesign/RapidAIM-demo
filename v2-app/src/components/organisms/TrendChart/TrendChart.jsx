@@ -30,6 +30,7 @@ ChartJS.register(
 
 export const TrendChart = ({
   data = [],
+  series,
   labels = [],
   type = 'bar', // 'bar' or 'line'
   title = 'Chart',
@@ -69,6 +70,27 @@ export const TrendChart = ({
         ],
       });
     } else if (type === 'line') {
+      if (series?.length) {
+        setChartData({
+          labels,
+          datasets: series.map((item, index) => ({
+            label: item.label,
+            data: item.data,
+            borderColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
+            backgroundColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
+            borderWidth: index === 0 ? 3 : 2,
+            borderDash: item.dashed ? [6, 4] : [],
+            pointBackgroundColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
+            pointBorderColor: '#FFFFFF',
+            pointBorderWidth: 1,
+            pointRadius: 3,
+            fill: false,
+            tension: 0.4,
+          })),
+        });
+        return;
+      }
+
       // For line charts, use a linear gradient from top to bottom
       const ctx = chart.ctx;
       const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -91,13 +113,23 @@ export const TrendChart = ({
         ],
       });
     }
-  }, [data, labels, type, threshold, getColorForValue]);
+  }, [data, labels, series, type, threshold, getColorForValue]);
+
+  const hasMultipleSeries = type === 'line' && Boolean(series?.length);
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: {
+        display: hasMultipleSeries,
+        labels: {
+          color: '#334155',
+          font: { size: 12, family: '"Inter", sans-serif', weight: 600 },
+          usePointStyle: true,
+          boxWidth: 10,
+        },
+      },
       tooltip: {
         backgroundColor: '#1E293B',
         padding: 12,
@@ -137,6 +169,12 @@ export const TrendChart = ({
 
 TrendChart.propTypes = {
   data: PropTypes.arrayOf(PropTypes.number),
+  series: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(PropTypes.number).isRequired,
+    color: PropTypes.string,
+    dashed: PropTypes.bool,
+  })),
   labels: PropTypes.arrayOf(PropTypes.string),
   type: PropTypes.oneOf(['bar', 'line']),
   title: PropTypes.string,

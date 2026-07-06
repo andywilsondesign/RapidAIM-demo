@@ -259,6 +259,39 @@ Required story coverage:
 - Every template/static page should have a matching Storybook story.
 - Data fixtures used in pages should also be used in stories.
 
+## V1 Parity Audit - July 6, 2026
+
+This audit cross-references the V2 static handoff against the V1 desktop and mobile prototypes. V2 should remain static, but it should preserve the important visual hierarchy, labels, and content cues from V1.
+
+### Restored In This Pass
+
+- Block detail subtitle now includes the v1 sensor summary: `14 sensors / 12 active`.
+- Block detail primary stat now includes v1-style supporting copy: current count trend, `up 18% since last week`, and `Farm average: 45`.
+- Block detail includes `Last 7 Day Detections` using the detection-grid component, with a status-dot column, `Name` column, `Last Night` column label, and `America/Los_Angeles` timezone cue.
+- The `3-Day Avg & 7-Day Rolling` chart now supports two separate labelled line series rather than flattening the state to one line.
+- Dual-line chart styling now uses distinct colour plus dashed-line treatment so the difference is not communicated by subtle colour alone.
+- Detail panel back controls now show explicit hierarchy labels: `Back to Ranch`, `Back to Organisation`, and `Back to Block`.
+- Control center now supports a collapsed state from the component itself, mirroring the v1 expandable/collapsible control panel.
+- The related component stories were updated so Storybook reflects the same design-system states used in the V2 handoff pages.
+
+### Remaining Gaps To Review
+
+- V1 block/ranch/sensor action rows include context navigation actions such as `View Ranch Details`, `View Organisation`, and `View Block Details`. V2 currently represents hierarchy through visible back controls, but does not yet show these additional in-panel navigation actions.
+- V1 has chart date-range navigation controls for the day trend chart: previous/next buttons plus a `Most Recent` or historical offset label. V2 still shows static chart snapshots only.
+- V1 dynamically changes day-trend chart type by entity, using line charts for block/ranch and a bar chart for sensor. V2 currently uses the same representative chart stack pattern more broadly.
+- V1 status pills include richer status language such as `STATUS: URGENT ACTION`, `STATUS: MONITOR`, `STATUS: STABLE`, `STATUS: OFFLINE`, and `IN-FIELD VERIFICATION PENDING`. V2 represents risk badges, but does not yet model every status-pill state.
+- V1 scouting/task interactions include animated task creation, task badge updates, and task progress feedback. V2 captures the static modal and task dropdown states, not the runtime transition behavior.
+- V1 organization dashboard has additional enterprise detail, including portfolio risk matrix, ranch urgency index, operational progress, and interactive multi-site trajectory affordances. V2 captures the broad dashboard direction but remains lighter.
+- V1 mobile overlays include separate floating layer, pest, ranch, task, and modal controls. V2 has static mobile overlay snapshots, but not every dropdown substate from the prototype.
+
+### Recommended Next Implementation Slice
+
+1. Add a `DetailActionRow` variant that can show primary actions plus optional hierarchy actions without cluttering the sticky CTA behavior.
+2. Add chart navigation controls as a static chart-header variant in `TrendChart`.
+3. Add a `StatusPill` atom or molecule for the full v1 status vocabulary.
+4. Expand mobile overlay stories with one state each for layers, pest selector, ranch selector, tasks, and scouting modal.
+5. Add organization-dashboard parity stories for portfolio matrix and ranch urgency index.
+
 Recommended Storybook groups:
 
 - Foundations: tokens, typography, colors, spacing.
@@ -424,4 +457,3 @@ These remain frontend/product implementation concerns after the design-system ha
 6. Add matching Storybook stories for each static page and component.
 7. Create the V1-to-V2 parity matrix.
 8. Run a visual review against V1 and mark intentional simplifications clearly.
-

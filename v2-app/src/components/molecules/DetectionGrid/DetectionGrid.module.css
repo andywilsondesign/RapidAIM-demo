@@ -1,4 +1,5 @@
 .wrapper {
+  flex: 0 0 auto;
   overflow: hidden;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
@@ -6,28 +7,102 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
   padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.timezone {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.timezone span {
+  font-size: var(--font-size-sm);
+}
+
+.tableViewport {
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.tableViewport::after {
+  content: none;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-xs);
+  table-layout: fixed;
 }
 
 .table th,
 .table td {
-  padding: var(--spacing-2);
+  height: 44px;
+  padding: var(--spacing-1);
   border-bottom: 1px solid var(--color-border-subtle);
   text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.table th:first-child,
-.table td:first-child {
+.nameColumn {
+  width: 31%;
+  min-width: 0;
+  padding-left: 0;
   text-align: left;
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusColumn {
+  width: 32px;
+  min-width: 32px;
+  padding-right: var(--spacing-1);
+  padding-left: var(--spacing-4);
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.dayColumn {
+  width: calc((69% - 32px) / 7);
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.table th.dayColumn {
+  overflow: hidden;
+  font-size: 0.625rem;
+  line-height: 1.05;
+  white-space: normal;
+}
+
+.statusDot {
+  display: inline-block;
+  width: var(--spacing-2);
+  height: var(--spacing-2);
+  border-radius: 999px;
+}
+
+.statusDot--low {
+  background: var(--color-status-green);
+}
+
+.statusDot--medium {
+  background: var(--color-status-amber);
+}
+
+.statusDot--high {
+  background: var(--color-status-red);
 }
 
 .table tr:last-child td {
@@ -36,16 +111,32 @@
 
 .low {
   background: var(--color-status-green-bg);
-  color: var(--color-status-green);
+  color: #1f6b24;
+  font-weight: var(--font-weight-semibold);
 }
 
 .medium {
   background: var(--color-status-amber-bg);
-  color: var(--color-status-amber);
+  color: #7a4300;
+  font-weight: var(--font-weight-semibold);
 }
 
 .high {
   background: var(--color-status-red-bg);
-  color: var(--color-status-red);
+  color: #b3261e;
   font-weight: var(--font-weight-bold);
+}
+
+@media (max-width: 680px) {
+  .table {
+    font-size: 0.6875rem;
+  }
+
+  .nameColumn {
+    width: 29%;
+  }
+
+  .dayColumn {
+    width: calc((71% - 32px) / 7);
+  }
 }
