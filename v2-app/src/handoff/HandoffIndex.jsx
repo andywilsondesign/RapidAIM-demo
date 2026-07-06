@@ -31,7 +31,7 @@ import styles from './HandoffIndex.module.css';
 
 const selectedBlock = blocks[0];
 const selectedRanch = { ...ranches[0], blocks: 12 };
-const selectedSensor = sensors[0];
+const selectedSensor = { ...sensors[0], pestName: selectedBlock.pestName };
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
   riskLevel: 'high',
@@ -242,9 +242,9 @@ function DesktopDetailPage({ type }) {
   }[type];
   const parentContext = {
     organization: null,
-    block: { items: [{ label: selectedBlock.ranchName }] },
+    block: { items: [{ label: selectedRanch.organization }, { label: selectedBlock.ranchName }] },
     ranch: { items: [{ label: selectedRanch.organization }] },
-    sensor: { items: [{ label: selectedSensor.ranchName }, { label: selectedSensor.blockName }] },
+    sensor: { items: [{ label: selectedRanch.organization }, { label: selectedSensor.ranchName }, { label: selectedSensor.blockName }] },
   }[type];
 
   return <DesktopShell detailPanel={panel} parentContext={parentContext} />;
@@ -302,7 +302,6 @@ function RanchDetailPanel() {
   return (
     <Panel
       title={selectedRanch.name}
-      eyebrow={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors} active sensors`}
       badge={selectedRanch.riskLevel}
       backLabel={selectedRanch.organization}
       backAriaLabel={`Back to ${selectedRanch.organization}`}
@@ -328,7 +327,7 @@ function SensorDetailPanel() {
       backLabel={selectedSensor.blockName}
       backAriaLabel={`Back to ${selectedSensor.blockName}`}
     >
-      <StatCard label="Current Count" value={selectedSensor.count} trend={18} />
+      <StatCard label={selectedSensor.pestName} value={selectedSensor.count} trend={18} />
       <SensorMetaGrid items={[
         { label: 'Status', value: selectedSensor.status, tone: 'positive' },
         { label: 'Battery', value: `${selectedSensor.battery}%`, tone: 'positive' },

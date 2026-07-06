@@ -30,7 +30,7 @@ export const ReportModal = ({ report, loading = false, className = '' }) => (
       )}
     </div>
     <footer className={styles.footer}>
-      <Button variant="black">Export as PDF</Button>
+      <Button variant="primary">Export as PDF</Button>
     </footer>
   </section>
 );

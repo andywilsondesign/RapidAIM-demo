@@ -192,22 +192,32 @@
   box-shadow: var(--shadow-sm);
   color: var(--color-text-secondary);
   font: inherit;
-  cursor: pointer;
   text-align: left;
   backdrop-filter: blur(12px) saturate(1.1);
 }
 
-.parentContextLink:hover,
-.parentContextLink:focus-visible {
+.parentContextLink:hover {
   background: rgba(255, 255, 255, 0.86);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(15, 90, 71, 0.12), var(--shadow-sm);
 }
 
 .breadcrumbItem {
   display: flex;
   min-width: 0;
   max-width: 100%;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.breadcrumbItem:hover,
+.breadcrumbItem:focus-visible {
+  color: var(--color-brand-primary);
+  outline: none;
 }
 
 .breadcrumbItem p {
@@ -415,7 +425,7 @@
   flex: 1;
   min-height: 0;
   flex-direction: column;
-  gap: var(--spacing-8);
+  gap: var(--spacing-5);
   padding: var(--spacing-4) var(--spacing-4) 160px;
   overflow: auto;
   scroll-behavior: smooth;
@@ -445,7 +455,7 @@
 .statsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-3);
+  gap: var(--spacing-5);
 }
 
 .actionRow {
