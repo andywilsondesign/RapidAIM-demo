@@ -7,7 +7,7 @@ export default {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['high', 'medium', 'low', 'neutral', 'entity'],
+      options: ['high', 'medium', 'low', 'offline', 'neutral', 'entity'],
     },
   },
 };
@@ -30,6 +30,12 @@ export const LowRisk = Template.bind({});
 LowRisk.args = {
   children: 'Low Risk',
   variant: 'low',
+};
+
+export const Offline = Template.bind({});
+Offline.args = {
+  children: 'Offline',
+  variant: 'offline',
 };
 
 export const Entity = Template.bind({});

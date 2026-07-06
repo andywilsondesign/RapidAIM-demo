@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
+  min-height: 81px;
   padding: var(--spacing-3);
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border-subtle);
@@ -22,6 +23,21 @@
   box-shadow: 0 0 0 2px var(--color-bg-base), 0 0 0 4px var(--color-border-focus);
 }
 
+.disabled {
+  cursor: not-allowed;
+  background-color: var(--color-bg-data-surface);
+}
+
+.disabled .rankBadge,
+.disabled .content {
+  opacity: 0.58;
+}
+
+.disabled:hover {
+  border-color: var(--color-border-subtle);
+  background-color: var(--color-bg-data-surface);
+}
+
 .rankBadge {
   display: flex;
   align-items: center;
@@ -39,6 +55,11 @@
 
 .content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+.riskBadge {
+  flex: 0 0 auto;
 }

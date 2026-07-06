@@ -30,7 +30,7 @@ import {
 import styles from './HandoffIndex.module.css';
 
 const selectedBlock = blocks[0];
-const selectedRanch = ranches[0];
+const selectedRanch = { ...ranches[0], blocks: 12 };
 const selectedSensor = sensors[0];
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
@@ -41,20 +41,71 @@ const selectedOrganization = {
   activeSensors: 69,
   totalSensors: 76,
   trend: 18,
-  summary: 'Group-level pest pressure is concentrated in Sierra Orchards, with active scouting work recommended across the highest-risk ranches.',
 };
 
 const selectedRanchBlocks = [
   selectedBlock,
   { ...blocks[1], id: 'block-sierra-2', ranchId: selectedRanch.id, ranchName: selectedRanch.name },
   { ...blocks[2], id: 'block-sierra-1-west', ranchId: selectedRanch.id, ranchName: selectedRanch.name, name: 'Block 1 West' },
+  { ...blocks[1], id: 'block-sierra-3', name: 'Block 3', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 47, activeSensors: 8, totalSensors: 9 },
+  { ...blocks[2], id: 'block-sierra-5', name: 'Block 5', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 34, activeSensors: 10, totalSensors: 10, riskLevel: 'medium' },
+  { ...blocks[2], id: 'block-sierra-6', name: 'Block 6', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 29, activeSensors: 7, totalSensors: 8, riskLevel: 'medium' },
+  { ...blocks[2], id: 'block-sierra-7', name: 'Block 7', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 21, activeSensors: 6, totalSensors: 6 },
+  { ...blocks[2], id: 'block-sierra-8', name: 'Block 8', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 18, activeSensors: 5, totalSensors: 5 },
+  { ...blocks[2], id: 'block-sierra-9', name: 'Block 9', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 14, activeSensors: 6, totalSensors: 7 },
+  { ...blocks[2], id: 'block-sierra-10', name: 'Block 10', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 12, activeSensors: 4, totalSensors: 5 },
+  { ...blocks[2], id: 'block-sierra-11', name: 'Block 11', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 9, activeSensors: 4, totalSensors: 4 },
+  { ...blocks[2], id: 'block-sierra-12', name: 'Block 12', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 7, activeSensors: 3, totalSensors: 4 },
 ].sort((a, b) => b.currentCount - a.currentCount);
 
 const rankedRanches = ranches
   .filter((ranch) => ranch.organization === selectedOrganization.name)
   .sort((a, b) => b.currentCount - a.currentCount);
 
-const rankedSensors = [...sensors].sort((a, b) => b.count - a.count);
+const rankedSensors = [
+  ...sensors,
+  { ...sensors[0], id: 'sensor-sierra-4-f', name: 'Sensor S4-F', count: 41, battery: 74, severity: 'high', status: 'Online', lastSync: '14 min ago' },
+  { ...sensors[0], id: 'sensor-sierra-4-g', name: 'Sensor S4-G', count: 33, battery: 71, severity: 'high', status: 'Online', lastSync: '16 min ago' },
+  { ...sensors[1], id: 'sensor-sierra-4-h', name: 'Sensor S4-H', count: 24, battery: 68, severity: 'medium', status: 'Online', lastSync: '22 min ago' },
+  { ...sensors[1], id: 'sensor-sierra-4-i', name: 'Sensor S4-I', count: 19, battery: 59, severity: 'medium', status: 'Online', lastSync: '28 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-j', name: 'Sensor S4-J', count: 11, battery: 46, severity: 'low', status: 'Online', lastSync: '41 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-k', name: 'Sensor S4-K', count: 6, battery: 37, severity: 'low', status: 'Online', lastSync: '55 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-l', name: 'Sensor S4-L', count: 5, battery: 34, severity: 'low', status: 'Online', lastSync: '1 hour ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-m', name: 'Sensor S4-M', count: 3, battery: 22, severity: 'low', status: 'Online', lastSync: '1 hour ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-n', name: 'Sensor S4-N', count: 2, battery: 19, severity: 'low', status: 'Online', lastSync: '2 hours ago' },
+].sort((a, b) => {
+  const severityRank = { high: 4, medium: 3, offline: 2, low: 1 };
+  return severityRank[b.severity] - severityRank[a.severity] || b.count - a.count;
+});
+
+const taskStreams = [
+  {
+    title: 'Scouting Assignments',
+    summary: '5 active assignments',
+    stats: [
+      { label: 'Requested', value: 2 },
+      { label: 'In Progress', value: 2 },
+      { label: 'Completed', value: 1 },
+    ],
+    items: [
+      { title: 'Northeast block inspection', subtitle: 'Sierra Orchards / Block 4', riskLevel: 'high' },
+      { title: 'Trap density confirmation', subtitle: 'Sunshine Valley / Block 2', riskLevel: 'medium' },
+    ],
+  },
+  {
+    title: 'Spraying Work Orders',
+    summary: '6 work orders tracked',
+    stats: [
+      { label: 'Requested', value: 1 },
+      { label: 'Scheduled', value: 2 },
+      { label: 'Approved', value: 3 },
+    ],
+    items: [
+      { title: 'Edge-row treatment review', subtitle: 'Requested approval', riskLevel: 'medium' },
+      { title: 'Night application window', subtitle: 'Scheduled for review', riskLevel: 'low' },
+    ],
+  },
+];
 
 const pageGroups = [
   {
@@ -205,16 +256,12 @@ function OrganizationDetailPanel() {
       title={selectedOrganization.name}
       eyebrow={`${selectedOrganization.ranches} ranches • ${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors} active sensors`}
       badge={selectedOrganization.riskLevel}
-      childLabel="Ranches"
-      childContent={<RanchLinks />}
+      actionMode="reportOnly"
+      sections={[
+        { label: `Ranches (${selectedOrganization.ranches})`, content: <RanchLinks /> },
+        { label: 'Tasks (11)', content: <OrganizationTasks /> },
+      ]}
     >
-      <div className={styles.statsGrid}>
-        <StatCard label="Group Asset Scale" value={`${selectedOrganization.ranches}/${selectedOrganization.blocks}`} />
-        <StatCard label="Grid Health" value="98.4%" trend={2} />
-        <StatCard label="Blocks Breached" value="8" />
-        <StatCard label="Active Tasks" value="12" />
-      </div>
-      <Typography variant="body-sm" color="secondary">{selectedOrganization.summary}</Typography>
       <TrendChart title="30-Day Multi-Site Pest Pressure" type="line" labels={chartSeries.organizationLabels} data={chartSeries.organizationTrend} threshold={25} />
       <ChartStack compact />
     </Panel>
@@ -225,12 +272,12 @@ function BlockDetailPanel() {
   return (
     <Panel
       title={selectedBlock.name}
-      eyebrow={`${selectedBlock.totalSensors} sensors • ${selectedBlock.activeSensors} active`}
       badge={selectedBlock.riskLevel}
       backLabel={selectedBlock.ranchName}
       backAriaLabel={`Back to ${selectedBlock.ranchName}`}
-      childLabel="Sensors"
-      childContent={<SensorLinks />}
+      sections={[
+        { label: `Sensors (${selectedBlock.activeSensors}/${selectedBlock.totalSensors})`, content: <SensorLinks /> },
+      ]}
     >
       <StatCard
         label={selectedBlock.pestName}
@@ -255,18 +302,18 @@ function RanchDetailPanel() {
   return (
     <Panel
       title={selectedRanch.name}
-      eyebrow={`${selectedRanch.blocks} blocks • ${selectedRanch.activeSensors}/${selectedRanch.totalSensors} active sensors`}
+      eyebrow={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors} active sensors`}
       badge={selectedRanch.riskLevel}
       backLabel={selectedRanch.organization}
       backAriaLabel={`Back to ${selectedRanch.organization}`}
-      childLabel="Blocks"
-      childContent={<BlockLinks />}
+      sections={[
+        { label: `Blocks (${selectedRanch.blocks})`, content: <BlockLinks /> },
+      ]}
     >
       <div className={styles.statsGrid}>
         <StatCard label="Total Detections" value={selectedRanch.currentCount} trend={selectedRanch.trend} />
         <StatCard label="Active Sensors" value={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors}`} />
       </div>
-      <Typography variant="body-sm" color="secondary">{selectedRanch.summary}</Typography>
       <DetectionGrid rows={detectionGrid} />
       <ChartStack compact />
     </Panel>
@@ -277,7 +324,6 @@ function SensorDetailPanel() {
   return (
     <Panel
       title={selectedSensor.name}
-      eyebrow={selectedSensor.ranchName}
       badge={selectedSensor.severity}
       backLabel={selectedSensor.blockName}
       backAriaLabel={`Back to ${selectedSensor.blockName}`}
@@ -294,7 +340,18 @@ function SensorDetailPanel() {
   );
 }
 
-function ActionRow() {
+function ActionRow({ mode = 'default' }) {
+  if (mode === 'reportOnly') {
+    return (
+      <div className={styles.actionRow}>
+        <Button variant="primary" fullWidth>
+          <span className="material-symbols-rounded">auto_awesome</span>
+          AI Report
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.actionRow}>
       <Button variant="primary" fullWidth>
@@ -302,17 +359,17 @@ function ActionRow() {
         Assign Scouting
       </Button>
       <Button variant="secondary" fullWidth>
-        <span className="material-symbols-rounded">summarize</span>
+        <span className="material-symbols-rounded">auto_awesome</span>
         AI Report
       </Button>
     </div>
   );
 }
 
-function BottomActionTray() {
+function BottomActionTray({ mode = 'default' }) {
   return (
     <div className={styles.bottomActionTray}>
-      <ActionRow />
+      <ActionRow mode={mode} />
     </div>
   );
 }
@@ -343,7 +400,7 @@ function RanchLinks() {
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
         <Typography variant="h5">Ranches</Typography>
-        <Typography variant="caption" color="secondary">Ranked by current detections</Typography>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
       {rankedRanches.map((ranch, index) => (
         <RankingListItem
@@ -363,9 +420,9 @@ function BlockLinks() {
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
         <Typography variant="h5">Blocks</Typography>
-        <Typography variant="caption" color="secondary">Ranked by current detections</Typography>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
-      {selectedRanchBlocks.map((block, index) => (
+      {selectedRanchBlocks.slice(0, 10).map((block, index) => (
         <RankingListItem
           key={block.id}
           rank={index + 1}
@@ -374,6 +431,7 @@ function BlockLinks() {
           riskLevel={block.riskLevel}
         />
       ))}
+      <Button variant="secondary" fullWidth>View all blocks</Button>
     </section>
   );
 }
@@ -383,16 +441,54 @@ function SensorLinks() {
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
         <Typography variant="h5">Sensors</Typography>
-        <Typography variant="caption" color="secondary">Ranked by current detections</Typography>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
-      {rankedSensors.map((sensor, index) => (
+      {rankedSensors.slice(0, 10).map((sensor, index) => (
         <RankingListItem
           key={sensor.id}
           rank={index + 1}
           title={sensor.name}
           subtitle={`${sensor.count} detections • ${sensor.status} • ${sensor.battery}% battery`}
           riskLevel={sensor.severity}
+          disabled={sensor.severity === 'offline'}
         />
+      ))}
+      <Button variant="secondary" fullWidth>View all sensors</Button>
+    </section>
+  );
+}
+
+function OrganizationTasks() {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <Typography variant="h5">Tasks</Typography>
+        <Typography variant="caption" color="secondary">High-level operational snapshot</Typography>
+      </div>
+      {taskStreams.map((stream) => (
+        <div className={styles.taskStream} key={stream.title}>
+          <div className={styles.sectionHeader}>
+            <Typography variant="body" weight="semibold">{stream.title}</Typography>
+            <Typography variant="caption" color="secondary">{stream.summary}</Typography>
+          </div>
+          <div className={styles.taskStats}>
+            {stream.stats.map((stat) => (
+              <div className={styles.taskStat} key={`${stream.title}-${stat.label}`}>
+                <Typography variant="caption" color="secondary">{stat.label}</Typography>
+                <Typography variant="h5">{stat.value}</Typography>
+              </div>
+            ))}
+          </div>
+          {stream.items.map((item, index) => (
+            <RankingListItem
+              key={`${stream.title}-${item.title}`}
+              rank={index + 1}
+              title={item.title}
+              subtitle={item.subtitle}
+              riskLevel={item.riskLevel}
+            />
+          ))}
+        </div>
       ))}
     </section>
   );
@@ -519,23 +615,28 @@ function AccountPage() {
   );
 }
 
-function Panel({ title, eyebrow, badge, backLabel, backAriaLabel, childLabel, childContent, children }) {
+function Panel({ title, eyebrow, badge, backLabel, backAriaLabel, sections = [], actionMode = 'default', children }) {
   const [activeSection, setActiveSection] = useState('overview');
   const overviewRef = useRef(null);
-  const childRef = useRef(null);
-  const hasChildSection = Boolean(childLabel && childContent);
+  const sectionRefs = useRef({});
+  const hasSections = sections.length > 0;
 
   const scrollToSection = (section) => {
-    const target = section === 'children' ? childRef.current : overviewRef.current;
+    const target = section === 'overview' ? overviewRef.current : sectionRefs.current[section];
     target?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     setActiveSection(section);
   };
 
   const handlePanelScroll = (event) => {
-    if (!hasChildSection || !childRef.current) return;
+    if (!hasSections) return;
     const bodyTop = event.currentTarget.getBoundingClientRect().top;
-    const childTop = childRef.current.getBoundingClientRect().top;
-    setActiveSection(childTop - bodyTop <= 128 ? 'children' : 'overview');
+    const visibleSection = sections.reduce((current, section) => {
+      const node = sectionRefs.current[section.label];
+      if (!node) return current;
+      const sectionTop = node.getBoundingClientRect().top - bodyTop;
+      return sectionTop <= 128 ? section.label : current;
+    }, 'overview');
+    setActiveSection(visibleSection);
   };
 
   return (
@@ -551,44 +652,52 @@ function Panel({ title, eyebrow, badge, backLabel, backAriaLabel, childLabel, ch
               )}
               <Typography variant="h3">{title}</Typography>
             </div>
+            {badge && <Badge variant={badge} className={styles.panelBadge}>{badge} Risk</Badge>}
           </div>
           <div className={styles.panelMetaRow}>
             {eyebrow && <Typography variant="caption" color="secondary" className={styles.panelSubtitle}>{eyebrow}</Typography>}
-            {badge && <Badge variant={badge} className={styles.panelBadge}>{badge} Risk</Badge>}
           </div>
         </div>
       </div>
-      <nav className={`${styles.anchorTabs} ${hasChildSection ? '' : styles.singleAnchorTab}`} aria-label={`${title} panel sections`}>
-        <button
-          className={activeSection === 'overview' ? styles.activeAnchorTab : ''}
-          type="button"
-          onClick={() => scrollToSection('overview')}
-        >
-          Overview
-        </button>
-        {hasChildSection && (
+      {hasSections && (
+        <nav className={styles.anchorTabs} aria-label={`${title} panel sections`} style={{ '--tab-count': sections.length + 1 }}>
           <button
-            className={activeSection === 'children' ? styles.activeAnchorTab : ''}
+            className={activeSection === 'overview' ? styles.activeAnchorTab : ''}
             type="button"
-            onClick={() => scrollToSection('children')}
+            onClick={() => scrollToSection('overview')}
           >
-            {childLabel}
+            Overview
           </button>
-        )}
-      </nav>
+          {sections.map((section) => (
+            <button
+              className={activeSection === section.label ? styles.activeAnchorTab : ''}
+              key={section.label}
+              type="button"
+              onClick={() => scrollToSection(section.label)}
+            >
+              {section.label}
+            </button>
+          ))}
+        </nav>
+      )}
       <div className={styles.panelBody} onScroll={handlePanelScroll}>
         <section className={styles.panelSection} ref={overviewRef}>
-          <Typography variant="h5">Overview</Typography>
           {children}
         </section>
-        {hasChildSection && (
-          <section className={styles.panelSection} ref={childRef}>
-            {childContent}
+        {sections.map((section) => (
+          <section
+            className={styles.panelSection}
+            key={section.label}
+            ref={(node) => {
+              sectionRefs.current[section.label] = node;
+            }}
+          >
+            {section.content}
           </section>
-        )}
+        ))}
       </div>
       <div className={styles.panelBottomFade} />
-      <BottomActionTray />
+      <BottomActionTray mode={actionMode} />
     </section>
   );
 }

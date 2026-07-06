@@ -32,6 +32,12 @@
   border: 1px solid rgba(46, 125, 50, 0.3);
 }
 
+.badge--offline {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
 .badge--neutral {
   background-color: var(--color-border-subtle);
   color: var(--color-text-secondary);

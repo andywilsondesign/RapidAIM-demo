@@ -41,6 +41,7 @@ const dummySensors = [
   { id: 's2', lat: 36.732, lng: -119.785, name: 'Sensor 2', count: 12, severity: 'medium' },
   { id: 's3', lat: 36.735, lng: -119.782, name: 'Sensor 3', count: 2, severity: 'low' },
   { id: 's4', lat: 36.739, lng: -119.781, name: 'Sensor 4', count: 58, severity: 'high' },
+  { id: 's5', lat: 36.736, lng: -119.786, name: 'Sensor 5', count: 0, severity: 'offline' },
 ];
 
 export const DefaultSatellite = Template.bind({});

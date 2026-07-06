@@ -188,16 +188,20 @@
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid var(--color-border-subtle);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-sm);
   color: var(--color-text-secondary);
   font: inherit;
+  cursor: pointer;
   text-align: left;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(12px) saturate(1.1);
 }
 
-.parentContextLink:hover {
-  background: rgba(255, 255, 255, 0.7);
+.parentContextLink:hover,
+.parentContextLink:focus-visible {
+  background: rgba(255, 255, 255, 0.86);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(15, 90, 71, 0.12), var(--shadow-sm);
 }
 
 .breadcrumbItem {
@@ -211,6 +215,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: inherit;
+  font-size: var(--font-size-xs);
 }
 
 .breadcrumbAncestor {
@@ -253,10 +258,11 @@
   top: var(--spacing-5);
   right: var(--spacing-5);
   z-index: 720;
-  width: 320px;
+  width: fit-content;
+  max-width: 320px;
   justify-content: flex-start;
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .panel {
@@ -273,7 +279,6 @@
   flex: 0 0 auto;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--spacing-2);
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border-subtle);
 }
@@ -287,10 +292,10 @@
 }
 
 .panelTitleRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-2);
+  gap: var(--spacing-3);
   min-width: 0;
   width: 100%;
 }
@@ -300,6 +305,13 @@
   min-width: 0;
   align-items: center;
   gap: var(--spacing-3);
+}
+
+.panelTitleCluster h3 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .panelSubtitle {
@@ -314,7 +326,7 @@
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--spacing-2);
 }
 
@@ -349,26 +361,23 @@
 .anchorTabs {
   display: grid;
   flex: 0 0 auto;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-1);
-  padding: var(--spacing-2) var(--spacing-4);
+  grid-template-columns: repeat(var(--tab-count, 2), minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
   border-bottom: 1px solid var(--color-border-subtle);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(8px);
 }
 
-.singleAnchorTab {
-  grid-template-columns: 1fr;
-}
-
 .anchorTabs button {
   display: inline-flex;
-  height: var(--spacing-8);
+  position: relative;
+  min-height: 48px;
   align-items: center;
   justify-content: center;
   padding: 0 var(--spacing-2);
   border: 0;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -386,7 +395,18 @@
 }
 
 .anchorTabs .activeAnchorTab {
-  box-shadow: inset 0 -2px 0 var(--color-brand-primary);
+  box-shadow: none;
+}
+
+.anchorTabs .activeAnchorTab::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--color-brand-primary);
+  content: '';
 }
 
 .panelBody {
@@ -395,7 +415,7 @@
   flex: 1;
   min-height: 0;
   flex-direction: column;
-  gap: var(--spacing-6);
+  gap: var(--spacing-8);
   padding: var(--spacing-4) var(--spacing-4) 160px;
   overflow: auto;
   scroll-behavior: smooth;
@@ -414,7 +434,7 @@
 
 .panelSection,
 .childList {
-  gap: var(--spacing-3);
+  gap: var(--spacing-5);
   scroll-margin-top: var(--spacing-4);
 }
 
@@ -430,19 +450,19 @@
 
 .actionRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: var(--spacing-2);
 }
 
 .panelBottomFade {
   position: absolute;
   right: 0;
-  bottom: 88px;
+  bottom: 87px;
   left: 0;
   z-index: 5;
-  height: 40px;
+  height: 48px;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel) 78%, var(--color-bg-panel));
 }
 
 .bottomActionTray {
@@ -451,6 +471,8 @@
   bottom: 0;
   left: 0;
   z-index: 6;
+  box-sizing: border-box;
+  min-height: 87px;
   padding: var(--spacing-3) var(--spacing-4) var(--spacing-4);
   border-top: 1px solid var(--color-border-subtle);
   background: rgba(255, 255, 255, 0.97);
@@ -460,7 +482,34 @@
 .chartStack {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--spacing-5);
+}
+
+.taskStream {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-data-surface);
+}
+
+.taskStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-2);
+}
+
+.taskStat {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
 }
 
 .centeredPreview {

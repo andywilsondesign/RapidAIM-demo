@@ -4,6 +4,8 @@ import { Typography } from '../../atoms/Typography/Typography';
 import { Select } from '../../atoms/Select/Select';
 import { Checkbox } from '../../atoms/Checkbox/Checkbox';
 import { FormField } from '../../molecules/FormField/FormField';
+import { Button } from '../../atoms/Button/Button';
+import { RiskMarker } from '../../atoms/RiskMarker/RiskMarker';
 import styles from './ControlCenter.module.css';
 
 export const ControlCenter = ({ className = '' }) => {
@@ -27,7 +29,6 @@ export const ControlCenter = ({ className = '' }) => {
 
       {!isCollapsed && <div className={styles.body}>
         <div className={styles.section}>
-          <Typography variant="h6" className={styles.sectionTitle}>Filters</Typography>
           <div className={styles.controls}>
             <FormField label="Organisation">
               <Select options={[
@@ -57,8 +58,14 @@ export const ControlCenter = ({ className = '' }) => {
                 <Typography variant="body-sm" className={styles.sliderValue}>70</Typography>
               </div>
               <div className={styles.thresholdRec}>
-                <span className="material-symbols-rounded">psychology</span>
-                <Typography variant="caption" color="secondary">Recommended: 25</Typography>
+                <span className="material-symbols-rounded">auto_awesome</span>
+                <div className={styles.thresholdRecText}>
+                  <Typography variant="caption" weight="bold">AI recommendation: 25</Typography>
+                </div>
+                <button className={styles.infoButton} type="button" aria-label="About AI threshold recommendation" title="AI recommends a threshold of 25 based on recent pest pressure and block history.">
+                  <span className="material-symbols-rounded">info</span>
+                </button>
+                <Button variant="ghost" size="sm" className={styles.applyButton}>Apply</Button>
               </div>
             </FormField>
           </div>
@@ -76,19 +83,19 @@ export const ControlCenter = ({ className = '' }) => {
           <Typography variant="h6" className={styles.sectionTitle}>Risk Legend</Typography>
           <div className={styles.legend}>
             <div className={styles.legendItem}>
-              <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-red)' }} />
+              <RiskMarker severity="high" size="md" />
               <Typography variant="body-sm">High Risk</Typography>
             </div>
             <div className={styles.legendItem}>
-              <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-amber)' }} />
+              <RiskMarker severity="medium" size="md" />
               <Typography variant="body-sm">Medium Risk</Typography>
             </div>
             <div className={styles.legendItem}>
-              <div className={styles.dot} style={{ backgroundColor: 'var(--color-status-green)' }} />
+              <RiskMarker severity="low" size="md" />
               <Typography variant="body-sm">Low Risk</Typography>
             </div>
             <div className={styles.legendItem}>
-              <span className="material-symbols-rounded" style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>build</span>
+              <RiskMarker severity="offline" size="md" />
               <Typography variant="body-sm">Offline Sensor</Typography>
             </div>
           </div>

@@ -4,6 +4,7 @@
     --color-bg-panel: #FFFFFF;
     --color-bg-card: #FFFFFF;
     --color-bg-hover: #F8FAF9;
+    --color-bg-data-surface: #F8FAFC;
     
     --color-text-primary: #111815; /* High contrast black */
     --color-text-secondary: #4A5B53; /* Mid-grey green, ensuring AA against white */
@@ -23,6 +24,14 @@
     --color-brand-primary: #0F5A47;
     --color-brand-light: #2BA082;
     --color-brand-hover: #167A62;
+
+    /* Semantic Actions */
+    --color-action-primary-bg: var(--color-brand-primary);
+    --color-action-primary-hover: var(--color-brand-hover);
+    --color-action-primary-text: #FFFFFF;
+    --color-action-secondary-bg: var(--color-bg-card);
+    --color-action-secondary-hover: var(--color-bg-hover);
+    --color-action-secondary-text: var(--color-text-primary);
     
     /* Typography */
     --font-family-base: 'Inter', system-ui, sans-serif;

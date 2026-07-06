@@ -1,21 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MapContainer, TileLayer, Polygon, Marker, Popup, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
+import { getRiskMarkerSvgMarkup } from '../../atoms/RiskMarker/RiskMarker.config';
 
 // Fix Leaflet's default icon paths issue by creating custom DivIcons
 const createMarkerIcon = (severity) => {
-  let color = 'var(--color-status-green)';
-  if (severity === 'high') color = 'var(--color-status-red)';
-  if (severity === 'medium') color = 'var(--color-status-amber)';
-
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
+    html: `<span class="leaflet-risk-marker">${getRiskMarkerSvgMarkup(severity)}</span>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
   });
 };
 
@@ -63,11 +60,11 @@ export const InteractiveMap = ({
             position={[sensor.lat, sensor.lng]}
             icon={createMarkerIcon(sensor.severity)}
           >
-            <Popup>
+            <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>
               <strong>{sensor.name}</strong><br />
               Detections: {sensor.count}<br />
-              Status: {sensor.severity} risk
-            </Popup>
+              Status: {sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}
+            </Tooltip>
           </Marker>
         ))}
       </MapContainer>
@@ -85,7 +82,7 @@ InteractiveMap.propTypes = {
     lng: PropTypes.number.isRequired,
     name: PropTypes.string,
     count: PropTypes.number,
-    severity: PropTypes.oneOf(['high', 'medium', 'low']).isRequired,
+    severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
   })),
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),

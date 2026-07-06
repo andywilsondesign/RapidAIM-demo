@@ -23,6 +23,6 @@ export const Badge = ({
 
 Badge.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['high', 'medium', 'low', 'neutral', 'entity']),
+  variant: PropTypes.oneOf(['high', 'medium', 'low', 'offline', 'neutral', 'entity']),
   className: PropTypes.string,
 };

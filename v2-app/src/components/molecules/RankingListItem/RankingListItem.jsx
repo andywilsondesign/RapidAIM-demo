@@ -9,17 +9,31 @@ export const RankingListItem = ({
   title,
   subtitle,
   riskLevel, // 'high', 'medium', 'low'
+  disabled = false,
   onClick,
   className = '',
 }) => {
+  const riskLabels = {
+    high: 'High Risk',
+    medium: 'Medium Risk',
+    low: 'Low Risk',
+    offline: 'Offline',
+  };
+  const riskLabel = riskLabels[riskLevel];
+
   return (
-    <button className={`${styles.item} ${className}`} onClick={onClick}>
+    <button
+      className={`${styles.item} ${disabled ? styles.disabled : ''} ${className}`}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
       <div className={styles.rankBadge}>{rank}</div>
       <div className={styles.content}>
         <Typography variant="body-sm" weight="semibold">{title}</Typography>
         <Typography variant="caption" color="secondary">{subtitle}</Typography>
       </div>
-      <Badge variant={riskLevel}>{riskLevel} Risk</Badge>
+      <Badge variant={riskLevel} className={styles.riskBadge}>{riskLabel}</Badge>
     </button>
   );
 };
@@ -28,7 +42,8 @@ RankingListItem.propTypes = {
   rank: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,
-  riskLevel: PropTypes.oneOf(['high', 'medium', 'low']).isRequired,
+  riskLevel: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
+  disabled: PropTypes.bool,
   onClick: PropTypes.func,
   className: PropTypes.string,
 };

@@ -8,7 +8,7 @@ export const HierarchyBreadcrumb = ({ items, className = '' }) => {
   const label = items.map((item) => item.label).join(' > ');
 
   return (
-    <div className={`${styles.parentContextLink} ${className}`} aria-label={`Current hierarchy: ${label}`} title={label}>
+    <button className={`${styles.parentContextLink} ${className}`} aria-label={`Open parent hierarchy: ${label}`} title={label} type="button">
       {items.map((item, index) => {
         const isLeaf = index === items.length - 1;
 
@@ -24,6 +24,6 @@ export const HierarchyBreadcrumb = ({ items, className = '' }) => {
           </React.Fragment>
         );
       })}
-    </div>
+    </button>
   );
 };
