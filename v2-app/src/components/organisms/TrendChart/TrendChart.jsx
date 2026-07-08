@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
@@ -37,6 +37,11 @@ export const TrendChart = ({
   threshold = 25,
   className = '',
 }) => {
+  const [hiddenSeries, setHiddenSeries] = useState([]);
+  const visibleSeries = useMemo(() => (
+    series?.filter((item) => !hiddenSeries.includes(item.label))
+  ), [hiddenSeries, series]);
+
   const chartData = useMemo(() => {
     // Colors mapping (based on atomic tokens)
     // High risk: #E53935 (Red)
@@ -64,7 +69,7 @@ export const TrendChart = ({
       if (series?.length) {
         return {
           labels,
-          datasets: series.map((item, index) => ({
+          datasets: visibleSeries.map((item, index) => ({
             label: item.label,
             data: item.data,
             borderColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
@@ -98,22 +103,23 @@ export const TrendChart = ({
     }
 
     return { labels, datasets: [] };
-  }, [data, labels, series, type, threshold]);
+  }, [data, labels, series, type, threshold, visibleSeries]);
 
   const hasMultipleSeries = type === 'line' && Boolean(series?.length);
+  const toggleSeries = (label) => {
+    setHiddenSeries((current) => (
+      current.includes(label)
+        ? current.filter((item) => item !== label)
+        : [...current, label]
+    ));
+  };
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: hasMultipleSeries,
-        labels: {
-          color: '#334155',
-          font: { size: 12, family: '"Inter", sans-serif', weight: 600 },
-          usePointStyle: true,
-          boxWidth: 10,
-        },
+        display: false,
       },
       tooltip: {
         backgroundColor: '#1E293B',
@@ -141,6 +147,26 @@ export const TrendChart = ({
       <div className={styles.header}>
         <Typography variant="body" weight="semibold">{title}</Typography>
       </div>
+      {hasMultipleSeries && (
+        <div className={styles.legendList} aria-label={`${title} legend`}>
+          {series.map((item) => {
+            const isHidden = hiddenSeries.includes(item.label);
+
+            return (
+            <button
+              className={`${styles.legendItem} ${isHidden ? styles.legendItemHidden : ''}`}
+              key={item.label}
+              type="button"
+              aria-pressed={!isHidden}
+              onClick={() => toggleSeries(item.label)}
+            >
+              <span className={styles.legendSwatch} style={{ '--series-color': item.color }} aria-hidden="true" />
+              <Typography variant="caption" weight="semibold">{item.label}</Typography>
+            </button>
+            );
+          })}
+        </div>
+      )}
       <div className={styles.chartWrapper}>
         {type === 'bar' ? (
           <Bar data={chartData} options={options} />

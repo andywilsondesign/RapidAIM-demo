@@ -43,6 +43,10 @@
   overflow: visible;
 }
 
+:global(.leaflet-risk-marker--selected) {
+  filter: drop-shadow(0 0 0.45rem rgba(15, 90, 71, 0.38)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+}
+
 .blockLabelMarker {
   display: inline-flex;
   width: max-content;

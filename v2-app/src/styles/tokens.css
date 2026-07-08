@@ -24,6 +24,8 @@
     --color-brand-primary: #0F5A47;
     --color-brand-light: #2BA082;
     --color-brand-hover: #167A62;
+    --color-panel-header-bg: var(--color-brand-primary);
+    --color-panel-header-text: #FFFFFF;
 
     /* Semantic Actions */
     --color-action-primary-bg: var(--color-brand-primary);

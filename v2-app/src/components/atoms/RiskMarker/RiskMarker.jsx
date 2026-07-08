@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import styles from './RiskMarker.module.css';
 import { markerConfig } from './RiskMarker.config';
 
-export const RiskMarker = ({ severity = 'low', size = 'md', className = '', label }) => {
+export const RiskMarker = ({ severity = 'low', size = 'md', selected = false, className = '', label }) => {
   const markerClass = [
     styles.marker,
     styles[`marker--${severity}`],
     styles[`marker--${size}`],
+    selected && styles['marker--selected'],
     className,
   ].filter(Boolean).join(' ');
 
@@ -24,6 +25,7 @@ export const RiskMarker = ({ severity = 'low', size = 'md', className = '', labe
 RiskMarker.propTypes = {
   severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']),
   size: PropTypes.oneOf(['sm', 'md']),
+  selected: PropTypes.bool,
   className: PropTypes.string,
   label: PropTypes.string,
 };

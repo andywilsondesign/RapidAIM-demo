@@ -19,8 +19,17 @@
 }
 
 .header {
-  background: var(--color-brand-primary);
-  color: #fff;
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.header button {
+  color: var(--color-panel-header-text);
+}
+
+.header button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-panel-header-text);
 }
 
 .title {

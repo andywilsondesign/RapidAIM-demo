@@ -21,12 +21,13 @@ export const markerConfig = {
   },
 };
 
-export const getRiskMarkerSvgMarkup = (severity = 'low') => {
+export const getRiskMarkerSvgMarkup = (severity = 'low', selected = false) => {
   const marker = markerConfig[severity] || markerConfig.low;
+  const strokeWidth = selected ? 2.3 : 1.45;
 
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="${marker.shape}" fill="${marker.fill}" stroke="#fff" stroke-width="1.45" stroke-linejoin="round"></path>
+      <path d="${marker.shape}" fill="${marker.fill}" stroke="#fff" stroke-width="${strokeWidth}" stroke-linejoin="round"></path>
       <path d="${marker.icon}" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
     </svg>
   `;

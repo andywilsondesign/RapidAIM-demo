@@ -7,7 +7,10 @@ import styles from './ReportModal.module.css';
 export const ReportModal = ({ report, loading = false, className = '' }) => (
   <section className={`${styles.modal} ${className}`} aria-label="AI insights report">
     <header className={styles.header}>
-      <Typography variant="h3">{report.title}</Typography>
+      <div className={styles.title}>
+        <span className="material-symbols-rounded">auto_awesome</span>
+        <Typography variant="h4">{report.title}</Typography>
+      </div>
       <Button variant="ghost" size="sm" aria-label="Close">
         <span className="material-symbols-rounded">close</span>
       </Button>

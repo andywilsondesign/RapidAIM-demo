@@ -9,6 +9,7 @@ import { StatCard } from '../components/molecules/StatCard/StatCard';
 import { DetectionGrid } from '../components/molecules/DetectionGrid/DetectionGrid';
 import { SensorMetaGrid } from '../components/molecules/SensorMetaGrid/SensorMetaGrid';
 import { InfoDisclosure } from '../components/molecules/InfoDisclosure/InfoDisclosure';
+import { ScopeNavigation as ScopeNavigationControl } from '../components/molecules/ScopeNavigation/ScopeNavigation';
 import { TopNavigationBar } from '../components/organisms/TopNavigationBar/TopNavigationBar';
 import { ControlCenter } from '../components/organisms/ControlCenter/ControlCenter';
 import { InteractiveMap } from '../components/organisms/InteractiveMap/InteractiveMap';
@@ -48,17 +49,17 @@ const selectedOrganization = {
 };
 
 const pestPressureCards = [
-  { label: 'Female Navel Orangeworm', valueKey: 'female-now', value: 124, trend: 18, benchmark: 'Farm average: 45' },
-  { label: 'Male Navel Orangeworm', valueKey: 'male-now', value: 72, trend: 9, benchmark: 'Farm average: 32' },
-  { label: 'Codling Moth', valueKey: 'codling-moth', value: 31, trend: -6, benchmark: 'Farm average: 28' },
-  { label: 'Mites', valueKey: 'mites', value: 48, trend: 12, benchmark: 'Farm average: 35' },
+  { label: 'Female Navel Orangeworm', valueKey: 'female-now', value: 124, trend: 18, benchmark: 'Farm average: 45', tone: 'high' },
+  { label: 'Male Navel Orangeworm', valueKey: 'male-now', value: 72, trend: 9, benchmark: 'Farm average: 32', tone: 'high' },
+  { label: 'Codling Moth', valueKey: 'codling-moth', value: 31, trend: -6, benchmark: 'Farm average: 28', tone: 'low' },
+  { label: 'Mites', valueKey: 'mites', value: 48, trend: 12, benchmark: 'Farm average: 35', tone: 'medium' },
 ];
 
 const pestChartSeries = [
   {
     label: 'Female Navel Orangeworm',
     valueKey: 'female-now',
-    color: '#B91C1C',
+    color: '#C1121F',
     dayTrend: [12, 18, 21, 24, 29, 35, 44, 52, 65, 72, 84, 96, 112, 124],
     rolling3Day: [17, 19, 21, 25, 29, 36, 44, 54, 63, 74, 84, 97, 111, 124],
     rolling7Day: [14, 16, 18, 21, 25, 30, 36, 43, 52, 62, 72, 83, 94, 106],
@@ -67,7 +68,7 @@ const pestChartSeries = [
   {
     label: 'Male Navel Orangeworm',
     valueKey: 'male-now',
-    color: '#C2410C',
+    color: '#15803D',
     dayTrend: [8, 10, 13, 18, 21, 24, 31, 34, 40, 48, 56, 62, 66, 72],
     rolling3Day: [9, 11, 14, 17, 21, 25, 30, 35, 41, 48, 55, 61, 67, 72],
     rolling7Day: [7, 9, 11, 14, 17, 21, 25, 29, 34, 40, 47, 54, 60, 66],
@@ -76,7 +77,7 @@ const pestChartSeries = [
   {
     label: 'Codling Moth',
     valueKey: 'codling-moth',
-    color: '#2563EB',
+    color: '#F59E0B',
     dayTrend: [36, 34, 33, 31, 30, 28, 27, 29, 28, 30, 29, 31, 30, 31],
     rolling3Day: [35, 34, 33, 32, 30, 28, 27, 28, 28, 29, 29, 30, 30, 31],
     rolling7Day: [38, 37, 36, 35, 34, 32, 31, 30, 29, 29, 29, 30, 30, 30],
@@ -85,7 +86,7 @@ const pestChartSeries = [
   {
     label: 'Mites',
     valueKey: 'mites',
-    color: '#6D28D9',
+    color: '#7C3AED',
     dayTrend: [18, 20, 22, 24, 23, 25, 28, 31, 34, 38, 41, 43, 46, 48],
     rolling3Day: [19, 20, 22, 23, 24, 25, 28, 31, 34, 38, 41, 43, 46, 48],
     rolling7Day: [16, 17, 18, 20, 21, 23, 25, 27, 30, 33, 36, 39, 42, 45],
@@ -135,6 +136,15 @@ const selectedRanchBlocks = [
   { ...blocks[2], id: 'block-sierra-11', name: 'Block 11', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 9, activeSensors: 4, totalSensors: 4 },
   { ...blocks[2], id: 'block-sierra-12', name: 'Block 12', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 7, activeSensors: 3, totalSensors: 4 },
 ].sort((a, b) => b.currentCount - a.currentCount);
+
+const ranchDetectionRows = detectionGrid.map((row) => ({
+  ...row,
+  status: row.block === selectedBlock.name
+    ? 'high'
+    : row.days.some((count) => count >= 25)
+      ? 'medium'
+      : 'low',
+}));
 
 const rankingBlocks = [
   { ...selectedBlock, pestName: 'Female Navel Orangeworm', taskStatus: 'Pending scouting', threshold: 25 },
@@ -246,20 +256,11 @@ const pageGroups = [
   {
     title: 'Desktop',
     pages: [
-      { id: 'desktop-organization', label: 'Organization Detail', component: <DesktopDetailPage type="organization" /> },
-      { id: 'desktop-ranch', label: 'Ranch Detail', component: <DesktopDetailPage type="ranch" /> },
-      { id: 'desktop-block', label: 'Block Detail', component: <DesktopDetailPage type="block" /> },
-      { id: 'desktop-sensor', label: 'Sensor Detail', component: <DesktopDetailPage type="sensor" /> },
-    ],
-  },
-  {
-    title: 'Desktop Experiment',
-    pages: [
-      { id: 'experiment-pest-pressure-ranking', label: 'Pest Pressure Ranking', component: <PestPressureRankingPage /> },
-      { id: 'experiment-organization-scope', label: 'Organization Scope', component: <DesktopDetailPage type="organization" scopeExperiment /> },
-      { id: 'experiment-ranch-scope', label: 'Ranch Scope', component: <DesktopDetailPage type="ranch" scopeExperiment /> },
-      { id: 'experiment-block-scope', label: 'Block Scope', component: <DesktopDetailPage type="block" scopeExperiment /> },
-      { id: 'experiment-sensor-scope', label: 'Sensor Scope', component: <DesktopDetailPage type="sensor" scopeExperiment /> },
+      { id: 'consolidated-pest-pressure-ranking', label: 'Pest Pressure Ranking', component: <PestPressureRankingPage /> },
+      { id: 'consolidated-organization', label: 'Organization Detail', component: <DesktopDetailPage type="organization" scopeExperiment /> },
+      { id: 'consolidated-ranch', label: 'Ranch Detail', component: <DesktopDetailPage type="ranch" scopeExperiment /> },
+      { id: 'consolidated-block', label: 'Block Detail', component: <DesktopDetailPage type="block" scopeExperiment /> },
+      { id: 'consolidated-sensor', label: 'Sensor Detail', component: <DesktopDetailPage type="sensor" scopeExperiment /> },
     ],
   },
   {
@@ -356,32 +357,41 @@ function DesktopShell({
   detailPanel,
   parentContext,
   scopeExperiment = false,
+  scopeLevel = 'block',
+  contentHeightPanel = false,
   blockOverlays,
   activeBlockLabel = selectedBlock.name,
 }) {
   const [pestFocus, setPestFocus] = useState('all');
+  const [previewBlockId, setPreviewBlockId] = useState('');
   const resolvedDetailPanel = scopeExperiment && React.isValidElement(detailPanel)
-    ? React.cloneElement(detailPanel, { pestFocus })
+    ? React.cloneElement(detailPanel, { pestFocus, onBlockPreviewChange: setPreviewBlockId })
     : detailPanel;
+  const selectedMapBlockId = scopeExperiment && scopeLevel === 'block' ? selectedBlock.id : '';
+  const resolvedBlockOverlays = scopeExperiment
+    ? blockOverlays || buildRankingBlockOverlays(selectedMapBlockId, previewBlockId)
+    : blockOverlays;
+  const selectedSensorId = scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '';
 
   return (
     <div className={styles.desktopShell}>
       <TopNavigationBar />
       <div className={styles.desktopMain}>
         {scopeExperiment ? (
-          <ScopeNavigation />
+          <ScopeNavigation level={scopeLevel} />
         ) : parentContext && (
           <HierarchyBreadcrumb className={styles.parentContextLink} items={parentContext.items} />
         )}
-        <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''}`}>{resolvedDetailPanel}</aside>
+        <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''} ${contentHeightPanel ? styles.leftRailContentHeight : ''}`}>{resolvedDetailPanel}</aside>
         <section className={styles.mapStage}>
           <InteractiveMap
             center={[36.647, -119.8]}
             zoom={15}
             blockPolygon={selectedBlock.polygon}
-            blockOverlays={blockOverlays}
+            blockOverlays={resolvedBlockOverlays}
             activeBlockLabel={activeBlockLabel}
             sensors={sensors}
+            selectedSensorId={selectedSensorId}
             blockSeverity={selectedBlock.riskLevel}
             mapStyle="satellite"
           />
@@ -402,9 +412,7 @@ function DesktopShell({
 DesktopShell.propTypes = {};
 
 function PestPressureRankingPage() {
-  const [selectedBlockId, setSelectedBlockId] = useState(
-    rankingBlocks.find((block) => block.taskStatus === 'Unassigned')?.id || rankingBlocks[0].id
-  );
+  const [selectedBlockId, setSelectedBlockId] = useState('');
   const [previewBlockId, setPreviewBlockId] = useState('');
   const activeBlockId = previewBlockId || selectedBlockId;
   const activeBlock = rankingBlocks.find((block) => block.id === activeBlockId) || rankingBlocks[0];
@@ -419,6 +427,8 @@ function PestPressureRankingPage() {
         />
       )}
       scopeExperiment
+      scopeLevel="ranking"
+      contentHeightPanel
       blockOverlays={buildRankingBlockOverlays(selectedBlockId, previewBlockId)}
       activeBlockLabel={activeBlock.name}
     />
@@ -439,60 +449,24 @@ function DesktopDetailPage({ type, scopeExperiment = false }) {
     sensor: { items: [{ label: selectedRanch.organization }, { label: selectedSensor.ranchName }, { label: selectedSensor.blockName }] },
   }[type];
 
-  return <DesktopShell detailPanel={panel} parentContext={parentContext} scopeExperiment={scopeExperiment} />;
+  return <DesktopShell detailPanel={panel} parentContext={parentContext} scopeExperiment={scopeExperiment} scopeLevel={type} />;
 }
 
-function ScopeNavigation() {
+function ScopeNavigation({ level = 'block' }) {
+  const blockLabel = level === 'organization' || level === 'ranch' || level === 'ranking' ? 'All blocks' : selectedBlock.name;
+  const ranchLabel = level === 'organization' || level === 'ranking' ? 'All ranches' : selectedRanch.name;
   const locationSegments = [
-    {
-      label: selectedOrganization.name,
-      options: scopeOrganizations,
-    },
-    {
-      label: selectedRanch.name,
-      options: scopeRanches,
-    },
-    {
-      label: selectedBlock.name,
-      options: scopeBlocks,
-    },
+    { label: selectedOrganization.name, options: scopeOrganizations },
+    { label: ranchLabel, options: [{ label: 'All ranches', riskLevel: 'low' }, ...scopeRanches] },
+    { label: blockLabel, options: [{ label: 'All blocks', riskLevel: 'low' }, ...scopeBlocks] },
   ];
 
   return (
-    <div className={styles.scopeNav} aria-label="Experimental pest and location scope navigation">
-      <div className={styles.locationScope} aria-label="Location breadcrumb selectors">
-        {locationSegments.map((segment, index) => (
-          <React.Fragment key={`${segment.label}-${index}`}>
-            {index > 0 && <span className={styles.scopeSeparator} aria-hidden="true">›</span>}
-            <ScopeDropdown {...segment} />
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ScopeDropdown({ label, options }) {
-  return (
-    <div className={styles.scopeDropdown}>
-      <button className={styles.scopeButton} type="button" aria-haspopup="listbox">
-        <span className={styles.scopeLabel}>{label}</span>
-        <span className="material-symbols-rounded" aria-hidden="true">expand_more</span>
-      </button>
-      <div className={styles.scopeMenu} role="listbox" aria-label={`${label} options`}>
-        {options.map((option) => (
-          <button
-            className={styles.scopeOption}
-            key={option.label}
-            type="button"
-            role="option"
-          aria-selected={option.label === label}
-        >
-            <span>{option.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
+    <ScopeNavigationControl
+      className={styles.scopeNav}
+      ariaLabel="Experimental pest and location scope navigation"
+      segments={locationSegments}
+    />
   );
 }
 
@@ -542,7 +516,7 @@ function PestPressureRankingPanel({ activeBlockId, onPreviewBlockChange, onSelec
           onClick={() => {
             setActiveTaskTab('unassigned');
             onPreviewBlockChange('');
-            onSelectedBlockChange(rankingBlocks.find((block) => block.taskStatus === 'Unassigned')?.id || rankingBlocks[0].id);
+            onSelectedBlockChange('');
           }}
         >
           Unassigned ({unassignedCount})
@@ -553,7 +527,7 @@ function PestPressureRankingPanel({ activeBlockId, onPreviewBlockChange, onSelec
           onClick={() => {
             setActiveTaskTab('assigned');
             onPreviewBlockChange('');
-            onSelectedBlockChange(rankingBlocks.find((block) => block.taskStatus !== 'Unassigned')?.id || rankingBlocks[0].id);
+            onSelectedBlockChange('');
           }}
         >
           Assigned ({assignedCount})
@@ -611,6 +585,7 @@ function PestPressureGrid({ pestFocus = 'all' }) {
           value={pest.value}
           trend={pest.trend}
           benchmark={pest.benchmark}
+          tone={pest.tone}
         />
       ))}
     </div>
@@ -620,7 +595,7 @@ function PestPressureGrid({ pestFocus = 'all' }) {
 function PestWeekComparison({ children }) {
   return (
     <section className={styles.pestComparison}>
-      <Typography variant="h5">Pest Overview (week)</Typography>
+      <Typography variant="h5">Pest Overview (vs last week)</Typography>
       {children}
     </section>
   );
@@ -631,6 +606,8 @@ function OrganizationDetailPanel({ scopeExperiment = false, pestFocus = 'all' })
     <Panel
       title={selectedOrganization.name}
       badge={selectedOrganization.riskLevel}
+      backLabel="Pest Pressure Ranking"
+      backAriaLabel="Back to pest pressure ranking"
       actionMode="reportOnly"
       sections={[
         { label: `Ranches (${selectedOrganization.ranches})`, content: <RanchLinks /> },
@@ -645,10 +622,16 @@ function OrganizationDetailPanel({ scopeExperiment = false, pestFocus = 'all' })
           benchmark="Farm average: 45"
         />}
       </PestWeekComparison>
-      <div className={styles.statsGrid}>
-        <StatCard label="Ranches" value={selectedOrganization.ranches} />
-        <StatCard label="Active Sensors" value={`${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors}`} />
-      </div>
+      {scopeExperiment ? (
+        <div className={styles.statsGridFull}>
+          <StatCard label="Active Sensors" value={`${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors}`} />
+        </div>
+      ) : (
+        <div className={styles.statsGrid}>
+          <StatCard label="Ranches" value={selectedOrganization.ranches} />
+          <StatCard label="Active Sensors" value={`${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors}`} tone="positive" />
+        </div>
+      )}
       <TrendChart title="30-Day Multi-Site Pest Pressure" type="line" labels={chartSeries.organizationLabels} data={chartSeries.organizationTrend} threshold={25} />
       <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
     </Panel>
@@ -680,13 +663,14 @@ function BlockDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
         firstColumnLabel="Name"
         showStatus
         timezone="America/Los_Angeles"
+        description="Sensor data from the last seven days shown in America/Los_Angeles time."
       />
       <ChartStack scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
     </Panel>
   );
 }
 
-function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
+function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all', onBlockPreviewChange }) {
   return (
     <Panel
       title={selectedRanch.name}
@@ -694,7 +678,7 @@ function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
       backLabel={selectedRanch.organization}
       backAriaLabel={`Back to ${selectedRanch.organization}`}
       sections={[
-        { label: `Blocks (${selectedRanch.blocks})`, content: <BlockLinks /> },
+        { label: `Blocks (${selectedRanch.blocks})`, content: <BlockLinks onBlockPreviewChange={onBlockPreviewChange} /> },
       ]}
     >
       <PestWeekComparison>
@@ -706,7 +690,12 @@ function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
         />}
       </PestWeekComparison>
       <StatCard label="Active Sensors" value={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors}`} />
-      <DetectionGrid rows={detectionGrid} />
+      <DetectionGrid
+        rows={ranchDetectionRows}
+        showStatus
+        timezone="America/Los_Angeles"
+        description="Block-level detection data from the last seven days shown in America/Los_Angeles time."
+      />
       <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
     </Panel>
   );
@@ -719,6 +708,9 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
       badge={selectedSensor.severity}
       backLabel={selectedSensor.blockName}
       backAriaLabel={`Back to ${selectedSensor.blockName}`}
+      sections={[
+        { label: 'Maintenance', content: <SensorMaintenance /> },
+      ]}
     >
       <PestWeekComparison>
         {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
@@ -728,14 +720,25 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
           benchmark="Farm average: 45"
         />}
       </PestWeekComparison>
+      <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
+    </Panel>
+  );
+}
+
+function SensorMaintenance() {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <Typography variant="h5">Maintenance</Typography>
+        <Typography variant="caption" color="secondary">Operational status for this sensor</Typography>
+      </div>
       <SensorMetaGrid items={[
         { label: 'Status', value: selectedSensor.status, tone: 'positive' },
         { label: 'Battery', value: `${selectedSensor.battery}%`, tone: 'positive' },
         { label: 'Signal', value: selectedSensor.signal, tone: 'positive' },
         { label: 'Last Sync', value: selectedSensor.lastSync, tone: 'positive' },
       ]} />
-      <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
-    </Panel>
+    </section>
   );
 }
 
@@ -767,7 +770,7 @@ function ActionRow({ mode = 'default' }) {
 
 function BottomActionTray({ mode = 'default' }) {
   return (
-    <div className={styles.bottomActionTray}>
+    <div className={`${styles.bottomActionTray} ${mode === 'reportOnly' ? styles.bottomActionTrayCompact : ''}`}>
       <ActionRow mode={mode} />
     </div>
   );
@@ -832,7 +835,7 @@ function RanchLinks() {
   );
 }
 
-function BlockLinks() {
+function BlockLinks({ onBlockPreviewChange }) {
   return (
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
@@ -846,6 +849,10 @@ function BlockLinks() {
           title={block.name}
           subtitle={`${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
           riskLevel={block.riskLevel}
+          onBlur={() => onBlockPreviewChange?.('')}
+          onFocus={() => onBlockPreviewChange?.(block.id)}
+          onMouseEnter={() => onBlockPreviewChange?.(block.id)}
+          onMouseLeave={() => onBlockPreviewChange?.('')}
         />
       ))}
       <Button variant="secondary" fullWidth>View all blocks</Button>
@@ -1113,7 +1120,7 @@ function Panel({ title, eyebrow, badge, backLabel, backAriaLabel, sections = [],
           </section>
         ))}
       </div>
-      <div className={styles.panelBottomFade} />
+      <div className={`${styles.panelBottomFade} ${actionMode === 'reportOnly' ? styles.panelBottomFadeCompact : ''}`} />
       <BottomActionTray mode={actionMode} />
     </section>
   );

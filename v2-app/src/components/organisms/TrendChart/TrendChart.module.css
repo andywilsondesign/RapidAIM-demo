@@ -14,10 +14,64 @@
   margin-bottom: var(--spacing-3);
 }
 
+.legendList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-3);
+}
+
+.legendItem {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--spacing-2);
+  justify-self: flex-start;
+  padding: var(--spacing-1) var(--spacing-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.legendItem:hover,
+.legendItem:focus-visible {
+  border-color: var(--color-border-subtle);
+  background: var(--color-bg-hover);
+  outline: none;
+}
+
+.legendItem p {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legendSwatch {
+  width: 1.5rem;
+  height: 3px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--series-color);
+}
+
+.legendItemHidden {
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+.legendItemHidden .legendSwatch {
+  opacity: 0.35;
+}
+
 .chartWrapper {
   position: relative;
   width: 100%;
-  height: var(--size-chart-height);
-  min-height: var(--size-chart-height);
-  max-height: var(--size-chart-height);
+  height: clamp(240px, 34vh, 320px);
+  min-height: 240px;
+  max-height: 320px;
 }

@@ -56,3 +56,11 @@
 .marker--offline {
   --marker-fill: #64748b;
 }
+
+.marker--selected {
+  filter: drop-shadow(0 0 0.45rem rgba(15, 90, 71, 0.36)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+}
+
+.marker--selected .shape {
+  stroke-width: 2.3;
+}

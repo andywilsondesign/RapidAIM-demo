@@ -48,3 +48,14 @@ export const MarkerSet = {
     </div>
   ),
 };
+
+export const SelectedStates = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: 24 }}>
+      <RiskMarker severity="high" selected />
+      <RiskMarker severity="medium" selected />
+      <RiskMarker severity="low" selected />
+      <RiskMarker severity="offline" selected />
+    </div>
+  ),
+};

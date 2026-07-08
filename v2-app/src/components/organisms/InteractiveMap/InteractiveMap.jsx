@@ -7,10 +7,10 @@ import styles from './InteractiveMap.module.css';
 import { getRiskMarkerSvgMarkup } from '../../atoms/RiskMarker/RiskMarker.config';
 
 // Fix Leaflet's default icon paths issue by creating custom DivIcons
-const createMarkerIcon = (severity) => {
+const createMarkerIcon = (severity, selected = false) => {
   return L.divIcon({
     className: 'custom-marker',
-    html: `<span class="leaflet-risk-marker">${getRiskMarkerSvgMarkup(severity)}</span>`,
+    html: `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${getRiskMarkerSvgMarkup(severity, selected)}</span>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
   });
@@ -43,6 +43,7 @@ export const InteractiveMap = ({
   blockPolygon = [],
   blockOverlays = [],
   sensors = [],
+  selectedSensorId = '',
   blockSeverity = 'low', // 'low', 'medium', 'high'
   activeBlockLabel = '',
   mapStyle = 'satellite', // 'satellite' or 'stylized'
@@ -127,7 +128,8 @@ export const InteractiveMap = ({
           <Marker
             key={sensor.id}
             position={[sensor.lat, sensor.lng]}
-            icon={createMarkerIcon(sensor.severity)}
+            icon={createMarkerIcon(sensor.severity, sensor.id === selectedSensorId)}
+            zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
           >
             <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>
               <strong>{sensor.name}</strong><br />
@@ -161,6 +163,7 @@ InteractiveMap.propTypes = {
     count: PropTypes.number,
     severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
   })),
+  selectedSensorId: PropTypes.string,
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
   className: PropTypes.string,

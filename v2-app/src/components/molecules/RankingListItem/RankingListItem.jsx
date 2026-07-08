@@ -11,6 +11,10 @@ export const RankingListItem = ({
   riskLevel, // 'high', 'medium', 'low'
   disabled = false,
   onClick,
+  onFocus,
+  onBlur,
+  onMouseEnter,
+  onMouseLeave,
   className = '',
 }) => {
   const riskLabels = {
@@ -25,7 +29,11 @@ export const RankingListItem = ({
     <button
       className={`${styles.item} ${disabled ? styles.disabled : ''} ${className}`}
       disabled={disabled}
+      onBlur={onBlur}
       onClick={onClick}
+      onFocus={onFocus}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       type="button"
     >
       <div className={styles.rankBadge}>{rank}</div>
@@ -45,5 +53,9 @@ RankingListItem.propTypes = {
   riskLevel: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
+  onMouseEnter: PropTypes.func,
+  onMouseLeave: PropTypes.func,
   className: PropTypes.string,
 };

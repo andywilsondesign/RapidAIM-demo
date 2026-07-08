@@ -9,6 +9,26 @@
   min-width: 150px;
 }
 
+.card--neutral {
+  background-color: var(--color-bg-data-surface);
+}
+
+.card--high {
+  border-color: rgba(211, 47, 47, 0.22);
+  background-color: var(--color-status-red-bg);
+}
+
+.card--medium {
+  border-color: rgba(251, 140, 0, 0.28);
+  background-color: var(--color-status-amber-bg);
+}
+
+.card--low,
+.card--positive {
+  border-color: rgba(67, 160, 71, 0.22);
+  background-color: var(--color-status-green-bg);
+}
+
 .label {
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -27,6 +47,8 @@
   gap: var(--spacing-1);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
+  background-color: var(--color-text-primary);
+  color: var(--color-bg-panel);
   white-space: nowrap;
 }
 
@@ -34,14 +56,25 @@
   font-size: var(--font-size-base);
 }
 
-.trend--positive {
-  background-color: var(--color-status-red-bg);
-  color: var(--color-status-red);
+.trendDirectionPositive {
+  background-color: var(--color-text-primary);
 }
 
-.trend--negative {
-  background-color: var(--color-status-green-bg);
-  color: var(--color-status-green);
+.trendDirectionNegative {
+  background-color: var(--color-text-primary);
+}
+
+.trend--high {
+  background-color: var(--color-status-red);
+}
+
+.trend--medium {
+  background-color: var(--color-status-amber);
+}
+
+.trend--low,
+.trend--positive {
+  background-color: var(--color-status-green);
 }
 
 .meta {

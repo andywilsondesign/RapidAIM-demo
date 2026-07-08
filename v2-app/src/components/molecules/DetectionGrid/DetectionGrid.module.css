@@ -7,6 +7,7 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,15 +17,10 @@
   background: var(--color-bg-data-surface);
 }
 
-.timezone {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: var(--spacing-1);
-}
-
-.timezone span {
-  font-size: var(--font-size-sm);
+.infoButton {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
 }
 
 .tableViewport {
@@ -52,7 +48,7 @@
 .table th,
 .table td {
   height: var(--size-data-row-height);
-  padding: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
   border-bottom: 1px solid var(--color-border-subtle);
   text-align: center;
   vertical-align: middle;
@@ -60,10 +56,10 @@
 }
 
 .nameColumn {
-  width: 34%;
+  width: 24%;
   min-width: 0;
-  padding-left: var(--spacing-1);
-  text-align: left;
+  padding-left: var(--spacing-3);
+  text-align: left !important;
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-semibold);
   overflow: hidden;
@@ -71,18 +67,22 @@
 }
 
 .statusColumn {
-  width: 20px;
-  min-width: 20px;
+  width: 28px;
+  min-width: 28px;
   padding-right: 0;
-  padding-left: var(--spacing-1);
+  padding-left: var(--spacing-3);
   color: var(--color-text-secondary);
-  text-align: center;
+  text-align: left;
 }
 
 .dayColumn {
-  width: calc((66% - 20px) / 7);
+  width: calc(76% / 7);
   min-width: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.withStatus .dayColumn {
+  width: calc((76% - 28px) / 7);
 }
 
 .table th.dayColumn {

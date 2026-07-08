@@ -18,35 +18,71 @@
   flex-direction: column;
   gap: var(--spacing-3);
   background: transparent;
-  overflow: auto;
-  padding-bottom: var(--spacing-1);
+  overflow: hidden;
+  scrollbar-gutter: stable;
 }
 
 .panelStack .panel {
+  position: relative;
   width: 100%;
   height: auto;
+  max-height: 100%;
   border-left: 0;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
-  overflow: visible;
+  overflow: hidden;
 }
 
-.panelStack .panel:not(.collapsed)::after {
+.panelStack:has(.panel:not(.collapsed) + .panel:not(.collapsed)) .panel:not(.collapsed) {
+  max-height: calc((100% - var(--spacing-3)) / 2);
+}
+
+.panelStack .panel::before,
+.panelStack .panel::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  height: 24px;
+  pointer-events: none;
+  content: '';
+}
+
+.panelStack .panel::before {
+  top: calc(3.5rem + 1px);
+  background: linear-gradient(to bottom, var(--color-bg-panel), rgba(255, 255, 255, 0));
+}
+
+.panelStack .panel::after {
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
+}
+
+.panelStack .panel:has(.stickyPestFocus)::before {
+  top: calc(3.5rem + 58px);
+}
+
+.panelStack .collapsed {
+  flex: 0 0 auto;
+  max-height: none;
+}
+
+.panelStack .collapsed::before,
+.panelStack .collapsed::after {
   display: none;
-  height: 40px;
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 
 .panelStack .body {
-  flex: 0 0 auto;
-  overflow: visible;
-  padding-bottom: 0;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--spacing-4);
 }
 
 .panelStack .header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
+  position: relative;
+  z-index: 5;
+  border-bottom: 0;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
@@ -55,7 +91,7 @@
 }
 
 .panelSegment {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
 }
 
 .collapsed {
@@ -88,8 +124,8 @@
   padding: var(--spacing-4);
   border: 0;
   border-bottom: 1px solid var(--color-border-subtle);
-  background: var(--color-bg-panel);
-  color: var(--color-text-primary);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -100,7 +136,7 @@
 }
 
 .toggleIcon {
-  color: var(--color-text-secondary);
+  color: var(--color-panel-header-text);
   transition: transform var(--transition-fast);
 }
 
@@ -123,19 +159,37 @@
   gap: var(--spacing-3);
 }
 
+.panelStack .section {
+  border-bottom: 0;
+}
+
 .stickyPestFocus {
-  position: sticky;
-  top: calc(var(--layout-top-nav-height) - var(--spacing-1));
-  z-index: 1;
+  position: relative;
+  z-index: 5;
   width: 100%;
-  padding: var(--spacing-3);
-  margin: calc(var(--spacing-3) * -1);
-  border-radius: var(--radius-md);
-  background: linear-gradient(to bottom, var(--color-bg-panel) 76%, rgba(255, 255, 255, 0));
+  padding: 0 var(--spacing-4) var(--spacing-4);
+  border-bottom: 0;
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
 }
 
 .stickyPestFocus > div {
   width: 100%;
+}
+
+.stickyPestFocus select {
+  border-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-panel-header-text);
+}
+
+.stickyPestFocus select:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+
+.stickyPestFocus [class*='icon'] {
+  color: var(--color-panel-header-text);
 }
 
 .sectionTitle {

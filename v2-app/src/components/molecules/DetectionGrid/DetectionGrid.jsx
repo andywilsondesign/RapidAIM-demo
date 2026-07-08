@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
+import { InfoDisclosure } from '../InfoDisclosure/InfoDisclosure';
 import styles from './DetectionGrid.module.css';
 
 const getCellClass = (count) => {
@@ -18,16 +19,18 @@ export const DetectionGrid = ({
   dayLabels = defaultDayLabels,
   showStatus = false,
   timezone,
+  description,
   className = '',
 }) => (
-  <div className={`${styles.wrapper} ${className}`}>
+  <div className={`${styles.wrapper} ${showStatus ? styles.withStatus : ''} ${className}`}>
     <div className={styles.header}>
       <Typography variant="body-sm" weight="semibold">{title}</Typography>
       {timezone && (
-        <Typography variant="caption" color="secondary" className={styles.timezone}>
-          <span className="material-symbols-rounded">info</span>
-          {timezone}
-        </Typography>
+        <InfoDisclosure
+          title={title}
+          description={description || `Sensor data from the last seven days shown in ${timezone} time.`}
+          className={styles.infoButton}
+        />
       )}
     </div>
     <div className={styles.tableViewport}>
@@ -72,5 +75,6 @@ DetectionGrid.propTypes = {
   dayLabels: PropTypes.arrayOf(PropTypes.string),
   showStatus: PropTypes.bool,
   timezone: PropTypes.string,
+  description: PropTypes.string,
   className: PropTypes.string,
 };

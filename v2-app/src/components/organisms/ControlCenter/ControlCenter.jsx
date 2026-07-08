@@ -145,9 +145,9 @@ function PestThresholdsPanel({
       </button>
 
       {!isCollapsed && (
-        <div className={styles.body}>
-          <div className={styles.section}>
-            <FormField className={styles.stickyPestFocus}>
+        <>
+          <div className={styles.stickyPestFocus}>
+            <FormField>
               <Select
                 aria-label="Pest focus"
                 value={pestFocus}
@@ -159,10 +159,13 @@ function PestThresholdsPanel({
               />
             </FormField>
           </div>
-          <div className={styles.section}>
-            <ThresholdList pests={visiblePestThresholds} />
+          <div className={styles.body}>
+            <div className={styles.section}>
+              <Typography variant="h6" className={styles.sectionTitle}>Thresholds</Typography>
+              <ThresholdList pests={visiblePestThresholds} />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </aside>
   );
