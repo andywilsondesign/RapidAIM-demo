@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   Chart as ChartJS,
@@ -37,41 +37,32 @@ export const TrendChart = ({
   threshold = 25,
   className = '',
 }) => {
-  const chartRef = useRef(null);
-  const [chartData, setChartData] = useState({
-    datasets: [],
-  });
-
-  // Colors mapping (based on atomic tokens)
-  // High risk: #E53935 (Red)
-  // Medium risk: #FB8C00 (Amber)
-  // Low risk: #43A047 (Green)
-  const getColorForValue = useCallback((val) => {
-    if (val >= threshold * 2) return '#E53935';
-    if (val >= threshold) return '#FB8C00';
-    return '#43A047';
-  }, [threshold]);
-
-  useEffect(() => {
-    const chart = chartRef.current;
-    if (!chart) return;
+  const chartData = useMemo(() => {
+    // Colors mapping (based on atomic tokens)
+    // High risk: #E53935 (Red)
+    // Medium risk: #FB8C00 (Amber)
+    // Low risk: #43A047 (Green)
+    const getColorForValue = (val) => {
+      if (val >= threshold * 2) return '#E53935';
+      if (val >= threshold) return '#FB8C00';
+      return '#43A047';
+    };
 
     if (type === 'bar') {
-      const backgroundColors = data.map((val) => getColorForValue(val));
-      setChartData({
+      return {
         labels,
         datasets: [
           {
             label: 'Detections',
             data,
-            backgroundColor: backgroundColors,
+            backgroundColor: data.map((val) => getColorForValue(val)),
             borderRadius: 4,
           },
         ],
-      });
+      };
     } else if (type === 'line') {
       if (series?.length) {
-        setChartData({
+        return {
           labels,
           datasets: series.map((item, index) => ({
             label: item.label,
@@ -87,33 +78,27 @@ export const TrendChart = ({
             fill: false,
             tension: 0.4,
           })),
-        });
-        return;
+        };
       }
 
-      // For line charts, use a linear gradient from top to bottom
-      const ctx = chart.ctx;
-      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-      gradient.addColorStop(0, '#E53935'); // High values
-      gradient.addColorStop(0.5, '#FB8C00');
-      gradient.addColorStop(1, '#43A047'); // Low values
-
-      setChartData({
+      return {
         labels,
         datasets: [
           {
             label: '7-Day Rolling Avg',
             data,
-            borderColor: gradient,
+            borderColor: '#C2410C',
             borderWidth: 3,
             tension: 0.4, // smooth curve
             pointBackgroundColor: data.map((val) => getColorForValue(val)),
             pointRadius: 4,
           },
         ],
-      });
+      };
     }
-  }, [data, labels, series, type, threshold, getColorForValue]);
+
+    return { labels, datasets: [] };
+  }, [data, labels, series, type, threshold]);
 
   const hasMultipleSeries = type === 'line' && Boolean(series?.length);
 
@@ -158,9 +143,9 @@ export const TrendChart = ({
       </div>
       <div className={styles.chartWrapper}>
         {type === 'bar' ? (
-          <Bar ref={chartRef} data={chartData} options={options} />
+          <Bar data={chartData} options={options} />
         ) : (
-          <Line ref={chartRef} data={chartData} options={options} />
+          <Line data={chartData} options={options} />
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { HandoffIndex } from './HandoffIndex';
-import { HierarchyBreadcrumb } from './HandoffBreadcrumb';
+import { HierarchyBreadcrumb } from '../components/molecules/HierarchyBreadcrumb/HierarchyBreadcrumb';
 
 export default {
   title: 'Handoff/StaticPages',

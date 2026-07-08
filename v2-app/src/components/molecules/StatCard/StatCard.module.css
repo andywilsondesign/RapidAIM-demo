@@ -27,6 +27,7 @@
   gap: var(--spacing-1);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
+  white-space: nowrap;
 }
 
 .trendIcon {

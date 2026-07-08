@@ -35,6 +35,45 @@ const dummyBlockPolygon = [
   [36.730, -119.790],
 ];
 
+const blockStateOverlays = [
+  {
+    id: 'block-high-default',
+    label: 'Block 1',
+    severity: 'high',
+    state: 'default',
+    positions: [
+      [36.742, -119.795],
+      [36.742, -119.788],
+      [36.736, -119.788],
+      [36.736, -119.795],
+    ],
+  },
+  {
+    id: 'block-medium-hover',
+    label: 'Block 2',
+    severity: 'medium',
+    state: 'hover',
+    positions: [
+      [36.742, -119.787],
+      [36.742, -119.780],
+      [36.736, -119.780],
+      [36.736, -119.787],
+    ],
+  },
+  {
+    id: 'block-low-selected',
+    label: 'Block 3',
+    severity: 'low',
+    state: 'selected',
+    positions: [
+      [36.735, -119.795],
+      [36.735, -119.788],
+      [36.729, -119.788],
+      [36.729, -119.795],
+    ],
+  },
+];
+
 // Dummy sensors scattered within the block
 const dummySensors = [
   { id: 's1', lat: 36.738, lng: -119.788, name: 'Sensor 1', count: 45, severity: 'high' },
@@ -62,4 +101,14 @@ StylizedMap.args = {
   sensors: dummySensors,
   blockSeverity: 'low',
   mapStyle: 'stylized',
+};
+
+export const BlockInteractionStates = Template.bind({});
+BlockInteractionStates.args = {
+  center: FRESNO_CENTER,
+  zoom: 15,
+  blockOverlays: blockStateOverlays,
+  activeBlockLabel: 'Block 3',
+  sensors: dummySensors,
+  mapStyle: 'satellite',
 };

@@ -17,7 +17,7 @@
 .chartWrapper {
   position: relative;
   width: 100%;
-  height: 200px;
-  min-height: 200px;
-  max-height: 200px;
+  height: var(--size-chart-height);
+  min-height: var(--size-chart-height);
+  max-height: var(--size-chart-height);
 }

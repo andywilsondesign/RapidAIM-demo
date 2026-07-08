@@ -55,6 +55,21 @@
     --spacing-5: 1.25rem; /* 20px */
     --spacing-6: 1.5rem; /* 24px */
     --spacing-8: 2rem; /* 32px */
+
+    /* Product layout */
+    --layout-top-nav-height: 4rem; /* 64px */
+    --layout-desktop-min-width: 70rem; /* 1120px */
+    --layout-map-panel-width: 24.375rem; /* 390px */
+    --layout-control-panel-width: 20rem; /* 320px */
+    --layout-panel-action-tray-height: 5.4375rem; /* 87px */
+    --layout-panel-fade-height: 3rem; /* 48px */
+
+    /* Component sizing */
+    --size-chart-height: 12.5rem; /* 200px */
+    --size-data-row-height: 2.75rem; /* 44px */
+    --size-ranking-row-min-height: 5.0625rem; /* 81px */
+    --size-map-marker: 1.5rem; /* 24px */
+    --size-icon-button: 2rem; /* 32px */
     
     --radius-sm: 4px;
     --radius-md: 8px;

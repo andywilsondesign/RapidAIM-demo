@@ -7,11 +7,13 @@ export const StatCard = ({
   label,
   value,
   trend,
+  trendContext,
   trendLabel,
   benchmark,
   className = '',
 }) => {
   const isPositive = trend > 0;
+
   return (
     <div className={`${styles.card} ${className}`}>
       <Typography variant="body-sm" color="secondary" className={styles.label}>
@@ -32,8 +34,13 @@ export const StatCard = ({
           </div>
         )}
       </div>
-      {(trendLabel || benchmark) && (
+      {(trendContext || trendLabel || benchmark) && (
         <div className={styles.meta}>
+          {trendContext && (
+            <Typography variant="caption" color="secondary" className={styles.metaLine}>
+              {trendContext}
+            </Typography>
+          )}
           {trendLabel && (
             <Typography variant="caption" weight="semibold" className={`${styles.metaLine} ${isPositive ? styles['metaLine--negative'] : styles['metaLine--positive']}`}>
               {trendLabel}
@@ -54,6 +61,7 @@ StatCard.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   trend: PropTypes.number,
+  trendContext: PropTypes.string,
   trendLabel: PropTypes.string,
   benchmark: PropTypes.string,
   className: PropTypes.string,

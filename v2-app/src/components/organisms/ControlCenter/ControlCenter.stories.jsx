@@ -17,3 +17,8 @@ const Template = (args) => (
 
 export const Default = Template.bind({});
 Default.args = {};
+
+export const ScopeExperiment = Template.bind({});
+ScopeExperiment.args = {
+  mode: 'scopeExperiment',
+};
