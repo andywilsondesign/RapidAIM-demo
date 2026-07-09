@@ -1,0 +1,102 @@
+/* RapidAIM Brand Experimental Tokens */
+/* Applied via .theme-brand class */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+.theme-brand {
+    /* Base Backgrounds */
+    --color-bg-base: #F4F4F4; /* Bright Snow */
+    --color-bg-panel: #FFFFFF;
+    --color-bg-card: #FFFFFF;
+    --color-bg-hover: #EBEBEB;
+    --color-bg-data-surface: #FFFFFF;
+    
+    /* Text */
+    --color-text-primary: #08081A; /* Carbon */
+    --color-text-secondary: #666666; /* Slate */
+    
+    /* Borders */
+    --color-border-subtle: #BFBFBF; /* Mist */
+    --color-border-focus: #151560; /* Deep Indigo */
+    
+    /* Status Colors (AA accessible variants of the brand palette) */
+    --color-status-red: #B91C1C;
+    --color-status-red-bg: #FEE2E2;
+    --color-status-amber: #B45309; 
+    --color-status-amber-bg: #FFFBEB; 
+    --color-status-green: #047857; /* Darker than Signal Green for text AA */
+    --color-status-green-bg: #ECFDF5;
+    
+    /* Brand Accent */
+    --color-brand-primary: #151560; /* Deep Indigo */
+    --color-brand-light: #F9B709; /* Honey Bronze */
+    --color-brand-hover: #0E0E45; 
+    --color-panel-header-bg: var(--color-brand-primary);
+    --color-panel-header-text: #FFFFFF;
+
+    /* Semantic Actions */
+    --color-action-primary-bg: var(--color-brand-primary);
+    --color-action-primary-hover: var(--color-brand-hover);
+    --color-action-primary-text: #FFFFFF;
+    --color-action-secondary-bg: var(--color-bg-card);
+    --color-action-secondary-hover: var(--color-bg-hover);
+    --color-action-secondary-text: var(--color-text-primary);
+    
+    /* Typography */
+    --font-family-mono: 'Space Mono', monospace; 
+}
+
+/* Typography Extensions */
+.theme-brand h1,
+.theme-brand h2,
+.theme-brand h3,
+.theme-brand h4,
+.theme-brand h5,
+.theme-brand h6,
+.theme-brand .font-title {
+    font-family: var(--font-family-mono);
+    font-weight: 700;
+}
+
+.theme-brand .font-eyebrow {
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+}
+
+/* UI Accents from Brand */
+.theme-brand .accent-beacon {
+    background-color: #FFD940; /* Beacon Yellow */
+    color: #151560; /* Deep Indigo */
+}
+
+/* Experimental Iconography Reticle */
+.theme-brand .icon-reticle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-brand .icon-reticle::before,
+.theme-brand .icon-reticle::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-color: #F9B709; /* Honey Bronze */
+    border-style: solid;
+}
+
+.theme-brand .icon-reticle::before {
+    top: -2px;
+    left: -2px;
+    border-width: 2px 0 0 2px;
+}
+
+.theme-brand .icon-reticle::after {
+    bottom: -2px;
+    right: -2px;
+    border-width: 0 2px 2px 0;
+}

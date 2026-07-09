@@ -1,0 +1,314 @@
+.panel {
+  position: relative;
+  width: min(var(--layout-control-panel-width), 100%);
+  min-width: 0;
+  background-color: var(--color-bg-panel);
+  border-left: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.panelStack {
+  display: flex;
+  width: min(var(--layout-control-panel-width), 100%);
+  height: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  background: transparent;
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.panelStack .panel {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  border-left: 0;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.panelStack:has(.panel:not(.collapsed) + .panel:not(.collapsed)) .panel:not(.collapsed) {
+  max-height: calc((100% - var(--spacing-3)) / 2);
+}
+
+.panelStack .panel::before,
+.panelStack .panel::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 4;
+  height: 24px;
+  pointer-events: none;
+  content: '';
+}
+
+.panelStack .panel::before {
+  top: calc(3.5rem + 1px);
+  background: linear-gradient(to bottom, var(--color-bg-panel), rgba(255, 255, 255, 0));
+}
+
+.panelStack .panel::after {
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
+}
+
+.panelStack .panel:has(.stickyPestFocus)::before {
+  top: calc(3.5rem + 58px);
+}
+
+.panelStack .collapsed {
+  flex: 0 0 auto;
+  max-height: none;
+}
+
+.panelStack .collapsed::before,
+.panelStack .collapsed::after {
+  display: none;
+}
+
+.panelStack .body {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--spacing-4);
+}
+
+.panelStack .header {
+  position: relative;
+  z-index: 5;
+  border-bottom: 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.panelStack .collapsed .header {
+  border-radius: var(--radius-xl);
+}
+
+.panelSegment {
+  flex: 0 1 auto;
+}
+
+.collapsed {
+  bottom: auto;
+  height: auto;
+}
+
+.panel::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 48px;
+  pointer-events: none;
+  content: '';
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel));
+}
+
+.collapsed::after {
+  display: none;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  border: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.collapsed .header {
+  border-bottom: 0;
+}
+
+.toggleIcon {
+  color: var(--color-panel-header-text);
+  transition: transform var(--transition-fast);
+}
+
+.collapsed .toggleIcon {
+  transform: rotate(-90deg);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--spacing-8);
+}
+
+.section {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.panelStack .section {
+  border-bottom: 0;
+}
+
+.stickyPestFocus {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  padding: 0 var(--spacing-4) var(--spacing-4);
+  border-bottom: 0;
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.stickyPestFocus > div {
+  width: 100%;
+}
+
+.stickyPestFocus select {
+  border-color: rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-panel-header-text);
+}
+
+.stickyPestFocus select:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+
+.stickyPestFocus [class*='icon'] {
+  color: var(--color-panel-header-text);
+}
+
+.sectionTitle {
+  color: var(--color-text-secondary);
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  min-width: 0;
+}
+
+.sliderContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-1);
+}
+
+.slider {
+  flex: 1;
+  accent-color: var(--color-brand-primary);
+}
+
+.sliderValue {
+  min-width: 24px;
+  text-align: right;
+  font-weight: var(--font-weight-bold);
+}
+
+.thresholdRec {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-2);
+  padding: var(--spacing-2);
+  border: 1px solid rgba(15, 90, 71, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(15, 90, 71, 0.06);
+}
+
+.thresholdRec > :global(.material-symbols-rounded) {
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+  flex: 0 0 var(--font-size-base);
+  color: var(--color-brand-primary);
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+.thresholdRecText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.thresholdRecText p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thresholdRecommendation strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.thresholdList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.thresholdCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-data-surface);
+}
+
+.pestThresholdHeader {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.pestThresholdHeader p {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.applyButton {
+  flex: 0 0 auto;
+  height: 28px;
+  padding-right: var(--spacing-2);
+  padding-left: var(--spacing-2);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
