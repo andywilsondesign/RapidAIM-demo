@@ -1,20 +1,22 @@
 import React from 'react';
-import { TaskDropdown } from './TaskDropdown';
-import { tasks } from '../../../fixtures/rapidAimFixtures';
+import { HandoffIndex } from '../../../brand-alignment/handoff/BrandHandoffIndex';
 
 export default {
   title: 'Organisms/TaskDropdown',
-  component: TaskDropdown,
-};
-
-export const Empty = {
-  args: {
-    tasks: [],
+  component: HandoffIndex,
+  parameters: {
+    layout: 'fullscreen',
   },
 };
 
-export const Populated = {
+export const Desktop = {
   args: {
-    tasks,
+    initialPageId: 'tasks',
+  },
+};
+
+export const Mobile = {
+  args: {
+    initialPageId: 'mobile-overlays',
   },
 };

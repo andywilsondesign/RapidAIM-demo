@@ -4,6 +4,7 @@ import { SearchBar } from '../../molecules/SearchBar/SearchBar';
 import { Button } from '../../atoms/Button/Button';
 import { Typography } from '../../atoms/Typography/Typography';
 import styles from './TopNavigationBar.module.css';
+import logo from '../../../assets/rapidaim_logo.svg';
 
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
@@ -37,8 +38,7 @@ export const TopNavigationBar = ({
               </Button>
             )}
             <div className={styles.logo}>
-              <span className={`material-symbols-rounded ${styles.logoIcon}`}>pest_control</span>
-              <Typography variant="h4" color="brand">{organizationName}</Typography>
+              <img src={logo} alt={organizationName} style={{ height: '36px', width: 'auto' }} />
             </div>
           </div>
 

@@ -1,77 +1,132 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
-import { Button } from '../../atoms/Button/Button';
 import { Badge } from '../../atoms/Badge/Badge';
-import { StatCard } from '../../molecules/StatCard/StatCard';
-import { Alert } from '../../molecules/Alert/Alert';
-import { TrendChart } from '../TrendChart/TrendChart';
 import styles from './DetailPanel.module.css';
 
-export const DetailPanel = ({
-  title,
-  subtitle,
-  riskLevel = 'high',
-  onClose,
-  onAssignTask,
-  className = '',
+export const DetailPanel = ({ 
+  title, 
+  eyebrow, 
+  badge, 
+  backLabel, 
+  backAriaLabel,
+  onBackClick,
+  sections = [], 
+  actions, 
+  children,
+  className = ''
 }) => {
+  const [activeSection, setActiveSection] = useState('overview');
+  const overviewRef = useRef(null);
+  const sectionRefs = useRef({});
+  const hasSections = sections.length > 0;
+
+  const scrollToSection = (section) => {
+    const target = section === 'overview' ? overviewRef.current : sectionRefs.current[section];
+    target?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    setActiveSection(section);
+  };
+
+  const handlePanelScroll = (event) => {
+    if (!hasSections) return;
+    const bodyTop = event.currentTarget.getBoundingClientRect().top;
+    const visibleSection = sections.reduce((current, section) => {
+      const node = sectionRefs.current[section.label];
+      if (!node) return current;
+      const sectionTop = node.getBoundingClientRect().top - bodyTop;
+      return sectionTop <= 128 ? section.label : current;
+    }, 'overview');
+    setActiveSection(visibleSection);
+  };
+
   return (
-    <aside className={`${styles.panel} ${className}`}>
-      <div className={styles.header}>
-        <div className={styles.headerTop}>
-          <div className={styles.titleArea}>
-            <Typography variant="h3">{title}</Typography>
-            <Badge variant={riskLevel}>{riskLevel} Risk</Badge>
+    <section className={`${styles.panel} ${className}`}>
+      <div className={styles.panelHeader}>
+        <div className={styles.panelTitleGroup}>
+          <div className={styles.panelTitleRow}>
+            <div className={styles.panelTitleCluster}>
+              {backLabel && (
+                <button 
+                  className={styles.backButton} 
+                  type="button" 
+                  aria-label={backAriaLabel || `Back to ${backLabel}`}
+                  onClick={onBackClick}
+                >
+                  <span className="material-symbols-rounded">arrow_back</span>
+                </button>
+              )}
+              <Typography variant="h3">{title}</Typography>
+            </div>
+            {badge && <Badge variant={badge} className={styles.panelBadge}>{badge} Risk</Badge>}
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close panel">
-            <span className="material-symbols-rounded">close</span>
-          </Button>
-        </div>
-        <Typography variant="body-sm" color="secondary">{subtitle}</Typography>
-      </div>
-
-      <div className={styles.content}>
-        <Alert
-          type="inline"
-          variant="warning"
-          title="AI Insight"
-          message="Pest pressure is rising rapidly compared to historical averages for this time of year."
-          className={styles.alert}
-        />
-
-        <div className={styles.statsGrid}>
-          <StatCard label="Current Count" value="124" trend={24} />
-          <StatCard label="Daily Avg" value="45" trend={12} />
-        </div>
-
-        <TrendChart 
-          type="line" 
-          title="7-Day Trend"
-          labels={Array.from({ length: 7 }, (_, i) => `Day ${i+1}`)}
-          data={[12, 19, 15, 25, 42, 55, 60]}
-          threshold={25}
-          className={styles.chart}
-        />
-
-        <div className={styles.actions}>
-          <Button variant="primary" fullWidth onClick={onAssignTask}>
-            Assign Task
-          </Button>
-          <Button variant="secondary" fullWidth>
-            View Full Report
-          </Button>
+          <div className={styles.panelMetaRow}>
+            {eyebrow && <Typography variant="caption" color="secondary" className={`${styles.panelSubtitle} font-eyebrow`}>{eyebrow}</Typography>}
+          </div>
         </div>
       </div>
-    </aside>
+      {hasSections && (
+        <nav className={styles.anchorTabs} aria-label={`${title} panel sections`} style={{ '--tab-count': sections.length + 1 }}>
+          <button
+            className={activeSection === 'overview' ? styles.activeAnchorTab : ''}
+            type="button"
+            onClick={() => scrollToSection('overview')}
+          >
+            Overview
+          </button>
+          {sections.map((section) => (
+            <button
+              className={activeSection === section.label ? styles.activeAnchorTab : ''}
+              key={section.label}
+              type="button"
+              onClick={() => scrollToSection(section.label)}
+            >
+              {section.label}
+            </button>
+          ))}
+        </nav>
+      )}
+      <div className={styles.panelBody} onScroll={handlePanelScroll}>
+        <section className={styles.panelSection} ref={overviewRef}>
+          {children}
+        </section>
+        {sections.map((section) => (
+          <section
+            className={styles.panelSection}
+            key={section.label}
+            ref={(node) => {
+              sectionRefs.current[section.label] = node;
+            }}
+          >
+            {section.content}
+          </section>
+        ))}
+      </div>
+      {actions && (
+        <>
+          <div className={`${styles.panelBottomFade} ${styles.panelBottomFadeActions}`} />
+          <div className={styles.panelActions}>
+            {actions}
+          </div>
+        </>
+      )}
+    </section>
   );
 };
 
 DetailPanel.propTypes = {
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
-  riskLevel: PropTypes.oneOf(['high', 'medium', 'low']),
-  onClose: PropTypes.func,
-  onAssignTask: PropTypes.func,
+  eyebrow: PropTypes.string,
+  badge: PropTypes.string,
+  backLabel: PropTypes.string,
+  backAriaLabel: PropTypes.string,
+  onBackClick: PropTypes.func,
+  sections: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      content: PropTypes.node.isRequired,
+    })
+  ),
+  actions: PropTypes.node,
+  children: PropTypes.node,
   className: PropTypes.string,
 };

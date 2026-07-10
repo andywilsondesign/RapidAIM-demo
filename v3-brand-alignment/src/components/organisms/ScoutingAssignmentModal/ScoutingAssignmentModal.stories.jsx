@@ -1,25 +1,22 @@
 import React from 'react';
-import { ScoutingAssignmentModal } from './ScoutingAssignmentModal';
-import { blocks } from '../../../fixtures/rapidAimFixtures';
+import { HandoffIndex } from '../../../brand-alignment/handoff/BrandHandoffIndex';
 
 export default {
   title: 'Organisms/ScoutingAssignmentModal',
-  component: ScoutingAssignmentModal,
+  component: HandoffIndex,
+  parameters: {
+    layout: 'fullscreen',
+  },
 };
 
 export const Desktop = {
   args: {
-    entityName: `${blocks[0].ranchName} / ${blocks[0].name}`,
-    riskLevel: blocks[0].riskLevel,
-    pestName: blocks[0].pestName,
+    initialPageId: 'scouting',
   },
 };
 
 export const Mobile = {
   args: {
-    entityName: blocks[0].name,
-    riskLevel: blocks[0].riskLevel,
-    pestName: 'Female NOW',
-    compact: true,
+    initialPageId: 'mobile-overlays',
   },
 };

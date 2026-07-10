@@ -14,25 +14,25 @@ export const HandoffWorkspace = {};
 
 export const DesktopOrganizationDetail = {
   args: {
-    initialPageId: 'desktop-organization',
+    initialPageId: 'consolidated-organization',
   },
 };
 
 export const DesktopBlockDetail = {
   args: {
-    initialPageId: 'desktop-block',
+    initialPageId: 'consolidated-block',
   },
 };
 
 export const DesktopRanchDetail = {
   args: {
-    initialPageId: 'desktop-ranch',
+    initialPageId: 'consolidated-ranch',
   },
 };
 
 export const DesktopSensorDetail = {
   args: {
-    initialPageId: 'desktop-sensor',
+    initialPageId: 'consolidated-sensor',
   },
 };
 

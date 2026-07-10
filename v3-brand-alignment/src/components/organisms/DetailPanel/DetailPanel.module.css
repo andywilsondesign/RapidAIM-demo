@@ -1,58 +1,198 @@
 .panel {
-  width: 400px;
-  background-color: var(--color-bg-panel);
-  border-right: 1px solid var(--color-border-subtle);
+  position: relative;
   display: flex;
-  flex-direction: column;
   height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--color-bg-panel);
 }
 
-.header {
-  padding: var(--spacing-4);
-  border-bottom: 1px solid var(--color-border-subtle);
+.panelHeader {
   display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--spacing-4);
+  border-bottom: 0;
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.panelTitleGroup {
+  display: flex;
+  width: 100%;
+  min-width: 0;
   flex-direction: column;
   gap: var(--spacing-2);
 }
 
-.headerTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.titleArea {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-2);
-}
-
-.content {
-  padding: var(--spacing-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-  overflow-y: auto;
-}
-
-.alert {
-  margin-bottom: var(--spacing-2);
-}
-
-.statsGrid {
+.panelTitleRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  min-width: 0;
+  width: 100%;
+}
+
+.panelTitleCluster {
+  display: flex;
+  min-width: 0;
+  align-items: center;
   gap: var(--spacing-3);
 }
 
-.chart {
-  height: 200px;
+.panelTitleCluster h3 {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-panel-header-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.actions {
+.panelSubtitle {
+  padding-left: 0;
+}
+
+.panelBadge {
+  flex: 0 0 auto;
+}
+
+.panelMetaRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-2);
+}
+
+.backButton {
+  display: inline-flex;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-panel-header-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.backButton:hover {
+  border-color: rgba(255, 255, 255, 0.44);
+  color: var(--color-panel-header-text);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.backButton .material-symbols-rounded {
+  font-size: var(--font-size-base);
+}
+
+.anchorTabs {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(var(--tab-count, 2), minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+}
+
+.anchorTabs button {
+  display: inline-flex;
+  position: relative;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-2);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.anchorTabs button:hover,
+.anchorTabs button:focus-visible,
+.anchorTabs .activeAnchorTab {
+  background: var(--color-bg-hover);
+  color: var(--color-brand-primary);
+  outline: none;
+}
+
+.anchorTabs .activeAnchorTab {
+  box-shadow: none;
+}
+
+.anchorTabs .activeAnchorTab::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--color-brand-primary);
+  content: '';
+}
+
+.panelBody {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--spacing-5);
+  padding: var(--spacing-4) var(--spacing-4) 160px;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+.panelBody > * {
+  flex-shrink: 0;
+}
+
+.panelSection {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-4);
+  gap: var(--spacing-5);
+  scroll-margin-top: var(--spacing-4);
+}
+
+.panelBottomFade {
+  position: absolute;
+  right: 0;
+  bottom: var(--layout-panel-action-tray-height);
+  left: 0;
+  z-index: 5;
+  height: var(--layout-panel-fade-height);
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel) 78%, var(--color-bg-panel));
+}
+
+.panelBottomFadeActions {
+  bottom: 4.5rem;
+}
+
+.panelActions {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  box-sizing: border-box;
+  min-height: 4.5rem;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--color-border-subtle);
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(8px);
 }

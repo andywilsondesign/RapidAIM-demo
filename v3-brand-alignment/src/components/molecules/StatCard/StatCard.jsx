@@ -22,7 +22,7 @@ export const StatCard = ({
       </Typography>
       
       <div className={styles.valueRow}>
-        <Typography variant="h3">{value}</Typography>
+        <Typography variant="h3" className="font-metric">{value}</Typography>
         
         {trend !== undefined && trend !== 0 && (
           <div className={`${styles.trend} ${styles[`trend--${tone}`]} ${isPositive ? styles.trendDirectionPositive : styles.trendDirectionNegative}`}>

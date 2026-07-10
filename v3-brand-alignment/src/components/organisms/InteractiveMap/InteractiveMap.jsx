@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
@@ -35,6 +35,18 @@ const getBlockLabelPosition = (positions) => {
   const longitudes = positions.map(([, lng]) => lng);
 
   return [Math.min(...latitudes), Math.max(...longitudes)];
+};
+
+const MapResizer = () => {
+  const map = useMap();
+  React.useEffect(() => {
+    // Re-calculate size after render to fix Leaflet gray/shifted tile issue
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
 };
 
 export const InteractiveMap = ({
@@ -101,6 +113,7 @@ export const InteractiveMap = ({
   return (
     <div className={`${styles.mapWrapper} ${className}`}>
       <MapContainer center={center} zoom={zoom} zoomControl={false} style={{ height: '100%', width: '100%' }}>
+        <MapResizer />
         <ZoomControl position="bottomright" />
         <TileLayer
           url={mapStyle === 'satellite' ? satelliteUrl : stylizedUrl}

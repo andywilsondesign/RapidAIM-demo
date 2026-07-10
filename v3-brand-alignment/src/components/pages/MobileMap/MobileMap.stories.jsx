@@ -2,15 +2,21 @@ import React from 'react';
 import { HandoffIndex } from '../../../brand-alignment/handoff/BrandHandoffIndex';
 
 export default {
-  title: 'Pages/Account Settings',
+  title: 'Pages/Mobile Map (TBC)',
   component: HandoffIndex,
   parameters: {
     layout: 'fullscreen',
   },
 };
 
-export const Desktop = {
+export const MobileRanking = {
   args: {
-    initialPageId: 'account',
+    initialPageId: 'mobile-ranking',
+  },
+};
+
+export const MobileDetail = {
+  args: {
+    initialPageId: 'mobile-detail',
   },
 };

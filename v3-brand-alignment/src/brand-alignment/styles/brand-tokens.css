@@ -54,8 +54,12 @@
 .theme-brand h5,
 .theme-brand h6,
 .theme-brand .font-title {
-    font-family: var(--font-family-mono);
+    font-family: Arial, sans-serif;
     font-weight: 700;
+}
+
+.theme-brand .font-metric {
+    font-family: var(--font-family-mono);
 }
 
 .theme-brand .font-eyebrow {

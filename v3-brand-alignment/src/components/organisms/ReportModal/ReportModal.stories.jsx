@@ -1,21 +1,16 @@
 import React from 'react';
-import { ReportModal } from './ReportModal';
-import { report } from '../../../fixtures/rapidAimFixtures';
+import { HandoffIndex } from '../../../brand-alignment/handoff/BrandHandoffIndex';
 
 export default {
   title: 'Organisms/ReportModal',
-  component: ReportModal,
-};
-
-export const Loading = {
-  args: {
-    report,
-    loading: true,
+  component: HandoffIndex,
+  parameters: {
+    layout: 'fullscreen',
   },
 };
 
-export const Complete = {
+export const AiReportModal = {
   args: {
-    report,
+    initialPageId: 'report',
   },
 };
