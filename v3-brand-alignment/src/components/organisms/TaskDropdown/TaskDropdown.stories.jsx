@@ -1,5 +1,5 @@
 import React from 'react';
-import { HandoffIndex } from '../../../brand-alignment/handoff/BrandHandoffIndex';
+import { HandoffIndex } from '../../../handoff/HandoffIndex';
 
 export default {
   title: 'Organisms/TaskDropdown',

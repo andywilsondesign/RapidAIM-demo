@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SearchBar } from '../../molecules/SearchBar/SearchBar';
 import { Button } from '../../atoms/Button/Button';
-import { Typography } from '../../atoms/Typography/Typography';
 import styles from './TopNavigationBar.module.css';
 import logo from '../../../assets/rapidaim_logo.svg';
 
@@ -38,7 +37,7 @@ export const TopNavigationBar = ({
               </Button>
             )}
             <div className={styles.logo}>
-              <img src={logo} alt={organizationName} style={{ height: '36px', width: 'auto' }} />
+              <img src={logo} alt={organizationName} />
             </div>
           </div>
 

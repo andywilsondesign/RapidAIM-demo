@@ -11,7 +11,7 @@ export const SensorMetaGrid = ({ items, className = '' }) => (
           {item.label}
         </Typography>
         <div className={styles.valueRow}>
-          <Typography variant="h4">{item.value}</Typography>
+          <Typography variant="h4" className="font-metric">{item.value}</Typography>
           <div className={styles.indicator}>
             <span className={`material-symbols-rounded ${styles.indicatorIcon}`}>check_circle</span>
           </div>

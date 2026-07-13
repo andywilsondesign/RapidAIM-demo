@@ -163,7 +163,7 @@
   width: min(var(--layout-map-panel-width), calc(100% - (var(--spacing-5) * 2)));
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-floating-panel);
   border-radius: var(--radius-xl);
   background: var(--color-bg-panel);
   box-shadow: var(--shadow-lg);
@@ -213,7 +213,7 @@
   z-index: 700;
   height: auto;
   overflow: auto;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--color-border-floating-panel);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }

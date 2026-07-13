@@ -11,6 +11,7 @@
     
     --color-border-subtle: #E0E6E3;
     --color-border-focus: #0F5A47;
+    --color-border-floating-panel: rgba(255, 255, 255, 0.86);
     
     /* Status Colors - Ensure contrast */
     --color-status-red: #D32F2F; 
@@ -37,6 +38,9 @@
     
     /* Typography */
     --font-family-base: 'Inter', system-ui, sans-serif;
+    --font-family-title: Arial, sans-serif;
+    --font-family-metric: 'Space Mono', monospace;
+    --font-family-mono: var(--font-family-metric);
     --font-size-xs: 0.75rem; /* 12px */
     --font-size-sm: 0.875rem; /* 14px */
     --font-size-base: 1rem; /* 16px */

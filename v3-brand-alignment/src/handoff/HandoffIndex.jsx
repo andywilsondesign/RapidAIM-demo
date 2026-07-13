@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Badge } from '../components/atoms/Badge/Badge';
 import { Button } from '../components/atoms/Button/Button';
 import { Select } from '../components/atoms/Select/Select';
@@ -10,8 +10,10 @@ import { DetectionGrid } from '../components/molecules/DetectionGrid/DetectionGr
 import { SensorMetaGrid } from '../components/molecules/SensorMetaGrid/SensorMetaGrid';
 import { InfoDisclosure } from '../components/molecules/InfoDisclosure/InfoDisclosure';
 import { ScopeNavigation as ScopeNavigationControl } from '../components/molecules/ScopeNavigation/ScopeNavigation';
+import { TaskListItem } from '../components/molecules/TaskListItem/TaskListItem';
 import { TopNavigationBar } from '../components/organisms/TopNavigationBar/TopNavigationBar';
 import { ControlCenter } from '../components/organisms/ControlCenter/ControlCenter';
+import { DetailPanel } from '../components/organisms/DetailPanel/DetailPanel';
 import { InteractiveMap } from '../components/organisms/InteractiveMap/InteractiveMap';
 import { TrendChart } from '../components/organisms/TrendChart/TrendChart';
 import { WeatherWidget } from '../components/organisms/WeatherWidget/WeatherWidget';
@@ -603,12 +605,12 @@ function PestWeekComparison({ children }) {
 
 function OrganizationDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
   return (
-    <Panel
+    <DetailPanel
       title={selectedOrganization.name}
       badge={selectedOrganization.riskLevel}
       backLabel="Pest Pressure Ranking"
       backAriaLabel="Back to pest pressure ranking"
-      actionMode="reportOnly"
+      actions={<BottomActionTray mode="reportOnly" />}
       sections={[
         { label: `Ranches (${selectedOrganization.ranches})`, content: <RanchLinks /> },
         { label: 'Tasks (11)', content: <OrganizationTasks /> },
@@ -634,17 +636,18 @@ function OrganizationDetailPanel({ scopeExperiment = false, pestFocus = 'all' })
       )}
       <TrendChart title="30-Day Multi-Site Pest Pressure" type="line" labels={chartSeries.organizationLabels} data={chartSeries.organizationTrend} threshold={25} />
       <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
-    </Panel>
+    </DetailPanel>
   );
 }
 
 function BlockDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
   return (
-    <Panel
+    <DetailPanel
       title={selectedBlock.name}
       badge={selectedBlock.riskLevel}
       backLabel={selectedBlock.ranchName}
       backAriaLabel={`Back to ${selectedBlock.ranchName}`}
+      actions={<BottomActionTray mode="default" />}
       sections={[
         { label: `Sensors (${selectedBlock.activeSensors}/${selectedBlock.totalSensors})`, content: <SensorLinks /> },
       ]}
@@ -666,17 +669,18 @@ function BlockDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
         description="Sensor data from the last seven days shown in America/Los_Angeles time."
       />
       <ChartStack scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
-    </Panel>
+    </DetailPanel>
   );
 }
 
 function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all', onBlockPreviewChange }) {
   return (
-    <Panel
+    <DetailPanel
       title={selectedRanch.name}
       badge={selectedRanch.riskLevel}
       backLabel={selectedRanch.organization}
       backAriaLabel={`Back to ${selectedRanch.organization}`}
+      actions={<BottomActionTray mode="default" />}
       sections={[
         { label: `Blocks (${selectedRanch.blocks})`, content: <BlockLinks onBlockPreviewChange={onBlockPreviewChange} /> },
       ]}
@@ -697,17 +701,18 @@ function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all', onBlockP
         description="Block-level detection data from the last seven days shown in America/Los_Angeles time."
       />
       <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
-    </Panel>
+    </DetailPanel>
   );
 }
 
 function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
   return (
-    <Panel
+    <DetailPanel
       title={selectedSensor.name}
       badge={selectedSensor.severity}
       backLabel={selectedSensor.blockName}
       backAriaLabel={`Back to ${selectedSensor.blockName}`}
+      actions={<BottomActionTray mode="default" />}
       sections={[
         { label: 'Maintenance', content: <SensorMaintenance /> },
       ]}
@@ -721,7 +726,7 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
         />}
       </PestWeekComparison>
       <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
-    </Panel>
+    </DetailPanel>
   );
 }
 
@@ -903,15 +908,23 @@ function OrganizationTasks() {
               </div>
             ))}
           </div>
-          {stream.items.map((item, index) => (
-            <RankingListItem
-              key={`${stream.title}-${item.title}`}
-              rank={index + 1}
-              title={item.title}
-              subtitle={item.subtitle}
-              riskLevel={item.riskLevel}
-            />
-          ))}
+          {stream.items.map((item) => {
+            const task = {
+              entityName: item.subtitle,
+              type: stream.title === 'Scouting Assignments' ? 'Scouting' : 'Work Order',
+              assignee: 'Unassigned',
+              priority: item.riskLevel === 'high' ? 'Urgent' : item.riskLevel === 'medium' ? 'Medium' : 'Low',
+              status: 'Requested',
+              notes: item.title,
+            };
+
+            return (
+              <TaskListItem
+                key={`${stream.title}-${item.title}`}
+                task={task}
+              />
+            );
+          })}
         </div>
       ))}
     </section>
@@ -1036,93 +1049,6 @@ function AccountPage() {
     <div className={styles.accountFrame}>
       <AccountSettings />
     </div>
-  );
-}
-
-function Panel({ title, eyebrow, badge, backLabel, backAriaLabel, sections = [], actionMode = 'default', children }) {
-  const [activeSection, setActiveSection] = useState('overview');
-  const overviewRef = useRef(null);
-  const sectionRefs = useRef({});
-  const hasSections = sections.length > 0;
-
-  const scrollToSection = (section) => {
-    const target = section === 'overview' ? overviewRef.current : sectionRefs.current[section];
-    target?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    setActiveSection(section);
-  };
-
-  const handlePanelScroll = (event) => {
-    if (!hasSections) return;
-    const bodyTop = event.currentTarget.getBoundingClientRect().top;
-    const visibleSection = sections.reduce((current, section) => {
-      const node = sectionRefs.current[section.label];
-      if (!node) return current;
-      const sectionTop = node.getBoundingClientRect().top - bodyTop;
-      return sectionTop <= 128 ? section.label : current;
-    }, 'overview');
-    setActiveSection(visibleSection);
-  };
-
-  return (
-    <section className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitleGroup}>
-          <div className={styles.panelTitleRow}>
-            <div className={styles.panelTitleCluster}>
-              {backLabel && (
-                <button className={styles.backButton} type="button" aria-label={backAriaLabel || `Back to ${backLabel}`}>
-                  <span className="material-symbols-rounded">arrow_back</span>
-                </button>
-              )}
-              <Typography variant="h3">{title}</Typography>
-            </div>
-            {badge && <Badge variant={badge} className={styles.panelBadge}>{badge} Risk</Badge>}
-          </div>
-          <div className={styles.panelMetaRow}>
-            {eyebrow && <Typography variant="caption" color="secondary" className={styles.panelSubtitle}>{eyebrow}</Typography>}
-          </div>
-        </div>
-      </div>
-      {hasSections && (
-        <nav className={styles.anchorTabs} aria-label={`${title} panel sections`} style={{ '--tab-count': sections.length + 1 }}>
-          <button
-            className={activeSection === 'overview' ? styles.activeAnchorTab : ''}
-            type="button"
-            onClick={() => scrollToSection('overview')}
-          >
-            Overview
-          </button>
-          {sections.map((section) => (
-            <button
-              className={activeSection === section.label ? styles.activeAnchorTab : ''}
-              key={section.label}
-              type="button"
-              onClick={() => scrollToSection(section.label)}
-            >
-              {section.label}
-            </button>
-          ))}
-        </nav>
-      )}
-      <div className={styles.panelBody} onScroll={handlePanelScroll}>
-        <section className={styles.panelSection} ref={overviewRef}>
-          {children}
-        </section>
-        {sections.map((section) => (
-          <section
-            className={styles.panelSection}
-            key={section.label}
-            ref={(node) => {
-              sectionRefs.current[section.label] = node;
-            }}
-          >
-            {section.content}
-          </section>
-        ))}
-      </div>
-      <div className={`${styles.panelBottomFade} ${actionMode === 'reportOnly' ? styles.panelBottomFadeCompact : ''}`} />
-      <BottomActionTray mode={actionMode} />
-    </section>
   );
 }
 
