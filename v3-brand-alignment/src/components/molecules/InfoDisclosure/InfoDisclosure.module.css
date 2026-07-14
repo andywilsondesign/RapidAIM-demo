@@ -23,7 +23,7 @@
 .trigger:hover,
 .trigger:focus-visible,
 .trigger[aria-expanded='true'] {
-  background: rgba(15, 90, 71, 0.08);
+  background: rgba(21, 21, 96, 0.08);
   color: var(--color-brand-primary);
   outline: none;
 }
@@ -75,7 +75,7 @@
 
 .closeButton:hover,
 .closeButton:focus-visible {
-  background: rgba(15, 90, 71, 0.08);
+  background: rgba(21, 21, 96, 0.08);
   color: var(--color-brand-primary);
   outline: none;
 }

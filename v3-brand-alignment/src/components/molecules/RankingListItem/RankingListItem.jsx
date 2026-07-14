@@ -9,6 +9,7 @@ export const RankingListItem = ({
   title,
   subtitle,
   riskLevel, // 'high', 'medium', 'low'
+  statusLabel,
   disabled = false,
   onClick,
   onFocus,
@@ -40,6 +41,9 @@ export const RankingListItem = ({
       <div className={styles.content}>
         <Typography variant="body-sm" weight="semibold">{title}</Typography>
         <Typography variant="caption" color="secondary">{subtitle}</Typography>
+        {statusLabel && (
+          <span className={styles.statusTag}>{statusLabel}</span>
+        )}
       </div>
       <Badge variant={riskLevel} className={styles.riskBadge}>{riskLabel}</Badge>
     </button>
@@ -51,6 +55,7 @@ RankingListItem.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,
   riskLevel: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
+  statusLabel: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   onFocus: PropTypes.func,

@@ -1,31 +1,50 @@
 :root {
+    /* Brand palette from RapidAIM V3 guidelines */
+    --color-brand-navy: #151560;
+    --color-brand-yellow: #F9B709;
+    --color-brand-yellow-soft: #FFD940;
+    --color-brand-green: #37CC88;
+    --color-brand-ink: #08081A;
+    --color-brand-grey: #666666;
+    --color-brand-grey-light: #BFBFBF;
+    --color-brand-off-white: #F4F4F4;
+
     /* Color Palette - Solid & AA Accessible */
-    --color-bg-base: #F4F7F6;
+    --color-bg-base: var(--color-brand-off-white);
     --color-bg-panel: #FFFFFF;
     --color-bg-card: #FFFFFF;
-    --color-bg-hover: #F8FAF9;
+    --color-bg-hover: #F7F7FB;
     --color-bg-data-surface: #F8FAFC;
     
-    --color-text-primary: #111815; /* High contrast black */
-    --color-text-secondary: #4A5B53; /* Mid-grey green, ensuring AA against white */
+    --color-text-primary: var(--color-brand-ink);
+    --color-text-secondary: var(--color-brand-grey);
     
-    --color-border-subtle: #E0E6E3;
-    --color-border-focus: #0F5A47;
+    --color-border-subtle: #E3E3EB;
+    --color-border-focus: var(--color-brand-navy);
     --color-border-floating-panel: rgba(255, 255, 255, 0.86);
     
     /* Status Colors - Ensure contrast */
-    --color-status-red: #D32F2F; 
+    --color-status-red: #C1121F; 
     --color-status-red-bg: #FDE8E8;
-    --color-status-amber: #F57F17;
-    --color-status-amber-bg: #FFF8E1;
-    --color-status-green: #2E7D32;
-    --color-status-green-bg: #E8F5E9;
+    --color-status-amber: #8A5A00;
+    --color-status-amber-bg: #FFF4C2;
+    --color-status-green: #0F7A4F;
+    --color-status-green-bg: #E6F8EF;
+
+    /* Map block overlays - tuned for satellite imagery contrast */
+    --color-map-risk-high-fill: #E11932;
+    --color-map-risk-high-stroke: #FF2D55;
+    --color-map-risk-medium-fill: #F9A602;
+    --color-map-risk-medium-stroke: #FFB000;
+    --color-map-risk-low-fill: #19B56B;
+    --color-map-risk-low-stroke: #66F27A;
     
     /* Brand Accent */
-    --color-brand-primary: #0F5A47;
-    --color-brand-light: #2BA082;
-    --color-brand-hover: #167A62;
-    --color-panel-header-bg: var(--color-brand-primary);
+    --color-brand-primary: var(--color-brand-navy);
+    --color-brand-light: #30308F;
+    --color-brand-hover: #08081A;
+    --color-brand-accent: var(--color-brand-yellow);
+    --color-panel-header-bg: var(--color-brand-ink);
     --color-panel-header-text: #FFFFFF;
 
     /* Semantic Actions */

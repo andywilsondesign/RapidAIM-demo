@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Badge } from '../components/atoms/Badge/Badge';
 import { Button } from '../components/atoms/Button/Button';
 import { Select } from '../components/atoms/Select/Select';
@@ -15,13 +16,13 @@ import { TopNavigationBar } from '../components/organisms/TopNavigationBar/TopNa
 import { ControlCenter } from '../components/organisms/ControlCenter/ControlCenter';
 import { DetailPanel } from '../components/organisms/DetailPanel/DetailPanel';
 import { InteractiveMap } from '../components/organisms/InteractiveMap/InteractiveMap';
+import { MobileBottomSheet } from '../components/organisms/MobileBottomSheet/MobileBottomSheet';
 import { TrendChart } from '../components/organisms/TrendChart/TrendChart';
 import { WeatherWidget } from '../components/organisms/WeatherWidget/WeatherWidget';
 import { TaskDropdown } from '../components/organisms/TaskDropdown/TaskDropdown';
 import { ScoutingAssignmentModal } from '../components/organisms/ScoutingAssignmentModal/ScoutingAssignmentModal';
 import { ReportModal } from '../components/organisms/ReportModal/ReportModal';
 import { AccountSettings } from '../components/pages/AccountSettings/AccountSettings';
-import { HierarchyBreadcrumb } from '../components/molecules/HierarchyBreadcrumb/HierarchyBreadcrumb';
 import {
   blocks,
   chartSeries,
@@ -70,7 +71,7 @@ const pestChartSeries = [
   {
     label: 'Male Navel Orangeworm',
     valueKey: 'male-now',
-    color: '#15803D',
+    color: '#0F7A4F',
     dayTrend: [8, 10, 13, 18, 21, 24, 31, 34, 40, 48, 56, 62, 66, 72],
     rolling3Day: [9, 11, 14, 17, 21, 25, 30, 35, 41, 48, 55, 61, 67, 72],
     rolling7Day: [7, 9, 11, 14, 17, 21, 25, 29, 34, 40, 47, 54, 60, 66],
@@ -178,32 +179,44 @@ const scalePolygon = (polygon, scale) => {
 
 const rankingBlockBasePolygon = scalePolygon(selectedBlock.polygon, 0.32);
 
-const rankingBlockMapPolygons = rankingBlocks.reduce((acc, block, index) => {
+const buildBlockMapPolygons = (blockList) => blockList.reduce((acc, block, index) => {
   const row = Math.floor(index / 2);
   const column = index % 2;
   acc[block.id] = offsetPolygon(rankingBlockBasePolygon, row * -0.0029, column * 0.0048);
   return acc;
 }, {});
 
-const buildRankingBlockOverlays = (selectedBlockId, previewBlockId) => rankingBlocks.slice(0, 8).map((block) => {
-  let state = 'default';
+const buildBlockOverlays = (blockList, selectedBlockId, previewBlockId) => {
+  const blockMapPolygons = buildBlockMapPolygons(blockList);
 
-  if (block.id === selectedBlockId) {
-    state = 'selected';
-  }
+  return blockList.map((block) => {
+    let state = 'default';
 
-  if (block.id === previewBlockId && block.id !== selectedBlockId) {
-    state = 'hover';
-  }
+    if (block.id === selectedBlockId) {
+      state = 'selected';
+    }
 
-  return {
-    id: block.id,
-    label: block.name,
-    positions: rankingBlockMapPolygons[block.id],
-    severity: block.riskLevel,
-    state,
-  };
-});
+    if (block.id === previewBlockId && block.id !== selectedBlockId) {
+      state = 'hover';
+    }
+
+    return {
+      id: block.id,
+      label: block.name,
+      positions: blockMapPolygons[block.id],
+      severity: block.riskLevel,
+      state,
+    };
+  });
+};
+
+const buildRankingBlockOverlays = (selectedBlockId, previewBlockId) => (
+  buildBlockOverlays(rankingBlocks.slice(0, 8), selectedBlockId, previewBlockId)
+);
+
+const buildRanchBlockOverlays = (selectedBlockId, previewBlockId) => (
+  buildBlockOverlays(selectedRanchBlocks.slice(0, 10), selectedBlockId, previewBlockId)
+);
 
 const rankedRanches = ranches
   .filter((ranch) => ranch.organization === selectedOrganization.name)
@@ -276,8 +289,11 @@ const pageGroups = [
   {
     title: 'Mobile',
     pages: [
-      { id: 'mobile-ranking', label: 'Ranking Sheet', component: <MobilePage state="ranking" /> },
-      { id: 'mobile-detail', label: 'Detail Sheet', component: <MobilePage state="detail" /> },
+      { id: 'mobile-pest-pressure-ranking', label: 'Pest Pressure Ranking', component: <MobileMapPage type="ranking" /> },
+      { id: 'mobile-organization', label: 'Organization Detail', component: <MobileMapPage type="organization" /> },
+      { id: 'mobile-ranch', label: 'Ranch Detail', component: <MobileMapPage type="ranch" /> },
+      { id: 'mobile-block', label: 'Block Detail', component: <MobileMapPage type="block" /> },
+      { id: 'mobile-sensor', label: 'Sensor Detail', component: <MobileMapPage type="sensor" /> },
       { id: 'mobile-overlays', label: 'Mobile Overlays', component: <MobileOverlaysPage /> },
     ],
   },
@@ -291,17 +307,53 @@ const pageGroups = [
 
 const flatPages = pageGroups.flatMap((group) => group.pages);
 
-export const HandoffIndex = ({ initialPageId = flatPages[0].id }) => {
+const desktopToMobileType = {
+  'consolidated-pest-pressure-ranking': 'ranking',
+  'consolidated-organization': 'organization',
+  'consolidated-ranch': 'ranch',
+  'consolidated-block': 'block',
+  'consolidated-sensor': 'sensor',
+};
+
+function useResponsiveMobileView() {
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 900px)').matches : false
+  ));
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 900px)');
+    const handleChange = (event) => setIsMobile(event.matches);
+    setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isMobile;
+}
+
+export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = true }) => {
   const [activePageId, setActivePageId] = useState(initialPageId);
   const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
+  const isResponsiveMobile = useResponsiveMobileView();
   const activePage = useMemo(
     () => flatPages.find((page) => page.id === activePageId) || flatPages[0],
     [activePageId]
   );
+  const responsiveMobileType = isResponsiveMobile ? desktopToMobileType[activePageId] : null;
+  const shouldShowNavigator = showNavigator && !isResponsiveMobile;
+  const renderedPage = responsiveMobileType
+    ? <ResponsiveMobilePage type={responsiveMobileType} />
+    : activePage.component;
+
+  useEffect(() => {
+    const handleNavigateHome = () => setActivePageId('consolidated-pest-pressure-ranking');
+    document.addEventListener('rapidaim:navigate-home', handleNavigateHome);
+    return () => document.removeEventListener('rapidaim:navigate-home', handleNavigateHome);
+  }, []);
 
   return (
-    <div className={`${styles.shell} ${isNavigatorOpen ? '' : styles.shellCollapsed}`}>
-      {isNavigatorOpen ? (
+    <div className={`${styles.shell} ${!shouldShowNavigator || !isNavigatorOpen ? styles.shellCollapsed : ''}`}>
+      {shouldShowNavigator && isNavigatorOpen ? (
       <aside className={styles.sidebar} aria-label="Handoff page navigator">
         <div className={styles.brand}>
           <span className="material-symbols-rounded">view_sidebar</span>
@@ -336,7 +388,7 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id }) => {
           ))}
         </div>
       </aside>
-      ) : (
+      ) : shouldShowNavigator ? (
         <button
           className={styles.expandButton}
           onClick={() => setIsNavigatorOpen(true)}
@@ -346,12 +398,17 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id }) => {
           <span className="material-symbols-rounded">view_sidebar</span>
           <span>Views</span>
         </button>
-      )}
+      ) : null}
       <main className={styles.stage}>
-        <div className={styles.viewport}>{activePage.component}</div>
+        <div className={styles.viewport}>{renderedPage}</div>
       </main>
     </div>
   );
+};
+
+HandoffIndex.propTypes = {
+  initialPageId: PropTypes.string,
+  showNavigator: PropTypes.bool,
 };
 
 function DesktopShell({
@@ -371,7 +428,9 @@ function DesktopShell({
     : detailPanel;
   const selectedMapBlockId = scopeExperiment && scopeLevel === 'block' ? selectedBlock.id : '';
   const resolvedBlockOverlays = scopeExperiment
-    ? blockOverlays || buildRankingBlockOverlays(selectedMapBlockId, previewBlockId)
+    ? blockOverlays || (scopeLevel === 'ranch'
+      ? buildRanchBlockOverlays('', previewBlockId)
+      : buildRankingBlockOverlays(selectedMapBlockId, previewBlockId))
     : blockOverlays;
   const selectedSensorId = scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '';
 
@@ -379,11 +438,7 @@ function DesktopShell({
     <div className={styles.desktopShell}>
       <TopNavigationBar />
       <div className={styles.desktopMain}>
-        {scopeExperiment ? (
-          <ScopeNavigation level={scopeLevel} />
-        ) : parentContext && (
-          <HierarchyBreadcrumb className={styles.parentContextLink} items={parentContext.items} />
-        )}
+        <ScopeNavigation level={scopeExperiment ? scopeLevel : 'block'} />
         <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''} ${contentHeightPanel ? styles.leftRailContentHeight : ''}`}>{resolvedDetailPanel}</aside>
         <section className={styles.mapStage}>
           <InteractiveMap
@@ -457,16 +512,34 @@ function DesktopDetailPage({ type, scopeExperiment = false }) {
 function ScopeNavigation({ level = 'block' }) {
   const blockLabel = level === 'organization' || level === 'ranch' || level === 'ranking' ? 'All blocks' : selectedBlock.name;
   const ranchLabel = level === 'organization' || level === 'ranking' ? 'All ranches' : selectedRanch.name;
+  const sensorLabel = level === 'sensor' ? selectedSensor.name : 'All sensors';
+  const activeIndexByLevel = {
+    organization: 0,
+    ranch: 1,
+    block: 2,
+    sensor: 3,
+  };
   const locationSegments = [
     { label: selectedOrganization.name, options: scopeOrganizations },
     { label: ranchLabel, options: [{ label: 'All ranches', riskLevel: 'low' }, ...scopeRanches] },
     { label: blockLabel, options: [{ label: 'All blocks', riskLevel: 'low' }, ...scopeBlocks] },
+    {
+      label: sensorLabel,
+      options: [{ label: 'All sensors', riskLevel: 'low' }, ...rankedSensors.slice(0, 5).map((sensor) => ({
+        label: sensor.name,
+        riskLevel: sensor.severity,
+      }))],
+    },
   ];
 
   return (
     <ScopeNavigationControl
       className={styles.scopeNav}
       ariaLabel="Experimental pest and location scope navigation"
+      showHome
+      activeHome={level === 'ranking'}
+      activeIndex={activeIndexByLevel[level] ?? -1}
+      onHomeClick={() => document.dispatchEvent(new CustomEvent('rapidaim:navigate-home'))}
       segments={locationSegments}
     />
   );
@@ -496,14 +569,14 @@ function PestPressureRankingPanel({ activeBlockId, onPreviewBlockChange, onSelec
           <div className={styles.rankingFilters}>
             <FormField label="Organisation">
               <Select options={[
-                { label: 'Show all organisations', value: 'all' },
+                { label: 'Show all', value: 'all' },
                 { label: 'RapidAIM Growers Co.', value: 'rapid' },
                 { label: 'Apex Agriculture', value: 'apex' },
               ]} />
             </FormField>
             <FormField label="Ranch">
               <Select options={[
-                { label: 'Show all ranches', value: 'all' },
+                { label: 'Show all', value: 'all' },
                 { label: 'Sierra Orchards', value: 'sierra' },
                 { label: 'Sunshine Valley Ranch', value: 'sunshine' },
               ]} />
@@ -538,34 +611,20 @@ function PestPressureRankingPanel({ activeBlockId, onPreviewBlockChange, onSelec
       <div className={`${styles.panelBody} ${styles.rankingPanelBody}`}>
         <section className={styles.childList}>
           {visibleBlocks.map((block, index) => (
-            <button
-              className={`${styles.rankingBlockItem} ${block.id === activeBlockId ? styles.activeRankingBlockItem : ''}`}
+            <RankingListItem
+              className={block.id === activeBlockId ? styles.activeRankingListItem : ''}
               key={block.id}
-              type="button"
+              rank={index + 1}
+              title={block.name}
+              subtitle={`${block.ranchName} • ${block.pestName} • ${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
+              riskLevel={block.riskLevel}
+              statusLabel={activeTaskTab === 'assigned' ? `Task: ${block.taskStatus}` : undefined}
               onBlur={() => onPreviewBlockChange('')}
               onClick={() => onSelectedBlockChange(block.id)}
               onFocus={() => onPreviewBlockChange(block.id)}
               onMouseEnter={() => onPreviewBlockChange(block.id)}
               onMouseLeave={() => onPreviewBlockChange('')}
-              onPointerEnter={() => onPreviewBlockChange(block.id)}
-              onPointerLeave={() => onPreviewBlockChange('')}
-            >
-              <div className={styles.rankBadge}>{index + 1}</div>
-              <div className={styles.rankingBlockContent}>
-                <div className={styles.rankingBlockTitleRow}>
-                  <Typography variant="body-sm" weight="semibold">{block.name}</Typography>
-                  <Badge variant={block.riskLevel}>{`${block.riskLevel} risk`}</Badge>
-                </div>
-                <Typography variant="caption" color="secondary">
-                  {block.ranchName} • {block.pestName} • {block.currentCount} detections • {block.activeSensors}/{block.totalSensors} sensors active
-                </Typography>
-                {activeTaskTab === 'assigned' && (
-                  <div className={styles.rankingBlockMetaRow}>
-                    <Badge variant="neutral">{`Task: ${block.taskStatus}`}</Badge>
-                  </div>
-                )}
-              </div>
-            </button>
+            />
           ))}
         </section>
       </div>
@@ -965,70 +1024,209 @@ function ReportPage() {
   );
 }
 
-function MobilePage({ state }) {
-  const isDetail = state === 'detail';
-
+function MobileMapPage({ type = 'ranking' }) {
   return (
-    <CenteredPreview>
-      <div className={styles.mobileDevice}>
-        <TopNavigationBar />
-        <div className={styles.mobileMap}>
-          <InteractiveMap
-            center={[36.647, -119.8]}
-            zoom={15}
-            blockPolygon={selectedBlock.polygon}
-            sensors={sensors.slice(0, 2)}
-            blockSeverity={selectedBlock.riskLevel}
-          />
-          <div className={styles.fabs}>
-            <Button variant="secondary" className={styles.fab} aria-label="Layers"><span className="material-symbols-rounded">layers</span></Button>
-            <Button variant="secondary" className={styles.fab} aria-label="Pest"><span className="material-symbols-rounded">pest_control</span></Button>
-            <Button variant="secondary" className={styles.fab} aria-label="GPS"><span className="material-symbols-rounded">my_location</span></Button>
-          </div>
-        </div>
-        <div className={styles.bottomSheet}>
-          <div className={styles.sheetHandle} />
-          {isDetail ? <MobileDetailSheet /> : <MobileRankingSheet />}
-        </div>
-      </div>
+    <CenteredPreview className={styles.mobilePreview}>
+      <MobileDeviceFrame type={type} />
     </CenteredPreview>
   );
+}
+
+function ResponsiveMobilePage({ type = 'ranking' }) {
+  return (
+    <div className={styles.responsiveMobileFrame}>
+      <MobileDeviceFrame type={type} />
+    </div>
+  );
+}
+
+function MobileDeviceFrame({ type = 'ranking' }) {
+  const [sheetKind, setSheetKind] = useState('content');
+  const [sheetState, setSheetState] = useState('docked');
+  const selectedMapBlockId = type === 'block' ? selectedBlock.id : '';
+  const selectedSensorId = type === 'sensor' ? selectedSensor.id : '';
+  const resolvedSheetKind = sheetKind;
+  const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map';
+  const sheetLabel = {
+    content: type === 'ranking' ? 'Pest pressure ranking' : `${type} detail`,
+    pest: 'Pest focus',
+    map: 'Map controls',
+  }[resolvedSheetKind];
+
+  const openSheet = (nextKind) => {
+    setSheetKind(nextKind);
+    setSheetState(nextKind === 'content' ? 'docked' : 'full');
+  };
+  const toggleSheet = () => {
+    if (isControlSheet) {
+      setSheetKind('content');
+      setSheetState('docked');
+      return;
+    }
+
+    setSheetState((current) => current === 'full' ? 'docked' : 'full');
+  };
+
+  return (
+    <div className={styles.mobileDevice}>
+      <TopNavigationBar className={styles.mobileTopNavigation} />
+      <div className={styles.mobileMap}>
+        <InteractiveMap
+          center={[36.647, -119.8]}
+          zoom={15}
+          blockPolygon={selectedBlock.polygon}
+          blockOverlays={buildRankingBlockOverlays(selectedMapBlockId, '')}
+          activeBlockLabel={type === 'block' ? selectedBlock.name : ''}
+          sensors={sensors}
+          selectedSensorId={selectedSensorId}
+          blockSeverity={selectedBlock.riskLevel}
+          mapStyle="satellite"
+        />
+        <div className={styles.mobileScopeDock}>
+          <ScopeNavigation level={type === 'ranking' ? 'ranking' : type} />
+        </div>
+        <WeatherWidget weather={weather} compact className={styles.mobileWeather} />
+        <div className={styles.fabs}>
+          <Button
+            variant="secondary"
+            className={styles.fab}
+            aria-label="Open pest focus"
+            onClick={() => openSheet('pest')}
+          >
+            <span className="material-symbols-rounded">pest_control</span>
+          </Button>
+          <Button
+            variant="secondary"
+            className={styles.fab}
+            aria-label="Open map controls"
+            onClick={() => openSheet('map')}
+          >
+            <span className="material-symbols-rounded">layers</span>
+          </Button>
+          <Button variant="secondary" className={styles.fab} aria-label="Locate"><span className="material-symbols-rounded">my_location</span></Button>
+        </div>
+      </div>
+      <MobileBottomSheet
+        state={sheetState}
+        label={sheetLabel}
+        onToggle={toggleSheet}
+        dismissMode={isControlSheet}
+        dockedSummary={<MobileDockSummary type={type} sheetKind={resolvedSheetKind} />}
+      >
+        <MobileSheet type={type} sheetKind={resolvedSheetKind} />
+      </MobileBottomSheet>
+    </div>
+  );
+}
+
+function MobileDockSummary({ type, sheetKind }) {
+  const contentCopy = {
+    ranking: { title: 'Pest Pressure Ranking', meta: 'Blocks ranked highest risk to lowest' },
+    organization: { title: selectedOrganization.name, meta: 'Organisation detail', badge: selectedOrganization.riskLevel },
+    ranch: { title: selectedRanch.name, meta: selectedRanch.organization, badge: selectedRanch.riskLevel },
+    block: { title: selectedBlock.name, meta: selectedBlock.ranchName, badge: selectedBlock.riskLevel },
+    sensor: { title: selectedSensor.name, meta: selectedSensor.blockName, badge: selectedSensor.severity },
+  };
+  const controlCopy = {
+    pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },
+    map: { title: 'Map Controls', meta: 'Layers, legend, and map display' },
+  };
+  const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
+
+  return (
+    <div className={styles.mobileDockSummary}>
+      <div>
+        <Typography variant="h4">{resolved.title}</Typography>
+        <Typography variant="caption">{resolved.meta}</Typography>
+      </div>
+      {resolved.badge && <Badge variant={resolved.badge}>{`${resolved.badge} risk`}</Badge>}
+    </div>
+  );
+}
+
+function MobileSheet({ type, sheetKind }) {
+  if (sheetKind === 'pest') {
+    return <MobileControlsSheet scopePanel="pest" />;
+  }
+
+  if (sheetKind === 'map') {
+    return <MobileControlsSheet scopePanel="map" />;
+  }
+
+  if (type === 'ranking') {
+    return <MobileRankingSheet />;
+  }
+
+  const panelMap = {
+    organization: <OrganizationDetailPanel scopeExperiment />,
+    ranch: <RanchDetailPanel scopeExperiment />,
+    block: <BlockDetailPanel scopeExperiment />,
+    sensor: <SensorDetailPanel scopeExperiment />,
+  };
+
+  return <div className={styles.mobileDetailPanel}>{panelMap[type]}</div>;
 }
 
 function MobileRankingSheet() {
   return (
     <div className={styles.sheetContent}>
-      <div className={styles.panelHeader}>
-        <Typography variant="h5">Pest Pressure Ranking</Typography>
-        <Badge variant="neutral">3 Blocks</Badge>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Pest Pressure Ranking</Typography>
+            <Typography variant="caption" color="secondary">Blocks ranked highest risk to lowest</Typography>
+          </div>
+          <InfoDisclosure
+            title="Ranking logic"
+            description="Blocks are ranked by active pest pressure under the current pest focus and threshold lens."
+            align="end"
+          />
+        </div>
+        <div className={styles.mobileFilterRow}>
+          <FormField label="Organisation">
+            <Select
+              options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'RapidAIM Growers Co.', value: 'rapid' },
+                { label: 'Apex Agriculture', value: 'apex' },
+              ]}
+            />
+          </FormField>
+          <FormField label="Ranch">
+            <Select
+              options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'Sierra Orchards', value: 'sierra' },
+                { label: 'Sunshine Valley Ranch', value: 'sunshine' },
+              ]}
+            />
+          </FormField>
+        </div>
       </div>
-      {blocks.map((block, index) => (
-        <RankingListItem
-          key={block.id}
-          rank={index + 1}
-          title={block.name}
-          subtitle={`${block.ranchName} / ${block.currentCount} detections`}
-          riskLevel={block.riskLevel}
-        />
-      ))}
+      <PestWeekComparison>
+        <PestPressureGrid pestFocus="all" />
+      </PestWeekComparison>
+      <div className={styles.mobileListSection}>
+        {rankingBlocks.slice(0, 6).map((block, index) => (
+          <RankingListItem
+            key={block.id}
+            rank={index + 1}
+            title={block.name}
+            subtitle={`${block.pestName} • ${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
+            riskLevel={block.riskLevel}
+          />
+        ))}
+      </div>
     </div>
   );
 }
 
-function MobileDetailSheet() {
+function MobileControlsSheet({ scopePanel = 'pest' }) {
   return (
-    <div className={styles.sheetContent}>
-      <Button variant="ghost" size="sm"><span className="material-symbols-rounded">chevron_left</span>Back</Button>
-      <div className={styles.panelHeader}>
-        <div>
-          <Typography variant="h4">{selectedBlock.name}</Typography>
-          <Typography variant="caption" color="secondary">{selectedBlock.ranchName}</Typography>
-        </div>
-        <Badge variant={selectedBlock.riskLevel}>{selectedBlock.riskLevel} Risk</Badge>
+    <div className={`${styles.sheetContent} ${styles.mobileControlsContent}`}>
+      <div className={styles.mobileControlPanel}>
+        <ControlCenter mode="scopeExperiment" scopePanel={scopePanel} embedded />
       </div>
-      <StatCard label={selectedBlock.pestName} value={selectedBlock.currentCount} trend={selectedBlock.trend} />
-      <ActionRow />
-      <ChartStack compact />
     </div>
   );
 }
@@ -1052,8 +1250,8 @@ function AccountPage() {
   );
 }
 
-function CenteredPreview({ children }) {
-  return <div className={styles.centeredPreview}>{children}</div>;
+function CenteredPreview({ children, className = '' }) {
+  return <div className={`${styles.centeredPreview} ${className}`}>{children}</div>;
 }
 
 function SplitPreview({ left, right, leftLabel, rightLabel }) {

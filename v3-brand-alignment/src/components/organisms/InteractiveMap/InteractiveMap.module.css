@@ -44,7 +44,7 @@
 }
 
 :global(.leaflet-risk-marker--selected) {
-  filter: drop-shadow(0 0 0.45rem rgba(15, 90, 71, 0.38)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+  filter: drop-shadow(0 0 0.45rem rgba(21, 21, 96, 0.38)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
 }
 
 .blockLabelMarker {
@@ -60,7 +60,7 @@
   max-width: 8rem;
   overflow: hidden;
   padding: var(--spacing-1) var(--spacing-2);
-  border: 1px solid rgba(15, 90, 71, 0.16);
+  border: 1px solid rgba(21, 21, 96, 0.16);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-sm);

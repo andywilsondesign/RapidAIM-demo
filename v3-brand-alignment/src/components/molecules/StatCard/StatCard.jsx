@@ -26,7 +26,7 @@ export const StatCard = ({
         
         {trend !== undefined && trend !== 0 && (
           <div className={`${styles.trend} ${styles[`trend--${tone}`]} ${isPositive ? styles.trendDirectionPositive : styles.trendDirectionNegative}`}>
-            <span className={`material-symbols-rounded ${styles.trendIcon}`}>
+            <span className={`material-symbols-rounded ${styles.trendIcon}`} aria-hidden="true">
               {isPositive ? 'trending_up' : 'trending_down'}
             </span>
             <Typography variant="caption" weight="semibold">

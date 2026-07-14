@@ -22,6 +22,13 @@
   scrollbar-gutter: stable;
 }
 
+.embeddedPanelStack {
+  width: 100%;
+  height: 100%;
+  gap: 0;
+  background: var(--color-bg-panel);
+}
+
 .panelStack .panel {
   position: relative;
   width: 100%;
@@ -31,6 +38,19 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+}
+
+.panelStack .embeddedPanel {
+  height: 100%;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.embeddedPanelStack .panel::before,
+.embeddedPanelStack .panel::after {
+  display: none;
 }
 
 .panelStack:has(.panel:not(.collapsed) + .panel:not(.collapsed)) .panel:not(.collapsed) {
@@ -173,6 +193,50 @@
   color: var(--color-panel-header-text);
 }
 
+.embeddedPanel .stickyPestFocus {
+  padding-top: var(--spacing-4);
+}
+
+.embeddedHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding-bottom: var(--spacing-3);
+  color: var(--color-panel-header-text);
+}
+
+.embeddedPanel .embeddedHeader {
+  margin: 0;
+  padding: var(--spacing-4);
+  background: var(--color-panel-header-bg);
+}
+
+.embeddedHeader h4 {
+  color: var(--color-panel-header-text);
+}
+
+.embeddedHeader span {
+  font-size: var(--font-size-lg);
+}
+
+.embeddedPanel > .body {
+  flex: 1;
+  min-height: 0;
+}
+
+.embeddedPanel .body {
+  padding-bottom: var(--spacing-4);
+}
+
+.embeddedPanel .body > .embeddedHeader {
+  padding: var(--spacing-4);
+  background: var(--color-panel-header-bg);
+}
+
+.embeddedPanel .body > .embeddedHeader + .section {
+  padding-top: var(--spacing-4);
+}
+
 .stickyPestFocus > div {
   width: 100%;
 }
@@ -233,9 +297,9 @@
   gap: var(--spacing-1);
   margin-top: var(--spacing-2);
   padding: var(--spacing-2);
-  border: 1px solid rgba(15, 90, 71, 0.18);
+  border: 1px solid rgba(21, 21, 96, 0.18);
   border-radius: var(--radius-md);
-  background: rgba(15, 90, 71, 0.06);
+  background: rgba(21, 21, 96, 0.06);
 }
 
 .thresholdRec > :global(.material-symbols-rounded) {

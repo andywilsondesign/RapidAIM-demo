@@ -169,9 +169,9 @@ export const TrendChart = ({
       )}
       <div className={styles.chartWrapper}>
         {type === 'bar' ? (
-          <Bar data={chartData} options={options} />
+          <Bar data={chartData} options={options} aria-label={title} />
         ) : (
-          <Line data={chartData} options={options} />
+          <Line data={chartData} options={options} aria-label={title} />
         )}
       </div>
     </div>

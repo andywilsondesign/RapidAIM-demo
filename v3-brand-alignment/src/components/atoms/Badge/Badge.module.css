@@ -44,6 +44,6 @@
 }
 
 .badge--entity {
-  background-color: var(--color-brand-primary);
-  color: #FFF;
+  background-color: var(--color-brand-yellow);
+  color: var(--color-brand-ink);
 }

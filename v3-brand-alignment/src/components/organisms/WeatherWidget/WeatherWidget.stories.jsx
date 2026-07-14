@@ -12,3 +12,10 @@ export const Default = {
     weather,
   },
 };
+
+export const Compact = {
+  args: {
+    weather,
+    compact: true,
+  },
+};

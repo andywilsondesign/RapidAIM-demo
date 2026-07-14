@@ -30,6 +30,8 @@ const locationOptions = {
 
 export const OrganizationScope = {
   args: {
+    showHome: true,
+    activeIndex: 0,
     segments: [
       { label: 'RapidAIM Growers Co.', options: locationOptions.organizations },
       { label: 'All ranches', options: locationOptions.ranches },
@@ -40,6 +42,8 @@ export const OrganizationScope = {
 
 export const RanchScope = {
   args: {
+    showHome: true,
+    activeIndex: 1,
     segments: [
       { label: 'RapidAIM Growers Co.', options: locationOptions.organizations },
       { label: 'Sierra Orchards', options: locationOptions.ranches },
@@ -50,6 +54,8 @@ export const RanchScope = {
 
 export const BlockScope = {
   args: {
+    showHome: true,
+    activeIndex: 2,
     segments: [
       { label: 'RapidAIM Growers Co.', options: locationOptions.organizations },
       { label: 'Sierra Orchards', options: locationOptions.ranches },
@@ -60,10 +66,43 @@ export const BlockScope = {
 
 export const LongNames = {
   args: {
+    showHome: true,
+    activeIndex: 2,
     segments: [
       { label: 'Very Long Agricultural Organisation Name With Multiple Regions', options: locationOptions.organizations },
       { label: 'Sunshine Valley Ranch', options: locationOptions.ranches },
       { label: 'Northwest Boundary Block With A Very Long Name', options: locationOptions.blocks },
+    ],
+  },
+};
+
+export const MobileWidth = {
+  decorators: [
+    (Story) => (
+      <div style={{ width: 360, overflow: 'auto' }}>
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    showHome: true,
+    activeIndex: 2,
+    segments: [
+      { label: 'RapidAIM Growers Co.', options: locationOptions.organizations },
+      { label: 'Sierra Orchards', options: locationOptions.ranches },
+      { label: 'Block 4', options: locationOptions.blocks },
+    ],
+  },
+};
+
+export const PestPressureRankingHome = {
+  args: {
+    showHome: true,
+    activeHome: true,
+    segments: [
+      { label: 'RapidAIM Growers Co.', options: locationOptions.organizations },
+      { label: 'All ranches', options: locationOptions.ranches },
+      { label: 'All blocks', options: locationOptions.blocks },
     ],
   },
 };

@@ -26,7 +26,7 @@ export const Alert = ({
 
   return (
     <div className={alertClass} role="alert">
-      <span className={`material-symbols-rounded ${styles.icon}`}>
+      <span className={`material-symbols-rounded ${styles.icon}`} aria-hidden="true">
         {iconMap[variant]}
       </span>
       <div className={styles.content}>
@@ -35,7 +35,7 @@ export const Alert = ({
       </div>
       {onClose && (
         <button className={styles.closeBtn} onClick={onClose} aria-label="Close alert">
-          <span className="material-symbols-rounded">close</span>
+          <span className="material-symbols-rounded" aria-hidden="true">close</span>
         </button>
       )}
     </div>

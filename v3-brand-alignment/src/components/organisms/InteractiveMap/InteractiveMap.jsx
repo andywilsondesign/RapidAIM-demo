@@ -6,6 +6,21 @@ import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
 import { getRiskMarkerSvgMarkup } from '../../atoms/RiskMarker/RiskMarker.config';
 
+const BLOCK_RISK_COLORS = {
+  high: {
+    fill: 'var(--color-map-risk-high-fill, #E11932)',
+    stroke: 'var(--color-map-risk-high-stroke, #FF2D55)',
+  },
+  medium: {
+    fill: 'var(--color-map-risk-medium-fill, #F9A602)',
+    stroke: 'var(--color-map-risk-medium-stroke, #FFB000)',
+  },
+  low: {
+    fill: 'var(--color-map-risk-low-fill, #19B56B)',
+    stroke: 'var(--color-map-risk-low-stroke, #66F27A)',
+  },
+};
+
 // Fix Leaflet's default icon paths issue by creating custom DivIcons
 const createMarkerIcon = (severity, selected = false) => {
   return L.divIcon({
@@ -61,42 +76,43 @@ export const InteractiveMap = ({
   mapStyle = 'satellite', // 'satellite' or 'stylized'
   className = '',
 }) => {
-  // Determine block fill color based on severity (heatmap effect)
-  const getBlockFillColor = (severity) => {
-    if (severity === 'high') return 'var(--color-status-red)';
-    if (severity === 'medium') return 'var(--color-status-amber)';
-    return 'var(--color-status-green)';
-  };
-
   const getBlockPathOptions = (severity, state = 'default') => {
-    const fillColor = getBlockFillColor(severity);
+    const palette = BLOCK_RISK_COLORS[severity] || BLOCK_RISK_COLORS.low;
+    const baseOptions = {
+      fillColor: palette.fill,
+      lineCap: 'round',
+      lineJoin: 'round',
+    };
 
     if (state === 'selected') {
       return {
+        ...baseOptions,
         color: '#FFFFFF',
-        fillColor,
-        fillOpacity: 0.52,
-        opacity: 0.98,
+        fillOpacity: 0.46,
+        opacity: 1,
         weight: 6,
+        dashArray: null,
       };
     }
 
     if (state === 'hover') {
       return {
+        ...baseOptions,
         color: '#FFFFFF',
-        fillColor,
-        fillOpacity: 0.44,
-        opacity: 0.9,
+        fillOpacity: 0.4,
+        opacity: 0.96,
         weight: 4,
         dashArray: '8 5',
       };
     }
 
     return {
-      color: fillColor,
-      fillColor,
-      fillOpacity: 0.3,
-      weight: 2,
+      ...baseOptions,
+      color: palette.stroke,
+      fillOpacity: 0.34,
+      opacity: 0.96,
+      weight: 3,
+      dashArray: null,
     };
   };
 
@@ -105,7 +121,8 @@ export const InteractiveMap = ({
     : blockPolygon.length > 0
       ? [{ id: 'primary-block', label: activeBlockLabel, positions: blockPolygon, severity: blockSeverity, state: activeBlockLabel ? 'selected' : 'default' }]
       : [];
-  const selectedBlockOverlay = displayedBlockOverlays.find((block) => block.state === 'selected');
+  const activeBlockOverlay = displayedBlockOverlays.find((block) => block.state === 'hover')
+    || displayedBlockOverlays.find((block) => block.state === 'selected');
 
   const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const stylizedUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // CartoDB Positron for clean view
@@ -128,10 +145,10 @@ export const InteractiveMap = ({
           />
         ))}
 
-        {selectedBlockOverlay?.label && (
+        {activeBlockOverlay?.label && (
           <Marker
-            position={getBlockLabelPosition(selectedBlockOverlay.positions)}
-            icon={createBlockLabelIcon(selectedBlockOverlay.label)}
+            position={getBlockLabelPosition(activeBlockOverlay.positions)}
+            icon={createBlockLabelIcon(activeBlockOverlay.label)}
             interactive={false}
             zIndexOffset={900}
           />
@@ -142,6 +159,8 @@ export const InteractiveMap = ({
             key={sensor.id}
             position={[sensor.lat, sensor.lng]}
             icon={createMarkerIcon(sensor.severity, sensor.id === selectedSensorId)}
+            title={`${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
+            alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
           >
             <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>

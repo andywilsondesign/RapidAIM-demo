@@ -19,8 +19,10 @@ const pestThresholds = [
 export const ControlCenter = ({
   className = '',
   mode = 'default',
+  scopePanel = 'both',
   pestFocus,
   onPestFocusChange,
+  embedded = false,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isPestViewCollapsed, setIsPestViewCollapsed] = useState(false);
@@ -38,18 +40,24 @@ export const ControlCenter = ({
 
   if (isScopeExperiment) {
     return (
-      <div className={`${styles.panelStack} ${className}`}>
-        <PestThresholdsPanel
-          isCollapsed={isPestViewCollapsed}
-          onToggle={() => setIsPestViewCollapsed((current) => !current)}
-          pestFocus={activePestFocus}
-          onPestFocusChange={handlePestFocusChange}
-          visiblePestThresholds={visiblePestThresholds}
-        />
-        <MapControlsPanel
-          isCollapsed={isViewControlsCollapsed}
-          onToggle={() => setIsViewControlsCollapsed((current) => !current)}
-        />
+      <div className={`${styles.panelStack} ${embedded ? styles.embeddedPanelStack : ''} ${className}`}>
+        {scopePanel !== 'map' && (
+          <PestThresholdsPanel
+            isCollapsed={scopePanel === 'pest' ? false : isPestViewCollapsed}
+            onToggle={() => scopePanel === 'both' && setIsPestViewCollapsed((current) => !current)}
+            pestFocus={activePestFocus}
+            onPestFocusChange={handlePestFocusChange}
+            visiblePestThresholds={visiblePestThresholds}
+            embedded={embedded}
+          />
+        )}
+        {scopePanel !== 'pest' && (
+          <MapControlsPanel
+            isCollapsed={scopePanel === 'map' ? false : isViewControlsCollapsed}
+            onToggle={() => scopePanel === 'both' && setIsViewControlsCollapsed((current) => !current)}
+            embedded={embedded}
+          />
+        )}
       </div>
     );
   }
@@ -98,7 +106,7 @@ export const ControlCenter = ({
 
               <FormField label="Threshold">
                 <div className={styles.sliderContainer}>
-                  <input type="range" min="0" max="100" defaultValue="70" className={styles.slider} />
+                  <input type="range" min="0" max="100" defaultValue="70" className={styles.slider} aria-label="Female Navel Orangeworm threshold" />
                   <Typography variant="body-sm" className={styles.sliderValue}>70</Typography>
                 </div>
                 <div className={styles.thresholdRec}>
@@ -130,23 +138,32 @@ function PestThresholdsPanel({
   pestFocus,
   onPestFocusChange,
   visiblePestThresholds,
+  embedded = false,
 }) {
   return (
-    <aside className={`${styles.panel} ${styles.panelSegment} ${isCollapsed ? styles.collapsed : ''}`}>
-      <button
-        className={styles.header}
-        type="button"
-        aria-expanded={!isCollapsed}
-        onClick={onToggle}
-      >
-        <span className="material-symbols-rounded">pest_control</span>
-        <Typography variant="h4">Pest Focus</Typography>
-        <span className={`material-symbols-rounded ${styles.toggleIcon}`}>expand_more</span>
-      </button>
+    <aside className={`${styles.panel} ${styles.panelSegment} ${embedded ? styles.embeddedPanel : ''} ${isCollapsed ? styles.collapsed : ''}`}>
+      {!embedded && (
+        <button
+          className={styles.header}
+          type="button"
+          aria-expanded={!isCollapsed}
+          onClick={onToggle}
+        >
+          <span className="material-symbols-rounded">pest_control</span>
+          <Typography variant="h4">Pest Focus</Typography>
+          <span className={`material-symbols-rounded ${styles.toggleIcon}`}>expand_more</span>
+        </button>
+      )}
 
       {!isCollapsed && (
         <>
           <div className={styles.stickyPestFocus}>
+            {embedded && (
+              <div className={styles.embeddedHeader}>
+                <span className="material-symbols-rounded" aria-hidden="true">pest_control</span>
+                <Typography variant="h4">Pest Focus</Typography>
+              </div>
+            )}
             <FormField>
               <Select
                 aria-label="Pest focus"
@@ -171,22 +188,30 @@ function PestThresholdsPanel({
   );
 }
 
-function MapControlsPanel({ isCollapsed, onToggle }) {
+function MapControlsPanel({ isCollapsed, onToggle, embedded = false }) {
   return (
-    <aside className={`${styles.panel} ${styles.panelSegment} ${isCollapsed ? styles.collapsed : ''}`}>
-      <button
-        className={styles.header}
-        type="button"
-        aria-expanded={!isCollapsed}
-        onClick={onToggle}
-      >
-        <span className="material-symbols-rounded">layers</span>
-        <Typography variant="h4">Map Controls</Typography>
-        <span className={`material-symbols-rounded ${styles.toggleIcon}`}>expand_more</span>
-      </button>
+    <aside className={`${styles.panel} ${styles.panelSegment} ${embedded ? styles.embeddedPanel : ''} ${isCollapsed ? styles.collapsed : ''}`}>
+      {!embedded && (
+        <button
+          className={styles.header}
+          type="button"
+          aria-expanded={!isCollapsed}
+          onClick={onToggle}
+        >
+          <span className="material-symbols-rounded">layers</span>
+          <Typography variant="h4">Map Controls</Typography>
+          <span className={`material-symbols-rounded ${styles.toggleIcon}`}>expand_more</span>
+        </button>
+      )}
 
       {!isCollapsed && (
         <div className={styles.body}>
+          {embedded && (
+            <div className={styles.embeddedHeader}>
+              <span className="material-symbols-rounded" aria-hidden="true">layers</span>
+              <Typography variant="h4">Map Controls</Typography>
+            </div>
+          )}
           <MapLayerSection />
           <RiskLegendSection />
         </div>
@@ -204,7 +229,14 @@ function ThresholdList({ pests }) {
             <Typography variant="body-sm" weight="bold">{pest.label}</Typography>
           </div>
           <div className={styles.sliderContainer}>
-            <input type="range" min="0" max="100" defaultValue={pest.threshold} className={styles.slider} />
+            <input
+              type="range"
+              min="0"
+              max="100"
+              defaultValue={pest.threshold}
+              className={styles.slider}
+              aria-label={`${pest.label} threshold`}
+            />
             <Typography variant="body-sm" className={styles.sliderValue}>{pest.threshold}</Typography>
           </div>
           <div className={styles.thresholdRec}>
@@ -265,8 +297,10 @@ function RiskLegendSection() {
 ControlCenter.propTypes = {
   className: PropTypes.string,
   mode: PropTypes.oneOf(['default', 'scopeExperiment']),
+  scopePanel: PropTypes.oneOf(['both', 'pest', 'map']),
   pestFocus: PropTypes.string,
   onPestFocusChange: PropTypes.func,
+  embedded: PropTypes.bool,
 };
 
 PestThresholdsPanel.propTypes = {
@@ -279,11 +313,13 @@ PestThresholdsPanel.propTypes = {
     threshold: PropTypes.number.isRequired,
     recommendation: PropTypes.number.isRequired,
   })).isRequired,
+  embedded: PropTypes.bool,
 };
 
 MapControlsPanel.propTypes = {
   isCollapsed: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
+  embedded: PropTypes.bool,
 };
 
 ThresholdList.propTypes = {

@@ -58,7 +58,7 @@
 }
 
 .marker--selected {
-  filter: drop-shadow(0 0 0.45rem rgba(15, 90, 71, 0.36)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+  filter: drop-shadow(0 0 0.45rem rgba(21, 21, 96, 0.36)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
 }
 
 .marker--selected .shape {

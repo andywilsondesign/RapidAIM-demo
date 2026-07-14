@@ -56,10 +56,28 @@
 
 /* Responsive */
 @media (max-width: 600px) {
+  .form {
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-md);
+  }
+
   .grid {
     grid-template-columns: 1fr;
+    gap: var(--spacing-3);
   }
+
   .fullWidth {
     grid-column: span 1;
+  }
+
+  .section {
+    gap: var(--spacing-3);
+    padding-bottom: var(--spacing-4);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 }

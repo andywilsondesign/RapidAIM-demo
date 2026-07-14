@@ -39,7 +39,7 @@
 }
 
 .input:focus-visible ~ .checkmark {
-  box-shadow: 0 0 0 3px rgba(15, 90, 71, 0.1);
+  box-shadow: 0 0 0 3px rgba(21, 21, 96, 0.14);
   border-color: var(--color-brand-primary);
 }
 

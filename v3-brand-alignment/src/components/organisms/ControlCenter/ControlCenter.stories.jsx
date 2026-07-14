@@ -10,7 +10,7 @@ export default {
 };
 
 const Template = (args) => (
-  <div style={{ height: '600px', width: '320px', padding: '16px', background: '#DCE5DF' }}>
+  <div style={{ height: '600px', width: '320px', padding: '16px', background: 'var(--color-bg-base)' }}>
     <ControlCenter {...args} />
   </div>
 );

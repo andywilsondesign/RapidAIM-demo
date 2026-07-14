@@ -4,6 +4,9 @@ import { HandoffIndex } from '../../../handoff/HandoffIndex';
 export default {
   title: 'Pages/Desktop Map',
   component: HandoffIndex,
+  args: {
+    showNavigator: false,
+  },
   parameters: {
     layout: 'fullscreen',
   },
