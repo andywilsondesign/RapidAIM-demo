@@ -76,6 +76,8 @@ export const InteractiveMap = ({
   mapStyle = 'satellite', // 'satellite' or 'stylized'
   className = '',
 }) => {
+  const [hoveredBlockId, setHoveredBlockId] = React.useState('');
+
   const getBlockPathOptions = (severity, state = 'default') => {
     const palette = BLOCK_RISK_COLORS[severity] || BLOCK_RISK_COLORS.low;
     const baseOptions = {
@@ -121,8 +123,12 @@ export const InteractiveMap = ({
     : blockPolygon.length > 0
       ? [{ id: 'primary-block', label: activeBlockLabel, positions: blockPolygon, severity: blockSeverity, state: activeBlockLabel ? 'selected' : 'default' }]
       : [];
-  const activeBlockOverlay = displayedBlockOverlays.find((block) => block.state === 'hover')
-    || displayedBlockOverlays.find((block) => block.state === 'selected');
+  const visualBlockOverlays = displayedBlockOverlays.map((block) => ({
+    ...block,
+    visualState: hoveredBlockId === block.id ? 'hover' : block.state,
+  }));
+  const activeBlockOverlay = visualBlockOverlays.find((block) => block.visualState === 'hover')
+    || visualBlockOverlays.find((block) => block.visualState === 'selected');
 
   const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const stylizedUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // CartoDB Positron for clean view
@@ -137,11 +143,15 @@ export const InteractiveMap = ({
           attribution={mapStyle === 'satellite' ? 'Tiles &copy; Esri' : '&copy; OpenStreetMap contributors &copy; CARTO'}
         />
 
-        {displayedBlockOverlays.map((block) => (
+        {visualBlockOverlays.map((block) => (
           <Polygon
             key={block.id}
             positions={block.positions}
-            pathOptions={getBlockPathOptions(block.severity, block.state)}
+            pathOptions={getBlockPathOptions(block.severity, block.visualState)}
+            eventHandlers={{
+              mouseover: () => setHoveredBlockId(block.id),
+              mouseout: () => setHoveredBlockId(''),
+            }}
           />
         ))}
 
