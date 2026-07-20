@@ -898,15 +898,18 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all', healthM
 }
 
 function HealthIssueAlert({ sensor }) {
+  const isCritical = sensor.battery <= 10 || sensor.status === 'Offline';
+  const issueLabel = isCritical ? 'Critical battery level' : 'Low battery detected';
+  const alertToneClass = isCritical ? styles.healthAlertCritical : styles.healthAlertWarning;
+
   return (
-    <div className={styles.healthAlert}>
+    <div className={`${styles.healthAlert} ${alertToneClass}`}>
       <span className="material-symbols-rounded" aria-hidden="true">battery_alert</span>
       <div>
-        <Typography variant="body-sm" weight="bold">Low battery detected</Typography>
+        <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
         <Typography variant="caption">
-          {sensor.name} is still reporting pest data, but the battery is at {sensor.battery}%. Check or replace the battery during the next field visit.
+          {sensor.name} is still reporting pest data, but the battery is at {sensor.battery}%. <a href="#sensor-health-section">View sensor health</a> for the current device state.
         </Typography>
-        <a href="#sensor-health-section">View sensor health</a>
       </div>
     </div>
   );
@@ -924,10 +927,10 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
         </Typography>
       </div>
       <SensorMetaGrid items={[
-        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive' },
-        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
-        { label: 'Signal', value: sensor.signal, tone: 'positive' },
-        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive' },
+        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive', statusLabel: sensor.status === 'Offline' ? 'Offline' : 'Healthy' },
+        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone, statusLabel: batteryTone === 'error' ? 'Critical' : batteryTone === 'warning' ? 'Low' : 'Healthy' },
+        { label: 'Signal', value: sensor.signal, tone: 'positive', statusLabel: 'Healthy' },
+        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive', statusLabel: 'Healthy' },
       ]} />
     </section>
   );

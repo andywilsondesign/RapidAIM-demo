@@ -136,8 +136,9 @@ export const ControlCenter = ({
           showSensorHealthControls={showSensorHealthControls}
           sensorMarkerMode={sensorMarkerMode}
         />
-        <RiskLegendSection />
-        {showSensorHealthControls && <SensorHealthLegendSection />}
+        {sensorMarkerMode === 'health' && showSensorHealthControls
+          ? <SensorHealthLegendSection />
+          : <RiskLegendSection title="Pest Risk Legend" />}
       </div>}
     </aside>
   );
@@ -234,8 +235,9 @@ function MapControlsPanel({
             showSensorHealthControls={showSensorHealthControls}
             sensorMarkerMode={sensorMarkerMode}
           />
-          <RiskLegendSection />
-          {showSensorHealthControls && <SensorHealthLegendSection />}
+          {sensorMarkerMode === 'health' && showSensorHealthControls
+            ? <SensorHealthLegendSection />
+            : <RiskLegendSection title="Pest Risk Legend" />}
         </div>
       )}
     </aside>
@@ -310,10 +312,10 @@ function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerM
   );
 }
 
-function RiskLegendSection() {
+function RiskLegendSection({ title = 'Risk Legend' }) {
   return (
     <div className={styles.section}>
-      <Typography variant="h6" className={styles.sectionTitle}>Risk Legend</Typography>
+      <Typography variant="h6" className={styles.sectionTitle}>{title}</Typography>
       <div className={styles.legend}>
         <div className={styles.legendItem}>
           <RiskMarker severity="high" size="md" />
@@ -335,6 +337,10 @@ function RiskLegendSection() {
     </div>
   );
 }
+
+RiskLegendSection.propTypes = {
+  title: PropTypes.string,
+};
 
 function SensorHealthLegendSection() {
   return (

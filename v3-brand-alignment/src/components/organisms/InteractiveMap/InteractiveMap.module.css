@@ -164,15 +164,15 @@
 }
 
 :global(.leaflet-health-marker--battery-full .leaflet-health-marker__battery-fill) {
-  fill: var(--color-map-risk-low-stroke, #66f27a);
+  fill: var(--color-status-green);
 }
 
 :global(.leaflet-health-marker--battery-mid .leaflet-health-marker__battery-fill) {
-  fill: var(--color-map-risk-medium-stroke, #ffb000);
+  fill: var(--color-status-amber);
 }
 
 :global(.leaflet-health-marker--battery-low .leaflet-health-marker__battery-fill) {
-  fill: var(--color-map-risk-high-stroke, #ff2d55);
+  fill: var(--color-status-red);
 }
 
 :global(.leaflet-health-marker--battery-empty .leaflet-health-marker__battery-fill) {

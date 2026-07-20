@@ -537,22 +537,33 @@
   align-items: flex-start;
   gap: var(--spacing-3);
   padding: var(--spacing-3);
-  border: 1px solid rgba(138, 90, 0, 0.28);
   border-radius: var(--radius-md);
-  background: var(--color-status-amber-bg);
   color: var(--color-text-primary);
 }
 
-.healthAlert > span {
+.healthAlertWarning {
+  border: 1px solid rgba(138, 90, 0, 0.28);
+  background: var(--color-status-amber-bg);
+}
+
+.healthAlertCritical {
+  border: 1px solid rgba(193, 18, 31, 0.28);
+  background: var(--color-status-red-bg);
+}
+
+.healthAlertWarning > span {
   color: var(--color-status-amber);
 }
 
+.healthAlertCritical > span {
+  color: var(--color-status-red);
+}
+
 .healthAlert a {
-  display: inline-flex;
-  margin-top: var(--spacing-2);
-  color: var(--color-brand-primary);
-  font-size: var(--font-size-sm);
+  color: currentColor;
   font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .healthTabMock {
