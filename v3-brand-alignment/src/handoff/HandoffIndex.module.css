@@ -119,6 +119,11 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.navLink {
+  display: block;
+  text-decoration: none;
+}
+
 .activeNavItem,
 .navItem:hover {
   border-color: rgba(255, 255, 255, 0.16);

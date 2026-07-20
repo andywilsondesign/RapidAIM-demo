@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge } from '../components/atoms/Badge/Badge';
 import { Button } from '../components/atoms/Button/Button';
@@ -335,6 +335,11 @@ const pageGroups = [
 ];
 
 const flatPages = pageGroups.flatMap((group) => group.pages);
+const pageIds = new Set(flatPages.map((page) => page.id));
+const reviewLinks = [
+  { label: 'Desktop Sensor Health Flow', pageId: 'consolidated-sensor-health' },
+  { label: 'Mobile Sensor Health Flow', pageId: 'mobile-sensor-health' },
+];
 
 const desktopToMobileType = {
   'consolidated-pest-pressure-ranking': 'ranking',
@@ -361,8 +366,18 @@ function useResponsiveMobileView() {
   return isMobile;
 }
 
+function getInitialPageId(fallbackPageId) {
+  if (typeof window === 'undefined') return fallbackPageId;
+  const requestedPageId = new URLSearchParams(window.location.search).get('page');
+  return pageIds.has(requestedPageId) ? requestedPageId : fallbackPageId;
+}
+
+function getPageHref(pageId) {
+  return `?page=${encodeURIComponent(pageId)}`;
+}
+
 export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = true }) => {
-  const [activePageId, setActivePageId] = useState(initialPageId);
+  const [activePageId, setActivePageId] = useState(() => getInitialPageId(initialPageId));
   const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
   const isResponsiveMobile = useResponsiveMobileView();
   const activePage = useMemo(
@@ -375,11 +390,18 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
     ? <ResponsiveMobilePage type={responsiveMobileType} />
     : activePage.component;
 
+  const selectPage = useCallback((pageId) => {
+    setActivePageId(pageId);
+    if (typeof window !== 'undefined' && pageIds.has(pageId)) {
+      window.history.replaceState(null, '', getPageHref(pageId));
+    }
+  }, []);
+
   useEffect(() => {
-    const handleNavigateHome = () => setActivePageId('consolidated-pest-pressure-ranking');
+    const handleNavigateHome = () => selectPage('consolidated-pest-pressure-ranking');
     document.addEventListener('rapidaim:navigate-home', handleNavigateHome);
     return () => document.removeEventListener('rapidaim:navigate-home', handleNavigateHome);
-  }, []);
+  }, [selectPage]);
 
   return (
     <div className={`${styles.shell} ${!shouldShowNavigator || !isNavigatorOpen ? styles.shellCollapsed : ''}`}>
@@ -401,6 +423,22 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
           Hide navigator
         </button>
         <div className={styles.navGroups}>
+          <div className={styles.navGroup}>
+            <Typography variant="h6">Sensor Health Review Links</Typography>
+            {reviewLinks.map((link) => (
+              <a
+                className={`${styles.navItem} ${styles.navLink} ${link.pageId === activePageId ? styles.activeNavItem : ''}`}
+                href={getPageHref(link.pageId)}
+                key={link.pageId}
+                onClick={(event) => {
+                  event.preventDefault();
+                  selectPage(link.pageId);
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
           {pageGroups.map((group) => (
             <div className={styles.navGroup} key={group.title}>
               <Typography variant="h6">{group.title}</Typography>
@@ -408,7 +446,7 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
                 <button
                   className={`${styles.navItem} ${page.id === activePageId ? styles.activeNavItem : ''}`}
                   key={page.id}
-                  onClick={() => setActivePageId(page.id)}
+                  onClick={() => selectPage(page.id)}
                   type="button"
                 >
                   {page.label}
@@ -1147,10 +1185,10 @@ function ResponsiveMobilePage({ type = 'ranking' }) {
 }
 
 function MobileDeviceFrame({ type = 'ranking' }) {
-  const [sheetKind, setSheetKind] = useState('content');
-  const [sheetState, setSheetState] = useState('docked');
   const selectedMapBlockId = type === 'block' ? selectedBlock.id : '';
   const isHealthMobile = type === 'sensor-health';
+  const [sheetKind, setSheetKind] = useState(isHealthMobile ? 'map' : 'content');
+  const [sheetState, setSheetState] = useState(isHealthMobile ? 'full' : 'docked');
   const selectedSensorId = type === 'sensor' || isHealthMobile ? selectedSensor.id : '';
   const sensorDisplayMode = isHealthMobile ? 'healthBatteryBare' : 'pest';
   const mapSensors = isHealthMobile ? healthExperimentSensors : sensors;
