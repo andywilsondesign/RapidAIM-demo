@@ -912,9 +912,6 @@ function HealthIssueAlert({ sensor }) {
 
   return (
     <div className={`${styles.healthAlert} ${alertToneClass}`}>
-      <span className={styles.healthAlertIcon} aria-hidden="true">
-        <span className="material-symbols-rounded">priority_high</span>
-      </span>
       <div className={styles.healthAlertContent}>
         <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
         <Typography variant="caption">

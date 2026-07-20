@@ -541,22 +541,6 @@
   color: var(--color-text-primary);
 }
 
-.healthAlertIcon {
-  display: inline-flex;
-  width: var(--spacing-8);
-  height: var(--spacing-8);
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: var(--color-status-red);
-  color: #fff;
-}
-
-.healthAlertIcon .material-symbols-rounded {
-  font-size: var(--font-size-base);
-}
-
 .healthAlertContent {
   display: flex;
   min-width: 0;
