@@ -21,13 +21,179 @@ const BLOCK_RISK_COLORS = {
   },
 };
 
-// Fix Leaflet's default icon paths issue by creating custom DivIcons
-const createMarkerIcon = (severity, selected = false) => {
+const getSensorHealthState = (sensor) => {
+  if (sensor.severity === 'offline' || sensor.status === 'Inactive' || sensor.signal === 'Offline') {
+    return 'offline';
+  }
+
+  if (sensor.battery <= 10 || sensor.status === 'Needs Maintenance') {
+    return 'warning';
+  }
+
+  return 'healthy';
+};
+
+const getHealthLabel = (healthState) => ({
+  healthy: 'Healthy',
+  warning: 'Low battery',
+  offline: 'Offline / fault',
+}[healthState] || 'Healthy');
+
+const getBatteryLevel = (sensor) => {
+  if (getSensorHealthState(sensor) === 'offline') {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, sensor.battery || 0));
+};
+
+const getHealthIcon = (healthState) => ({
+  healthy: 'M7.8 12.2l2.7 2.7 5.7-6',
+  warning: 'M8.2 7.2h7.6v9.6H8.2V7.2ZM10 5.4h4M12 10v2.7M12 15v.1',
+  offline: 'M8 12h8',
+}[healthState] || 'M7.8 12.2l2.7 2.7 5.7-6');
+
+const getBatteryIconPath = (batteryLevel) => {
+  if (batteryLevel === 0) {
+    return 'M6.5 9h10v6h-10V9ZM17.5 11h1.2v2h-1.2M8.2 12h6.6';
+  }
+
+  if (batteryLevel <= 15) {
+    return 'M6.5 9h10v6h-10V9ZM17.5 11h1.2v2h-1.2M8.2 12.2h2.1';
+  }
+
+  if (batteryLevel <= 50) {
+    return 'M6.5 9h10v6h-10V9ZM17.5 11h1.2v2h-1.2M8.2 12.2h5.2';
+  }
+
+  return 'M6.5 9h10v6h-10V9ZM17.5 11h1.2v2h-1.2M8.2 12.2h7';
+};
+
+const getBatteryLevelClass = (batteryLevel) => {
+  if (batteryLevel === 0) {
+    return 'empty';
+  }
+
+  if (batteryLevel <= 15) {
+    return 'low';
+  }
+
+  if (batteryLevel <= 25) {
+    return 'mid';
+  }
+
+  return 'full';
+};
+
+const createHealthLevelSvgMarkup = (healthState, batteryLevel, selected = false) => {
+  const fillHeight = batteryLevel === 0 ? 18 : Math.max(2, (batteryLevel / 100) * 18);
+  const fillY = 21 - fillHeight;
+  const markerClass = `leaflet-health-marker--${healthState}`;
+  const strokeWidth = selected ? 2.35 : 1.45;
+
+  return `
+    <svg class="${markerClass} leaflet-health-marker--level" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle class="leaflet-health-marker__level-base" cx="12" cy="12" r="9"></circle>
+      <rect class="leaflet-health-marker__level-fill" x="3" y="${fillY}" width="18" height="${fillHeight}" clip-path="circle(9px at 12px 12px)"></rect>
+      <line class="leaflet-health-marker__level-line" x1="4.6" y1="${fillY}" x2="19.4" y2="${fillY}"></line>
+      <circle class="leaflet-health-marker__shape" cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="${strokeWidth}"></circle>
+      ${healthState === 'offline'
+        ? `<path class="leaflet-health-marker__icon" d="${getHealthIcon('offline')}" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>`
+        : ''}
+    </svg>
+  `;
+};
+
+const createHealthBatterySvgMarkup = (healthState, batteryLevel, selected = false, bare = false) => {
+  const markerClass = `leaflet-health-marker--${healthState}`;
+  const strokeWidth = selected ? 2.35 : 1.45;
+  const batteryLevelClass = getBatteryLevelClass(batteryLevel);
+  const batteryFillWidth = Math.max(0.8, (batteryLevel / 100) * 12.2);
+
+  if (bare) {
+    if (healthState === 'offline') {
+      return getRiskMarkerSvgMarkup('offline', selected);
+    }
+
+    return `
+      <svg class="${markerClass} leaflet-health-marker--battery-bare leaflet-health-marker--battery-${batteryLevelClass}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect class="leaflet-health-marker__battery-base" x="5.15" y="8.25" width="12.2" height="7.5" rx="0.95"></rect>
+        <rect class="leaflet-health-marker__battery-fill" x="5.15" y="8.25" width="${batteryFillWidth}" height="7.5" rx="0.95"></rect>
+        <path class="leaflet-health-marker__battery-shell" d="M3.35 6.45h16.1v11.1H3.35V6.45Z"></path>
+        <path class="leaflet-health-marker__battery-cap" d="M20.45 9.05h1.55v4.9h-1.55"></path>
+      </svg>
+    `;
+  }
+
+  return `
+    <svg class="${markerClass} leaflet-health-marker--battery leaflet-health-marker--battery-${batteryLevelClass}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle class="leaflet-health-marker__shape" cx="12" cy="12" r="9" stroke="#fff" stroke-width="${strokeWidth}"></circle>
+      <path class="leaflet-health-marker__icon" d="${getBatteryIconPath(batteryLevel)}" fill="none" stroke="#fff" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  `;
+};
+
+const createHealthMarkerSvgMarkup = (sensor, selected = false, variant = 'number') => {
+  const healthState = getSensorHealthState(sensor);
+  const batteryLevel = getBatteryLevel(sensor);
+  if (variant === 'level') {
+    return createHealthLevelSvgMarkup(healthState, batteryLevel, selected);
+  }
+
+  if (variant === 'battery') {
+    return createHealthBatterySvgMarkup(healthState, batteryLevel, selected);
+  }
+
+  if (variant === 'batteryBare') {
+    return createHealthBatterySvgMarkup(healthState, batteryLevel, selected, true);
+  }
+
+  const healthClass = `leaflet-health-marker--${healthState}`;
+  const strokeWidth = selected ? 2.3 : 1.45;
+  const batteryLabel = healthState === 'warning' && batteryLevel > 0 ? `${batteryLevel}` : '';
+
+  return `
+    <svg class="${healthClass}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path class="leaflet-health-marker__shape" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="#fff" stroke-width="${strokeWidth}" stroke-linejoin="round"></path>
+      ${batteryLabel
+        ? `<text class="leaflet-health-marker__text" x="12" y="15" text-anchor="middle">${batteryLabel}</text>`
+        : `<path class="leaflet-health-marker__icon" d="${getHealthIcon(healthState)}" fill="none" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>`}
+    </svg>
+  `;
+};
+
+const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') => {
+  const healthState = getSensorHealthState(sensor);
+  const badgeVariantByMode = {
+    combined: 'number',
+    combinedLevel: 'level',
+    combinedBattery: 'battery',
+  };
+  const healthBadgeVariant = badgeVariantByMode[sensorDisplayMode];
+  const showHealthBadge = Boolean(healthBadgeVariant) && healthState !== 'healthy';
+  const isDedicatedHealthMode = sensorDisplayMode === 'health'
+    || sensorDisplayMode === 'healthLevel'
+    || sensorDisplayMode === 'healthBattery'
+    || sensorDisplayMode === 'healthBatteryBare';
+  const healthVariantByMode = {
+    health: 'number',
+    healthLevel: 'level',
+    healthBattery: 'battery',
+    healthBatteryBare: 'batteryBare',
+  };
+  const healthVariant = healthVariantByMode[sensorDisplayMode];
+  const html = healthVariant
+    ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createHealthMarkerSvgMarkup(sensor, selected, healthVariant)}</span>`
+    : `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">
+        ${getRiskMarkerSvgMarkup(sensor.severity, selected)}
+        ${showHealthBadge ? `<span class="leaflet-health-badge leaflet-health-badge--${healthState}">${createHealthMarkerSvgMarkup(sensor, false, healthBadgeVariant)}</span>` : ''}
+      </span>`;
+
   return L.divIcon({
     className: 'custom-marker',
-    html: `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${getRiskMarkerSvgMarkup(severity, selected)}</span>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    html,
+    iconSize: isDedicatedHealthMode ? [30, 30] : [24, 24],
+    iconAnchor: isDedicatedHealthMode ? [15, 15] : [12, 12],
   });
 };
 
@@ -74,6 +240,7 @@ export const InteractiveMap = ({
   blockSeverity = 'low', // 'low', 'medium', 'high'
   activeBlockLabel = '',
   mapStyle = 'satellite', // 'satellite' or 'stylized'
+  sensorDisplayMode = 'pest',
   className = '',
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
@@ -168,15 +335,27 @@ export const InteractiveMap = ({
           <Marker
             key={sensor.id}
             position={[sensor.lat, sensor.lng]}
-            icon={createMarkerIcon(sensor.severity, sensor.id === selectedSensorId)}
-            title={`${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
+            icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
+            title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
+              ? `${sensor.name}: ${getHealthLabel(getSensorHealthState(sensor))}, battery ${sensor.battery}%, last sync ${sensor.lastSync}`
+              : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
           >
             <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>
               <strong>{sensor.name}</strong><br />
-              Detections: {sensor.count}<br />
-              Status: {sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}
+              {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
+                <>
+                  Battery: {sensor.battery}%<br />
+                  Health: {getHealthLabel(getSensorHealthState(sensor))}<br />
+                  Last sync: {sensor.lastSync}
+                </>
+              ) : (
+                <>
+                  Detections: {sensor.count}<br />
+                  Status: {sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}
+                </>
+              )}
             </Tooltip>
           </Marker>
         ))}
@@ -208,5 +387,6 @@ InteractiveMap.propTypes = {
   selectedSensorId: PropTypes.string,
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
+  sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare']),
   className: PropTypes.string,
 };

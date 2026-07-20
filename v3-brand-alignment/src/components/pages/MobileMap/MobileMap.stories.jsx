@@ -42,6 +42,12 @@ export const SensorDetail = {
   },
 };
 
+export const SensorDetailHealth = {
+  args: {
+    initialPageId: 'mobile-sensor-health',
+  },
+};
+
 export const Overlays = {
   args: {
     initialPageId: 'mobile-overlays',

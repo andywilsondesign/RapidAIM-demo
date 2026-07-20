@@ -22,3 +22,12 @@ export const ScopeExperiment = Template.bind({});
 ScopeExperiment.args = {
   mode: 'scopeExperiment',
 };
+
+export const SensorHealthToggle = Template.bind({});
+SensorHealthToggle.args = {
+  mode: 'scopeExperiment',
+  showSensorHealthControls: true,
+  sensorMarkerMode: 'health',
+  defaultPestFocusOpen: false,
+  defaultMapControlsOpen: true,
+};

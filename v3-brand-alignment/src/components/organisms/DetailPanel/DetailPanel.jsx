@@ -80,7 +80,8 @@ export const DetailPanel = ({
               type="button"
               onClick={() => scrollToSection(section.label)}
             >
-              {section.label}
+              <span className={styles.anchorTabLabel}>{section.label}</span>
+              {section.badge && <span className={styles.anchorTabBadge}>{section.badge}</span>}
             </button>
           ))}
         </nav>
@@ -123,6 +124,7 @@ DetailPanel.propTypes = {
   sections: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
+      badge: PropTypes.node,
       content: PropTypes.node.isRequired,
     })
   ),

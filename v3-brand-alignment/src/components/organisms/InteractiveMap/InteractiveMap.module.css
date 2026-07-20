@@ -30,6 +30,7 @@
 }
 
 :global(.leaflet-risk-marker) {
+  position: relative;
   display: inline-flex;
   width: var(--size-map-marker);
   height: var(--size-map-marker);
@@ -45,6 +46,157 @@
 
 :global(.leaflet-risk-marker--selected) {
   filter: drop-shadow(0 0 0.45rem rgba(21, 21, 96, 0.38)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+}
+
+:global(.leaflet-health-marker--level),
+:global(.leaflet-health-marker--battery),
+:global(.leaflet-health-marker--battery-bare) {
+  transform-origin: center;
+  transform: scale(1.18);
+}
+
+:global(.leaflet-health-marker--healthy .leaflet-health-marker__shape) {
+  fill: rgba(255, 255, 255, 0.88);
+  stroke: #fff;
+}
+
+:global(.leaflet-health-marker--healthy .leaflet-health-marker__icon) {
+  stroke: var(--color-status-green);
+}
+
+:global(.leaflet-health-marker--warning .leaflet-health-marker__shape) {
+  fill: #f9b709;
+}
+
+:global(.leaflet-health-marker--warning.leaflet-health-marker--level .leaflet-health-marker__shape) {
+  fill: none;
+}
+
+:global(.leaflet-health-marker--warning .leaflet-health-marker__text) {
+  fill: #fff;
+  font-family: var(--font-family-metric);
+  font-size: 8.4px;
+  font-weight: var(--font-weight-bold);
+  paint-order: stroke;
+  stroke: rgba(0, 0, 0, 0.22);
+  stroke-width: 0.7px;
+}
+
+:global(.leaflet-health-marker--offline .leaflet-health-marker__shape) {
+  fill: #111827;
+}
+
+:global(.leaflet-health-marker--offline .leaflet-health-marker__icon) {
+  stroke: #fff;
+}
+
+:global(.leaflet-health-marker--level .leaflet-health-marker__level-base) {
+  fill: rgba(255, 255, 255, 0.84);
+}
+
+:global(.leaflet-health-marker--level .leaflet-health-marker__level-line) {
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+
+:global(.leaflet-health-marker--level .leaflet-health-marker__shape) {
+  stroke: var(--color-status-green);
+}
+
+:global(.leaflet-health-marker--healthy .leaflet-health-marker__level-fill) {
+  fill: var(--color-status-green);
+}
+
+:global(.leaflet-health-marker--warning.leaflet-health-marker--level .leaflet-health-marker__shape) {
+  stroke: #e11932;
+}
+
+:global(.leaflet-health-marker--warning .leaflet-health-marker__level-fill) {
+  fill: #e11932;
+}
+
+:global(.leaflet-health-marker--offline.leaflet-health-marker--level .leaflet-health-marker__shape) {
+  stroke: #111827;
+}
+
+:global(.leaflet-health-marker--offline .leaflet-health-marker__level-fill) {
+  fill: #111827;
+}
+
+:global(.leaflet-health-marker--battery .leaflet-health-marker__shape) {
+  fill: #111827;
+}
+
+:global(.leaflet-health-marker--healthy.leaflet-health-marker--battery .leaflet-health-marker__shape) {
+  fill: var(--color-status-green);
+}
+
+:global(.leaflet-health-marker--warning.leaflet-health-marker--battery .leaflet-health-marker__shape) {
+  fill: #e11932;
+}
+
+:global(.leaflet-health-marker--battery .leaflet-health-marker__icon) {
+  stroke: #fff;
+}
+
+:global(.leaflet-health-marker--battery-bare) {
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
+}
+
+:global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-shell) {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.9;
+  stroke-linejoin: round;
+}
+
+:global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-cap) {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-base) {
+  fill: #fff;
+}
+
+:global(.leaflet-health-marker--battery-full .leaflet-health-marker__battery-fill) {
+  fill: var(--color-map-risk-low-stroke, #66f27a);
+}
+
+:global(.leaflet-health-marker--battery-mid .leaflet-health-marker__battery-fill) {
+  fill: var(--color-map-risk-medium-stroke, #ffb000);
+}
+
+:global(.leaflet-health-marker--battery-low .leaflet-health-marker__battery-fill) {
+  fill: var(--color-map-risk-high-stroke, #ff2d55);
+}
+
+:global(.leaflet-health-marker--battery-empty .leaflet-health-marker__battery-fill) {
+  fill: #111827;
+}
+
+:global(.leaflet-health-badge) {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.28));
+}
+
+:global(.leaflet-health-badge svg) {
+  width: 100%;
+  height: 100%;
+}
+
+:global(.leaflet-health-badge .leaflet-health-marker__text) {
+  font-size: 8.2px;
 }
 
 .blockLabelMarker {

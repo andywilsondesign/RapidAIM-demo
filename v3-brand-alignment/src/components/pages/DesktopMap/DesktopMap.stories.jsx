@@ -41,3 +41,9 @@ export const SensorDetail = {
     initialPageId: 'consolidated-sensor',
   },
 };
+
+export const SensorDetailHealth = {
+  args: {
+    initialPageId: 'consolidated-sensor-health',
+  },
+};

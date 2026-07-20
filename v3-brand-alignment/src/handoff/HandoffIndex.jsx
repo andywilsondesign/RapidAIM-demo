@@ -39,6 +39,33 @@ import styles from './HandoffIndex.module.css';
 const selectedBlock = blocks[0];
 const selectedRanch = { ...ranches[0], blocks: 12, pestName: 'Female Navel Orangeworm' };
 const selectedSensor = { ...sensors[0], pestName: selectedBlock.pestName };
+const healthIssueSensor = {
+  ...selectedSensor,
+  pestName: selectedBlock.pestName,
+  battery: 9,
+  signal: 'Good',
+  status: 'Online',
+  lastSync: '18 min ago',
+};
+const healthExperimentSensors = sensors.map((sensor) => {
+  if (sensor.id === healthIssueSensor.id) {
+    return { ...sensor, battery: 9, status: 'Online', signal: 'Good', lastSync: '18 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-c') {
+    return { ...sensor, battery: 25, status: 'Online', signal: 'Good', severity: 'low', lastSync: '8 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-d') {
+    return { ...sensor, battery: 68, status: 'Online', signal: 'Excellent', severity: 'low', lastSync: '6 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-e') {
+    return { ...sensor, battery: 7, status: 'Online', signal: 'Good', severity: 'medium', lastSync: '24 min ago' };
+  }
+
+  return sensor;
+});
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
   riskLevel: 'high',
@@ -276,6 +303,7 @@ const pageGroups = [
       { id: 'consolidated-ranch', label: 'Ranch Detail', component: <DesktopDetailPage type="ranch" scopeExperiment /> },
       { id: 'consolidated-block', label: 'Block Detail', component: <DesktopDetailPage type="block" scopeExperiment /> },
       { id: 'consolidated-sensor', label: 'Sensor Detail', component: <DesktopDetailPage type="sensor" scopeExperiment /> },
+      { id: 'consolidated-sensor-health', label: 'Sensor Detail (Health)', component: <DesktopDetailPage type="sensor-health" scopeExperiment /> },
     ],
   },
   {
@@ -294,6 +322,7 @@ const pageGroups = [
       { id: 'mobile-ranch', label: 'Ranch Detail', component: <MobileMapPage type="ranch" /> },
       { id: 'mobile-block', label: 'Block Detail', component: <MobileMapPage type="block" /> },
       { id: 'mobile-sensor', label: 'Sensor Detail', component: <MobileMapPage type="sensor" /> },
+      { id: 'mobile-sensor-health', label: 'Sensor Detail (Health)', component: <MobileMapPage type="sensor-health" /> },
       { id: 'mobile-overlays', label: 'Mobile Overlays', component: <MobileOverlaysPage /> },
     ],
   },
@@ -313,6 +342,7 @@ const desktopToMobileType = {
   'consolidated-ranch': 'ranch',
   'consolidated-block': 'block',
   'consolidated-sensor': 'sensor',
+  'consolidated-sensor-health': 'sensor-health',
 };
 
 function useResponsiveMobileView() {
@@ -420,6 +450,11 @@ function DesktopShell({
   contentHeightPanel = false,
   blockOverlays,
   activeBlockLabel = selectedBlock.name,
+  mapSensors = sensors,
+  selectedSensorIdOverride,
+  sensorDisplayMode = 'pest',
+  controlCenterProps = {},
+  mapNotice,
 }) {
   const [pestFocus, setPestFocus] = useState('all');
   const [previewBlockId, setPreviewBlockId] = useState('');
@@ -432,7 +467,7 @@ function DesktopShell({
       ? buildRanchBlockOverlays('', previewBlockId)
       : buildRankingBlockOverlays(selectedMapBlockId, previewBlockId))
     : blockOverlays;
-  const selectedSensorId = scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '';
+  const selectedSensorId = selectedSensorIdOverride ?? (scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '');
 
   return (
     <div className={styles.desktopShell}>
@@ -447,15 +482,18 @@ function DesktopShell({
             blockPolygon={selectedBlock.polygon}
             blockOverlays={resolvedBlockOverlays}
             activeBlockLabel={activeBlockLabel}
-            sensors={sensors}
+            sensors={mapSensors}
             selectedSensorId={selectedSensorId}
+            sensorDisplayMode={sensorDisplayMode}
             blockSeverity={selectedBlock.riskLevel}
             mapStyle="satellite"
           />
           <WeatherWidget weather={weather} className={styles.weather} />
+          {mapNotice}
         </section>
         <ControlCenter
-          className={`${styles.rightRail} ${scopeExperiment ? styles.rightRailStack : ''}`}
+          {...controlCenterProps}
+          className={`${styles.rightRail} ${scopeExperiment ? styles.rightRailStack : ''} ${controlCenterProps.className || ''}`}
           mode={scopeExperiment ? 'scopeExperiment' : 'default'}
           pestFocus={pestFocus}
           onPestFocusChange={setPestFocus}
@@ -498,13 +536,42 @@ function DesktopDetailPage({ type, scopeExperiment = false }) {
     block: <BlockDetailPanel scopeExperiment={scopeExperiment} />,
     ranch: <RanchDetailPanel scopeExperiment={scopeExperiment} />,
     sensor: <SensorDetailPanel scopeExperiment={scopeExperiment} />,
+    'sensor-health': <SensorDetailPanel scopeExperiment={scopeExperiment} healthMode />,
   }[type];
   const parentContext = {
     organization: null,
     block: { items: [{ label: selectedRanch.organization }, { label: selectedBlock.ranchName }] },
     ranch: { items: [{ label: selectedRanch.organization }] },
     sensor: { items: [{ label: selectedRanch.organization }, { label: selectedSensor.ranchName }, { label: selectedSensor.blockName }] },
+    'sensor-health': { items: [{ label: selectedRanch.organization }, { label: healthIssueSensor.ranchName }, { label: healthIssueSensor.blockName }] },
   }[type];
+
+  if (type === 'sensor-health') {
+    return (
+      <DesktopShell
+        detailPanel={panel}
+        parentContext={parentContext}
+        scopeExperiment={scopeExperiment}
+        scopeLevel="sensor"
+        mapSensors={healthExperimentSensors}
+        selectedSensorIdOverride={healthIssueSensor.id}
+        sensorDisplayMode="healthBatteryBare"
+        controlCenterProps={{
+          showSensorHealthControls: true,
+          sensorMarkerMode: 'health',
+          defaultPestFocusOpen: false,
+          defaultMapControlsOpen: true,
+        }}
+        mapNotice={(
+          <div className={styles.sensorHealthToast}>
+            <span className="material-symbols-rounded" aria-hidden="true">battery_alert</span>
+            <Typography variant="caption">Sensor health view is on</Typography>
+            <Button variant="ghost" size="sm">Show pest risk</Button>
+          </div>
+        )}
+      />
+    );
+  }
 
   return <DesktopShell detailPanel={panel} parentContext={parentContext} scopeExperiment={scopeExperiment} scopeLevel={type} />;
 }
@@ -764,22 +831,25 @@ function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all', onBlockP
   );
 }
 
-function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
+function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all', healthMode = false }) {
+  const displaySensor = healthMode ? healthIssueSensor : selectedSensor;
+
   return (
     <DetailPanel
-      title={selectedSensor.name}
-      badge={selectedSensor.severity}
-      backLabel={selectedSensor.blockName}
-      backAriaLabel={`Back to ${selectedSensor.blockName}`}
+      title={displaySensor.name}
+      badge={displaySensor.severity}
+      backLabel={displaySensor.blockName}
+      backAriaLabel={`Back to ${displaySensor.blockName}`}
       actions={<BottomActionTray mode="default" />}
       sections={[
-        { label: 'Maintenance', content: <SensorMaintenance /> },
+        { label: 'Sensor Health', badge: healthMode ? '1' : undefined, content: <SensorMaintenance sensor={displaySensor} healthMode={healthMode} /> },
       ]}
     >
+      {healthMode && <HealthIssueAlert sensor={displaySensor} />}
       <PestWeekComparison>
         {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
-          label={selectedSensor.pestName}
-          value={selectedSensor.count}
+          label={displaySensor.pestName}
+          value={displaySensor.count}
           trend={18}
           benchmark="Farm average: 45"
         />}
@@ -789,22 +859,58 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
   );
 }
 
-function SensorMaintenance() {
+function HealthIssueAlert({ sensor }) {
   return (
-    <section className={styles.childList}>
+    <div className={styles.healthAlert}>
+      <span className="material-symbols-rounded" aria-hidden="true">battery_alert</span>
+      <div>
+        <Typography variant="body-sm" weight="bold">Low battery detected</Typography>
+        <Typography variant="caption">
+          {sensor.name} is still reporting pest data, but the battery is at {sensor.battery}%. Check or replace the battery during the next field visit.
+        </Typography>
+        <a href="#sensor-health-section">View sensor health</a>
+      </div>
+    </div>
+  );
+}
+
+function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
+  const batteryTone = sensor.battery <= 10 ? 'error' : sensor.battery <= 25 ? 'warning' : 'positive';
+
+  return (
+    <section className={styles.childList} id="sensor-health-section">
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Maintenance</Typography>
-        <Typography variant="caption" color="secondary">Operational status for this sensor</Typography>
+        <Typography variant="h5">Sensor Health</Typography>
+        <Typography variant="caption" color="secondary">
+          {healthMode ? 'Battery and device status for field maintenance.' : 'Operational status for this sensor.'}
+        </Typography>
       </div>
       <SensorMetaGrid items={[
-        { label: 'Status', value: selectedSensor.status, tone: 'positive' },
-        { label: 'Battery', value: `${selectedSensor.battery}%`, tone: 'positive' },
-        { label: 'Signal', value: selectedSensor.signal, tone: 'positive' },
-        { label: 'Last Sync', value: selectedSensor.lastSync, tone: 'positive' },
+        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive' },
+        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
+        { label: 'Signal', value: sensor.signal, tone: 'positive' },
+        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive' },
       ]} />
     </section>
   );
 }
+
+HealthIssueAlert.propTypes = {
+  sensor: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    battery: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+SensorMaintenance.propTypes = {
+  sensor: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    battery: PropTypes.number.isRequired,
+    signal: PropTypes.string.isRequired,
+    lastSync: PropTypes.string.isRequired,
+  }),
+  healthMode: PropTypes.bool,
+};
 
 function ActionRow({ mode = 'default' }) {
   if (mode === 'reportOnly') {
@@ -1044,11 +1150,14 @@ function MobileDeviceFrame({ type = 'ranking' }) {
   const [sheetKind, setSheetKind] = useState('content');
   const [sheetState, setSheetState] = useState('docked');
   const selectedMapBlockId = type === 'block' ? selectedBlock.id : '';
-  const selectedSensorId = type === 'sensor' ? selectedSensor.id : '';
+  const isHealthMobile = type === 'sensor-health';
+  const selectedSensorId = type === 'sensor' || isHealthMobile ? selectedSensor.id : '';
+  const sensorDisplayMode = isHealthMobile ? 'healthBatteryBare' : 'pest';
+  const mapSensors = isHealthMobile ? healthExperimentSensors : sensors;
   const resolvedSheetKind = sheetKind;
   const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map';
   const sheetLabel = {
-    content: type === 'ranking' ? 'Pest pressure ranking' : `${type} detail`,
+    content: type === 'ranking' ? 'Pest pressure ranking' : `${isHealthMobile ? 'sensor health' : type} detail`,
     pest: 'Pest focus',
     map: 'Map controls',
   }[resolvedSheetKind];
@@ -1077,13 +1186,14 @@ function MobileDeviceFrame({ type = 'ranking' }) {
           blockPolygon={selectedBlock.polygon}
           blockOverlays={buildRankingBlockOverlays(selectedMapBlockId, '')}
           activeBlockLabel={type === 'block' ? selectedBlock.name : ''}
-          sensors={sensors}
+          sensors={mapSensors}
           selectedSensorId={selectedSensorId}
+          sensorDisplayMode={sensorDisplayMode}
           blockSeverity={selectedBlock.riskLevel}
           mapStyle="satellite"
         />
         <div className={styles.mobileScopeDock}>
-          <ScopeNavigation level={type === 'ranking' ? 'ranking' : type} />
+              <ScopeNavigation level={type === 'ranking' ? 'ranking' : isHealthMobile ? 'sensor' : type} />
         </div>
         <WeatherWidget weather={weather} compact className={styles.mobileWeather} />
         <div className={styles.fabs}>
@@ -1113,7 +1223,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
         dismissMode={isControlSheet}
         dockedSummary={<MobileDockSummary type={type} sheetKind={resolvedSheetKind} />}
       >
-        <MobileSheet type={type} sheetKind={resolvedSheetKind} />
+        <MobileSheet type={type} sheetKind={resolvedSheetKind} healthMode={isHealthMobile} />
       </MobileBottomSheet>
     </div>
   );
@@ -1126,6 +1236,7 @@ function MobileDockSummary({ type, sheetKind }) {
     ranch: { title: selectedRanch.name, meta: selectedRanch.organization, badge: selectedRanch.riskLevel },
     block: { title: selectedBlock.name, meta: selectedBlock.ranchName, badge: selectedBlock.riskLevel },
     sensor: { title: selectedSensor.name, meta: selectedSensor.blockName, badge: selectedSensor.severity },
+    'sensor-health': { title: healthIssueSensor.name, meta: 'Low battery detected', badge: healthIssueSensor.severity },
   };
   const controlCopy = {
     pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },
@@ -1144,13 +1255,13 @@ function MobileDockSummary({ type, sheetKind }) {
   );
 }
 
-function MobileSheet({ type, sheetKind }) {
+function MobileSheet({ type, sheetKind, healthMode = false }) {
   if (sheetKind === 'pest') {
-    return <MobileControlsSheet scopePanel="pest" />;
+    return <MobileControlsSheet scopePanel="pest" healthMode={healthMode} />;
   }
 
   if (sheetKind === 'map') {
-    return <MobileControlsSheet scopePanel="map" />;
+    return <MobileControlsSheet scopePanel="map" healthMode={healthMode} />;
   }
 
   if (type === 'ranking') {
@@ -1162,6 +1273,7 @@ function MobileSheet({ type, sheetKind }) {
     ranch: <RanchDetailPanel scopeExperiment />,
     block: <BlockDetailPanel scopeExperiment />,
     sensor: <SensorDetailPanel scopeExperiment />,
+    'sensor-health': <SensorDetailPanel scopeExperiment healthMode />,
   };
 
   return <div className={styles.mobileDetailPanel}>{panelMap[type]}</div>;
@@ -1221,11 +1333,19 @@ function MobileRankingSheet() {
   );
 }
 
-function MobileControlsSheet({ scopePanel = 'pest' }) {
+function MobileControlsSheet({ scopePanel = 'pest', healthMode = false }) {
   return (
     <div className={`${styles.sheetContent} ${styles.mobileControlsContent}`}>
       <div className={styles.mobileControlPanel}>
-        <ControlCenter mode="scopeExperiment" scopePanel={scopePanel} embedded />
+        <ControlCenter
+          mode="scopeExperiment"
+          scopePanel={scopePanel}
+          embedded
+          showSensorHealthControls={healthMode}
+          sensorMarkerMode={healthMode ? 'health' : 'pest'}
+          defaultMapControlsOpen
+          defaultPestFocusOpen
+        />
       </div>
     </div>
   );

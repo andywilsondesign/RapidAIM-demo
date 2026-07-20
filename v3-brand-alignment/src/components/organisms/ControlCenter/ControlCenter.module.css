@@ -376,3 +376,79 @@
   align-items: center;
   gap: var(--spacing-2);
 }
+
+.viewModeOptions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-2);
+}
+
+.viewModeOption {
+  display: flex;
+  min-width: 0;
+  min-height: 3rem;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-panel);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.viewModeOption input {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: var(--color-brand-primary);
+}
+
+.viewModeOption span {
+  min-width: 0;
+}
+
+.activeViewModeOption {
+  border-color: rgba(21, 21, 96, 0.42);
+  background: rgba(21, 21, 96, 0.08);
+  color: var(--color-brand-primary);
+}
+
+.batteryLegendGlyph {
+  width: 1.75rem;
+  height: var(--size-map-marker);
+  flex: 0 0 1.75rem;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.18));
+}
+
+.batteryLegendBase {
+  fill: #fff;
+}
+
+.batteryLegendShell,
+.batteryLegendCap {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
+}
+
+.batteryLegendCap {
+  stroke-linecap: round;
+}
+
+.batteryLegendFill {
+  fill: var(--color-map-risk-low-stroke, #66f27a);
+}
+
+.batteryLegendGlyphWarning .batteryLegendFill {
+  fill: var(--color-map-risk-medium-stroke, #ffb000);
+}
+
+.batteryLegendGlyphLow .batteryLegendFill {
+  fill: var(--color-map-risk-high-stroke, #ff2d55);
+}

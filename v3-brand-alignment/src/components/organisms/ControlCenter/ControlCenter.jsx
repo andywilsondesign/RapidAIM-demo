@@ -23,10 +23,14 @@ export const ControlCenter = ({
   pestFocus,
   onPestFocusChange,
   embedded = false,
+  showSensorHealthControls = false,
+  sensorMarkerMode = 'pest',
+  defaultPestFocusOpen = true,
+  defaultMapControlsOpen = false,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isPestViewCollapsed, setIsPestViewCollapsed] = useState(false);
-  const [isViewControlsCollapsed, setIsViewControlsCollapsed] = useState(true);
+  const [isPestViewCollapsed, setIsPestViewCollapsed] = useState(!defaultPestFocusOpen);
+  const [isViewControlsCollapsed, setIsViewControlsCollapsed] = useState(!defaultMapControlsOpen);
   const [internalPestFocus, setInternalPestFocus] = useState('all');
   const isScopeExperiment = mode === 'scopeExperiment';
   const activePestFocus = pestFocus ?? internalPestFocus;
@@ -56,6 +60,8 @@ export const ControlCenter = ({
             isCollapsed={scopePanel === 'map' ? false : isViewControlsCollapsed}
             onToggle={() => scopePanel === 'both' && setIsViewControlsCollapsed((current) => !current)}
             embedded={embedded}
+            showSensorHealthControls={showSensorHealthControls}
+            sensorMarkerMode={sensorMarkerMode}
           />
         )}
       </div>
@@ -126,7 +132,12 @@ export const ControlCenter = ({
         )}
 
         <MapLayerSection />
+        <SensorViewModeSection
+          showSensorHealthControls={showSensorHealthControls}
+          sensorMarkerMode={sensorMarkerMode}
+        />
         <RiskLegendSection />
+        {showSensorHealthControls && <SensorHealthLegendSection />}
       </div>}
     </aside>
   );
@@ -188,7 +199,13 @@ function PestThresholdsPanel({
   );
 }
 
-function MapControlsPanel({ isCollapsed, onToggle, embedded = false }) {
+function MapControlsPanel({
+  isCollapsed,
+  onToggle,
+  embedded = false,
+  showSensorHealthControls = false,
+  sensorMarkerMode = 'pest',
+}) {
   return (
     <aside className={`${styles.panel} ${styles.panelSegment} ${embedded ? styles.embeddedPanel : ''} ${isCollapsed ? styles.collapsed : ''}`}>
       {!embedded && (
@@ -213,7 +230,12 @@ function MapControlsPanel({ isCollapsed, onToggle, embedded = false }) {
             </div>
           )}
           <MapLayerSection />
+          <SensorViewModeSection
+            showSensorHealthControls={showSensorHealthControls}
+            sensorMarkerMode={sensorMarkerMode}
+          />
           <RiskLegendSection />
+          {showSensorHealthControls && <SensorHealthLegendSection />}
         </div>
       )}
     </aside>
@@ -268,6 +290,26 @@ function MapLayerSection() {
   );
 }
 
+function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerMode = 'pest' }) {
+  if (!showSensorHealthControls) return null;
+
+  return (
+    <div className={styles.section}>
+      <Typography variant="h6" className={styles.sectionTitle}>Sensor Marker View</Typography>
+      <div className={styles.viewModeOptions} role="radiogroup" aria-label="Sensor marker view">
+        <label className={`${styles.viewModeOption} ${sensorMarkerMode === 'pest' ? styles.activeViewModeOption : ''}`}>
+          <input type="radio" name="sensor-marker-view" defaultChecked={sensorMarkerMode === 'pest'} />
+          <span>Pest risk</span>
+        </label>
+        <label className={`${styles.viewModeOption} ${sensorMarkerMode === 'health' ? styles.activeViewModeOption : ''}`}>
+          <input type="radio" name="sensor-marker-view" defaultChecked={sensorMarkerMode === 'health'} />
+          <span>Sensor health</span>
+        </label>
+      </div>
+    </div>
+  );
+}
+
 function RiskLegendSection() {
   return (
     <div className={styles.section}>
@@ -294,6 +336,55 @@ function RiskLegendSection() {
   );
 }
 
+function SensorHealthLegendSection() {
+  return (
+    <div className={styles.section}>
+      <Typography variant="h6" className={styles.sectionTitle}>Sensor Health Legend</Typography>
+      <div className={styles.legend}>
+        <div className={styles.legendItem}>
+          <BatteryLegendGlyph level="full" />
+          <Typography variant="body-sm">Healthy: above 25%</Typography>
+        </div>
+        <div className={styles.legendItem}>
+          <BatteryLegendGlyph level="warning" />
+          <Typography variant="body-sm">Low: 25% or below</Typography>
+        </div>
+        <div className={styles.legendItem}>
+          <BatteryLegendGlyph level="low" />
+          <Typography variant="body-sm">Critical: 10% or below</Typography>
+        </div>
+        <div className={styles.legendItem}>
+          <RiskMarker severity="offline" size="md" />
+          <Typography variant="body-sm">Offline / fault</Typography>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BatteryLegendGlyph({ level = 'full' }) {
+  const fillWidth = {
+    full: 12.2,
+    warning: 3.05,
+    low: 1.22,
+  }[level] || 12.2;
+  const stateClass = {
+    full: styles.batteryLegendGlyphFull,
+    warning: styles.batteryLegendGlyphWarning,
+    low: styles.batteryLegendGlyphLow,
+  }[level] || styles.batteryLegendGlyphFull;
+
+  return (
+    <svg className={`${styles.batteryLegendGlyph} ${stateClass}`} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect className={styles.batteryLegendBase} x="5.15" y="8.25" width="12.2" height="7.5" rx="0.95" />
+      <rect className={styles.batteryLegendFill} x="5.15" y="8.25" width={fillWidth} height="7.5" rx="0.95" />
+      <path className={styles.batteryLegendShell} d="M3.35 6.45h16.1v11.1H3.35V6.45Z" />
+      <path className={styles.batteryLegendCap} d="M20.45 9.05h1.55v4.9h-1.55" />
+    </svg>
+  );
+}
+
+
 ControlCenter.propTypes = {
   className: PropTypes.string,
   mode: PropTypes.oneOf(['default', 'scopeExperiment']),
@@ -301,6 +392,10 @@ ControlCenter.propTypes = {
   pestFocus: PropTypes.string,
   onPestFocusChange: PropTypes.func,
   embedded: PropTypes.bool,
+  showSensorHealthControls: PropTypes.bool,
+  sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+  defaultPestFocusOpen: PropTypes.bool,
+  defaultMapControlsOpen: PropTypes.bool,
 };
 
 PestThresholdsPanel.propTypes = {
@@ -320,6 +415,17 @@ MapControlsPanel.propTypes = {
   isCollapsed: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
   embedded: PropTypes.bool,
+  showSensorHealthControls: PropTypes.bool,
+  sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+};
+
+SensorViewModeSection.propTypes = {
+  showSensorHealthControls: PropTypes.bool,
+  sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+};
+
+BatteryLegendGlyph.propTypes = {
+  level: PropTypes.oneOf(['full', 'warning', 'low']),
 };
 
 ThresholdList.propTypes = {
