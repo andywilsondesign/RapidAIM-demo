@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Select } from '../../atoms/Select/Select';
@@ -25,6 +25,7 @@ export const ControlCenter = ({
   embedded = false,
   showSensorHealthControls = false,
   sensorMarkerMode = 'pest',
+  onSensorMarkerModeChange,
   defaultPestFocusOpen = true,
   defaultMapControlsOpen = false,
 }) => {
@@ -32,11 +33,21 @@ export const ControlCenter = ({
   const [isPestViewCollapsed, setIsPestViewCollapsed] = useState(!defaultPestFocusOpen);
   const [isViewControlsCollapsed, setIsViewControlsCollapsed] = useState(!defaultMapControlsOpen);
   const [internalPestFocus, setInternalPestFocus] = useState('all');
+  const [activeSensorMarkerMode, setActiveSensorMarkerMode] = useState(sensorMarkerMode);
   const isScopeExperiment = mode === 'scopeExperiment';
   const activePestFocus = pestFocus ?? internalPestFocus;
+
+  useEffect(() => {
+    setActiveSensorMarkerMode(sensorMarkerMode);
+  }, [sensorMarkerMode]);
+
   const handlePestFocusChange = (nextPestFocus) => {
     setInternalPestFocus(nextPestFocus);
     onPestFocusChange?.(nextPestFocus);
+  };
+  const handleSensorMarkerModeChange = (nextMode) => {
+    setActiveSensorMarkerMode(nextMode);
+    onSensorMarkerModeChange?.(nextMode);
   };
   const visiblePestThresholds = activePestFocus === 'all'
     ? pestThresholds
@@ -61,7 +72,8 @@ export const ControlCenter = ({
             onToggle={() => scopePanel === 'both' && setIsViewControlsCollapsed((current) => !current)}
             embedded={embedded}
             showSensorHealthControls={showSensorHealthControls}
-            sensorMarkerMode={sensorMarkerMode}
+            sensorMarkerMode={activeSensorMarkerMode}
+            onSensorMarkerModeChange={handleSensorMarkerModeChange}
           />
         )}
       </div>
@@ -134,9 +146,10 @@ export const ControlCenter = ({
         <MapLayerSection />
         <SensorViewModeSection
           showSensorHealthControls={showSensorHealthControls}
-          sensorMarkerMode={sensorMarkerMode}
+          sensorMarkerMode={activeSensorMarkerMode}
+          onSensorMarkerModeChange={handleSensorMarkerModeChange}
         />
-        {sensorMarkerMode === 'health' && showSensorHealthControls
+        {activeSensorMarkerMode === 'health' && showSensorHealthControls
           ? <SensorHealthLegendSection />
           : <RiskLegendSection title="Pest Risk Legend" />}
       </div>}
@@ -206,6 +219,7 @@ function MapControlsPanel({
   embedded = false,
   showSensorHealthControls = false,
   sensorMarkerMode = 'pest',
+  onSensorMarkerModeChange,
 }) {
   return (
     <aside className={`${styles.panel} ${styles.panelSegment} ${embedded ? styles.embeddedPanel : ''} ${isCollapsed ? styles.collapsed : ''}`}>
@@ -234,6 +248,7 @@ function MapControlsPanel({
           <SensorViewModeSection
             showSensorHealthControls={showSensorHealthControls}
             sensorMarkerMode={sensorMarkerMode}
+            onSensorMarkerModeChange={onSensorMarkerModeChange}
           />
           {sensorMarkerMode === 'health' && showSensorHealthControls
             ? <SensorHealthLegendSection />
@@ -292,7 +307,7 @@ function MapLayerSection() {
   );
 }
 
-function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerMode = 'pest' }) {
+function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerMode = 'pest', onSensorMarkerModeChange }) {
   if (!showSensorHealthControls) return null;
 
   return (
@@ -300,11 +315,21 @@ function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerM
       <Typography variant="h6" className={styles.sectionTitle}>Sensor Marker View</Typography>
       <div className={styles.viewModeOptions} role="radiogroup" aria-label="Sensor marker view">
         <label className={`${styles.viewModeOption} ${sensorMarkerMode === 'pest' ? styles.activeViewModeOption : ''}`}>
-          <input type="radio" name="sensor-marker-view" defaultChecked={sensorMarkerMode === 'pest'} />
+          <input
+            type="radio"
+            name="sensor-marker-view"
+            checked={sensorMarkerMode === 'pest'}
+            onChange={() => onSensorMarkerModeChange?.('pest')}
+          />
           <span>Pest risk</span>
         </label>
         <label className={`${styles.viewModeOption} ${sensorMarkerMode === 'health' ? styles.activeViewModeOption : ''}`}>
-          <input type="radio" name="sensor-marker-view" defaultChecked={sensorMarkerMode === 'health'} />
+          <input
+            type="radio"
+            name="sensor-marker-view"
+            checked={sensorMarkerMode === 'health'}
+            onChange={() => onSensorMarkerModeChange?.('health')}
+          />
           <span>Sensor health</span>
         </label>
       </div>
@@ -400,6 +425,7 @@ ControlCenter.propTypes = {
   embedded: PropTypes.bool,
   showSensorHealthControls: PropTypes.bool,
   sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+  onSensorMarkerModeChange: PropTypes.func,
   defaultPestFocusOpen: PropTypes.bool,
   defaultMapControlsOpen: PropTypes.bool,
 };
@@ -423,11 +449,13 @@ MapControlsPanel.propTypes = {
   embedded: PropTypes.bool,
   showSensorHealthControls: PropTypes.bool,
   sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+  onSensorMarkerModeChange: PropTypes.func,
 };
 
 SensorViewModeSection.propTypes = {
   showSensorHealthControls: PropTypes.bool,
   sensorMarkerMode: PropTypes.oneOf(['pest', 'health']),
+  onSensorMarkerModeChange: PropTypes.func,
 };
 
 BatteryLegendGlyph.propTypes = {

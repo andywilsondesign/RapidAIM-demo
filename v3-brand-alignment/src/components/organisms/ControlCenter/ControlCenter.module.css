@@ -446,9 +446,9 @@
 }
 
 .batteryLegendGlyphWarning .batteryLegendFill {
-  fill: var(--color-status-amber);
+  fill: var(--color-map-risk-medium-stroke, #ffb000);
 }
 
 .batteryLegendGlyphLow .batteryLegendFill {
-  fill: var(--color-status-red);
+  fill: var(--color-map-risk-high-stroke, #ff2d55);
 }

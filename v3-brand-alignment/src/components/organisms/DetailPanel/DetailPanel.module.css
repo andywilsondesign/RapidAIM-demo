@@ -147,6 +147,11 @@
   line-height: 1;
 }
 
+.anchorTabBadge--critical {
+  background: var(--color-status-red);
+  color: #fff;
+}
+
 .anchorTabs button:hover,
 .anchorTabs button:focus-visible,
 .anchorTabs .activeAnchorTab {

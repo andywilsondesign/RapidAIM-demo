@@ -569,6 +569,7 @@ function PestPressureRankingPage() {
 }
 
 function DesktopDetailPage({ type, scopeExperiment = false }) {
+  const [sensorMarkerMode, setSensorMarkerMode] = useState('health');
   const panel = {
     organization: <OrganizationDetailPanel scopeExperiment={scopeExperiment} />,
     block: <BlockDetailPanel scopeExperiment={scopeExperiment} />,
@@ -593,18 +594,25 @@ function DesktopDetailPage({ type, scopeExperiment = false }) {
         scopeLevel="sensor"
         mapSensors={healthExperimentSensors}
         selectedSensorIdOverride={healthIssueSensor.id}
-        sensorDisplayMode="healthBatteryBare"
+        sensorDisplayMode={sensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest'}
         controlCenterProps={{
           showSensorHealthControls: true,
-          sensorMarkerMode: 'health',
+          sensorMarkerMode,
+          onSensorMarkerModeChange: setSensorMarkerMode,
           defaultPestFocusOpen: false,
           defaultMapControlsOpen: true,
         }}
         mapNotice={(
           <div className={styles.sensorHealthToast}>
-            <span className="material-symbols-rounded" aria-hidden="true">battery_alert</span>
-            <Typography variant="caption">Sensor health view is on</Typography>
-            <Button variant="ghost" size="sm">Show pest risk</Button>
+            <span className="material-symbols-rounded" aria-hidden="true">{sensorMarkerMode === 'health' ? 'battery_alert' : 'pest_control'}</span>
+            <Typography variant="caption">{sensorMarkerMode === 'health' ? 'Sensor health view is on' : 'Pest risk view is on'}</Typography>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSensorMarkerMode(sensorMarkerMode === 'health' ? 'pest' : 'health')}
+            >
+              {sensorMarkerMode === 'health' ? 'Show pest risk' : 'Show sensor health'}
+            </Button>
           </div>
         )}
       />
@@ -880,7 +888,7 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all', healthM
       backAriaLabel={`Back to ${displaySensor.blockName}`}
       actions={<BottomActionTray mode="default" />}
       sections={[
-        { label: 'Sensor Health', badge: healthMode ? '1' : undefined, content: <SensorMaintenance sensor={displaySensor} healthMode={healthMode} /> },
+        { label: 'Sensor Health', badge: healthMode ? '1' : undefined, badgeTone: healthMode ? 'critical' : undefined, content: <SensorMaintenance sensor={displaySensor} healthMode={healthMode} /> },
       ]}
     >
       {healthMode && <HealthIssueAlert sensor={displaySensor} />}
@@ -904,11 +912,10 @@ function HealthIssueAlert({ sensor }) {
 
   return (
     <div className={`${styles.healthAlert} ${alertToneClass}`}>
-      <span className="material-symbols-rounded" aria-hidden="true">battery_alert</span>
       <div>
         <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
         <Typography variant="caption">
-          {sensor.name} is still reporting pest data, but the battery is at {sensor.battery}%. <a href="#sensor-health-section">View sensor health</a> for the current device state.
+          Battery is at {sensor.battery}%. <a href="#sensor-health-section">View sensor health</a>.
         </Typography>
       </div>
     </div>
@@ -927,10 +934,10 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
         </Typography>
       </div>
       <SensorMetaGrid items={[
-        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive', statusLabel: sensor.status === 'Offline' ? 'Offline' : 'Healthy' },
-        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone, statusLabel: batteryTone === 'error' ? 'Critical' : batteryTone === 'warning' ? 'Low' : 'Healthy' },
-        { label: 'Signal', value: sensor.signal, tone: 'positive', statusLabel: 'Healthy' },
-        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive', statusLabel: 'Healthy' },
+        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive' },
+        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
+        { label: 'Signal', value: sensor.signal, tone: 'positive' },
+        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive' },
       ]} />
     </section>
   );
@@ -1192,10 +1199,11 @@ function MobileDeviceFrame({ type = 'ranking' }) {
   const [sheetKind, setSheetKind] = useState(isHealthMobile ? 'map' : 'content');
   const [sheetState, setSheetState] = useState(isHealthMobile ? 'full' : 'docked');
   const [selectedMobileType, setSelectedMobileType] = useState(type);
+  const [mobileSensorMarkerMode, setMobileSensorMarkerMode] = useState(isHealthMobile ? 'health' : 'pest');
   const [selectedMobileBlockId, setSelectedMobileBlockId] = useState(type === 'block' ? selectedBlock.id : '');
   const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : '');
   const [sheetSelectionKey, setSheetSelectionKey] = useState(0);
-  const sensorDisplayMode = isHealthMobile ? 'healthBatteryBare' : 'pest';
+  const sensorDisplayMode = mobileSensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest';
   const mapSensors = isHealthMobile ? healthExperimentSensors : sensors;
   const resolvedSheetKind = sheetKind;
   const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map';
@@ -1211,6 +1219,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
     setSelectedMobileType(type);
     setSelectedMobileBlockId(type === 'block' ? selectedBlock.id : '');
     setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : '');
+    setMobileSensorMarkerMode(type === 'sensor-health' ? 'health' : 'pest');
     setSheetKind(type === 'sensor-health' ? 'map' : 'content');
     setSheetState(type === 'sensor-health' ? 'full' : 'docked');
     setSheetSelectionKey((current) => current + 1);
@@ -1297,7 +1306,13 @@ function MobileDeviceFrame({ type = 'ranking' }) {
         dismissMode={isControlSheet}
         dockedSummary={<MobileDockSummary type={selectedMobileType} sheetKind={resolvedSheetKind} selectedBlock={selectedMobileBlock} selectedSensor={selectedMobileSensor} />}
       >
-        <MobileSheet type={selectedMobileType} sheetKind={resolvedSheetKind} healthMode={isHealthMobile || selectedMobileType === 'sensor-health'} />
+        <MobileSheet
+          type={selectedMobileType}
+          sheetKind={resolvedSheetKind}
+          healthMode={isHealthMobile || selectedMobileType === 'sensor-health'}
+          sensorMarkerMode={mobileSensorMarkerMode}
+          onSensorMarkerModeChange={setMobileSensorMarkerMode}
+        />
       </MobileBottomSheet>
     </div>
   );
@@ -1329,13 +1344,13 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
   );
 }
 
-function MobileSheet({ type, sheetKind, healthMode = false }) {
+function MobileSheet({ type, sheetKind, healthMode = false, sensorMarkerMode = 'pest', onSensorMarkerModeChange }) {
   if (sheetKind === 'pest') {
-    return <MobileControlsSheet scopePanel="pest" healthMode={healthMode} />;
+    return <MobileControlsSheet scopePanel="pest" healthMode={healthMode} sensorMarkerMode={sensorMarkerMode} onSensorMarkerModeChange={onSensorMarkerModeChange} />;
   }
 
   if (sheetKind === 'map') {
-    return <MobileControlsSheet scopePanel="map" healthMode={healthMode} />;
+    return <MobileControlsSheet scopePanel="map" healthMode={healthMode} sensorMarkerMode={sensorMarkerMode} onSensorMarkerModeChange={onSensorMarkerModeChange} />;
   }
 
   if (type === 'ranking') {
@@ -1407,7 +1422,7 @@ function MobileRankingSheet() {
   );
 }
 
-function MobileControlsSheet({ scopePanel = 'pest', healthMode = false }) {
+function MobileControlsSheet({ scopePanel = 'pest', healthMode = false, sensorMarkerMode = 'pest', onSensorMarkerModeChange }) {
   return (
     <div className={`${styles.sheetContent} ${styles.mobileControlsContent}`}>
       <div className={styles.mobileControlPanel}>
@@ -1416,7 +1431,8 @@ function MobileControlsSheet({ scopePanel = 'pest', healthMode = false }) {
           scopePanel={scopePanel}
           embedded
           showSensorHealthControls={healthMode}
-          sensorMarkerMode={healthMode ? 'health' : 'pest'}
+          sensorMarkerMode={healthMode ? sensorMarkerMode : 'pest'}
+          onSensorMarkerModeChange={onSensorMarkerModeChange}
           defaultMapControlsOpen
           defaultPestFocusOpen
         />

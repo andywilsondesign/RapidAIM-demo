@@ -81,7 +81,11 @@ export const DetailPanel = ({
               onClick={() => scrollToSection(section.label)}
             >
               <span className={styles.anchorTabLabel}>{section.label}</span>
-              {section.badge && <span className={styles.anchorTabBadge}>{section.badge}</span>}
+              {section.badge && (
+                <span className={`${styles.anchorTabBadge} ${section.badgeTone ? styles[`anchorTabBadge--${section.badgeTone}`] : ''}`}>
+                  {section.badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -125,6 +129,7 @@ DetailPanel.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       badge: PropTypes.node,
+      badgeTone: PropTypes.oneOf(['critical']),
       content: PropTypes.node.isRequired,
     })
   ),
