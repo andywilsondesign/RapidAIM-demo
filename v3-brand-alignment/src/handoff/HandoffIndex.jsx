@@ -912,10 +912,13 @@ function HealthIssueAlert({ sensor }) {
 
   return (
     <div className={`${styles.healthAlert} ${alertToneClass}`}>
-      <div>
+      <span className={styles.healthAlertIcon} aria-hidden="true">
+        <span className="material-symbols-rounded">warning</span>
+      </span>
+      <div className={styles.healthAlertContent}>
         <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
         <Typography variant="caption">
-          Battery is at {sensor.battery}%. <a href="#sensor-health-section">View sensor health</a>.
+          Battery is at {sensor.battery}%, but this sensor is still gathering pest data. <a href="#sensor-health-section">View sensor health</a>.
         </Typography>
       </div>
     </div>
