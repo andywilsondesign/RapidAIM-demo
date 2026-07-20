@@ -241,6 +241,8 @@ export const InteractiveMap = ({
   activeBlockLabel = '',
   mapStyle = 'satellite', // 'satellite' or 'stylized'
   sensorDisplayMode = 'pest',
+  onBlockSelect,
+  onSensorSelect,
   className = '',
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
@@ -318,6 +320,7 @@ export const InteractiveMap = ({
             eventHandlers={{
               mouseover: () => setHoveredBlockId(block.id),
               mouseout: () => setHoveredBlockId(''),
+              click: () => onBlockSelect?.(block),
             }}
           />
         ))}
@@ -341,6 +344,9 @@ export const InteractiveMap = ({
               : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
+            eventHandlers={{
+              click: () => onSensorSelect?.(sensor),
+            }}
           >
             <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>
               <strong>{sensor.name}</strong><br />
@@ -388,5 +394,7 @@ InteractiveMap.propTypes = {
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
   sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare']),
+  onBlockSelect: PropTypes.func,
+  onSensorSelect: PropTypes.func,
   className: PropTypes.string,
 };

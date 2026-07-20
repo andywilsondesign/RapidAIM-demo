@@ -1185,20 +1185,33 @@ function ResponsiveMobilePage({ type = 'ranking' }) {
 }
 
 function MobileDeviceFrame({ type = 'ranking' }) {
-  const selectedMapBlockId = type === 'block' ? selectedBlock.id : '';
   const isHealthMobile = type === 'sensor-health';
   const [sheetKind, setSheetKind] = useState(isHealthMobile ? 'map' : 'content');
   const [sheetState, setSheetState] = useState(isHealthMobile ? 'full' : 'docked');
-  const selectedSensorId = type === 'sensor' || isHealthMobile ? selectedSensor.id : '';
+  const [selectedMobileType, setSelectedMobileType] = useState(type);
+  const [selectedMobileBlockId, setSelectedMobileBlockId] = useState(type === 'block' ? selectedBlock.id : '');
+  const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : '');
+  const [sheetSelectionKey, setSheetSelectionKey] = useState(0);
   const sensorDisplayMode = isHealthMobile ? 'healthBatteryBare' : 'pest';
   const mapSensors = isHealthMobile ? healthExperimentSensors : sensors;
   const resolvedSheetKind = sheetKind;
   const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map';
+  const selectedMobileBlock = [...rankingBlocks, ...selectedRanchBlocks].find((block) => block.id === selectedMobileBlockId) || selectedBlock;
+  const selectedMobileSensor = mapSensors.find((sensor) => sensor.id === selectedMobileSensorId) || (isHealthMobile ? healthIssueSensor : selectedSensor);
   const sheetLabel = {
-    content: type === 'ranking' ? 'Pest pressure ranking' : `${isHealthMobile ? 'sensor health' : type} detail`,
+    content: selectedMobileType === 'ranking' ? 'Pest pressure ranking' : `${isHealthMobile || selectedMobileType === 'sensor-health' ? 'sensor health' : selectedMobileType} detail`,
     pest: 'Pest focus',
     map: 'Map controls',
   }[resolvedSheetKind];
+
+  useEffect(() => {
+    setSelectedMobileType(type);
+    setSelectedMobileBlockId(type === 'block' ? selectedBlock.id : '');
+    setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : '');
+    setSheetKind(type === 'sensor-health' ? 'map' : 'content');
+    setSheetState(type === 'sensor-health' ? 'full' : 'docked');
+    setSheetSelectionKey((current) => current + 1);
+  }, [type]);
 
   const openSheet = (nextKind) => {
     setSheetKind(nextKind);
@@ -1213,6 +1226,23 @@ function MobileDeviceFrame({ type = 'ranking' }) {
 
     setSheetState((current) => current === 'full' ? 'docked' : 'full');
   };
+  const showSelectedContentSheet = () => {
+    setSheetKind('content');
+    setSheetState('docked');
+    setSheetSelectionKey((current) => current + 1);
+  };
+  const handleBlockSelect = (block) => {
+    setSelectedMobileBlockId(block.id);
+    setSelectedMobileSensorId('');
+    setSelectedMobileType('block');
+    showSelectedContentSheet();
+  };
+  const handleSensorSelect = (sensor) => {
+    setSelectedMobileSensorId(sensor.id);
+    setSelectedMobileBlockId('');
+    setSelectedMobileType(isHealthMobile ? 'sensor-health' : 'sensor');
+    showSelectedContentSheet();
+  };
 
   return (
     <div className={styles.mobileDevice}>
@@ -1222,13 +1252,15 @@ function MobileDeviceFrame({ type = 'ranking' }) {
           center={[36.647, -119.8]}
           zoom={15}
           blockPolygon={selectedBlock.polygon}
-          blockOverlays={buildRankingBlockOverlays(selectedMapBlockId, '')}
-          activeBlockLabel={type === 'block' ? selectedBlock.name : ''}
+          blockOverlays={buildRankingBlockOverlays(selectedMobileBlockId, '')}
+          activeBlockLabel={selectedMobileType === 'block' ? selectedMobileBlock.name : ''}
           sensors={mapSensors}
-          selectedSensorId={selectedSensorId}
+          selectedSensorId={selectedMobileSensorId}
           sensorDisplayMode={sensorDisplayMode}
           blockSeverity={selectedBlock.riskLevel}
           mapStyle="satellite"
+          onBlockSelect={handleBlockSelect}
+          onSensorSelect={handleSensorSelect}
         />
         <div className={styles.mobileScopeDock}>
               <ScopeNavigation level={type === 'ranking' ? 'ranking' : isHealthMobile ? 'sensor' : type} />
@@ -1255,26 +1287,27 @@ function MobileDeviceFrame({ type = 'ranking' }) {
         </div>
       </div>
       <MobileBottomSheet
+        key={`${resolvedSheetKind}-${sheetState}-${sheetSelectionKey}`}
         state={sheetState}
         label={sheetLabel}
         onToggle={toggleSheet}
         dismissMode={isControlSheet}
-        dockedSummary={<MobileDockSummary type={type} sheetKind={resolvedSheetKind} />}
+        dockedSummary={<MobileDockSummary type={selectedMobileType} sheetKind={resolvedSheetKind} selectedBlock={selectedMobileBlock} selectedSensor={selectedMobileSensor} />}
       >
-        <MobileSheet type={type} sheetKind={resolvedSheetKind} healthMode={isHealthMobile} />
+        <MobileSheet type={selectedMobileType} sheetKind={resolvedSheetKind} healthMode={isHealthMobile || selectedMobileType === 'sensor-health'} />
       </MobileBottomSheet>
     </div>
   );
 }
 
-function MobileDockSummary({ type, sheetKind }) {
+function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = selectedBlock, selectedSensor: currentSensor = selectedSensor }) {
   const contentCopy = {
     ranking: { title: 'Pest Pressure Ranking', meta: 'Blocks ranked highest risk to lowest' },
     organization: { title: selectedOrganization.name, meta: 'Organisation detail', badge: selectedOrganization.riskLevel },
     ranch: { title: selectedRanch.name, meta: selectedRanch.organization, badge: selectedRanch.riskLevel },
-    block: { title: selectedBlock.name, meta: selectedBlock.ranchName, badge: selectedBlock.riskLevel },
-    sensor: { title: selectedSensor.name, meta: selectedSensor.blockName, badge: selectedSensor.severity },
-    'sensor-health': { title: healthIssueSensor.name, meta: 'Low battery detected', badge: healthIssueSensor.severity },
+    block: { title: currentBlock.name, meta: currentBlock.ranchName, badge: currentBlock.riskLevel },
+    sensor: { title: currentSensor.name, meta: currentSensor.blockName, badge: currentSensor.severity },
+    'sensor-health': { title: currentSensor.name, meta: 'Low battery detected', badge: currentSensor.severity },
   };
   const controlCopy = {
     pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },

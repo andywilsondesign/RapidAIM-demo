@@ -11,7 +11,24 @@
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   background: var(--color-panel-header-bg);
   box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.14);
+  animation: mobileSheetEnter 220ms ease-out;
   transition: height var(--transition-base), min-height var(--transition-base);
+}
+
+@keyframes mobileSheetEnter {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
 }
 
 .docked {
