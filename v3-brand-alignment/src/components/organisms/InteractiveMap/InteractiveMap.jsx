@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl, useMap 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
-import { getRiskMarkerSvgMarkup } from '../../atoms/RiskMarker/RiskMarker.config';
+import { getRiskMarkerSvgMarkup, markerConfig } from '../../atoms/RiskMarker/RiskMarker.config';
 
 const BLOCK_RISK_COLORS = {
   high: {
@@ -36,12 +36,6 @@ const getSensorHealthState = (sensor) => {
 
   return 'healthy';
 };
-
-const getHealthLabel = (healthState) => ({
-  healthy: 'Healthy',
-  warning: 'Low battery',
-  offline: 'Offline / fault',
-}[healthState] || 'Healthy');
 
 const getBatteryLevel = (sensor) => {
   if (getSensorHealthState(sensor) === 'offline') {
@@ -166,6 +160,51 @@ const createHealthMarkerSvgMarkup = (sensor, selected = false, variant = 'number
   `;
 };
 
+const MAINTENANCE_MARKER_STYLES = {
+  critical: {
+    severity: 'high',
+    fill: '#08081A',
+    iconStroke: '#FFFFFF',
+  },
+  warning: {
+    severity: 'medium',
+    fill: '#666666',
+    iconStroke: '#FFFFFF',
+  },
+  healthy: {
+    severity: 'low',
+    fill: 'rgba(255, 255, 255, 0.92)',
+    iconStroke: '#08081A',
+  },
+  offline: {
+    severity: 'offline',
+    fill: '#08081A',
+    iconStroke: '#FFFFFF',
+  },
+};
+
+const getMaintenanceMarkerState = (sensor) => {
+  if (sensor.severity === 'offline' || sensor.status === 'Inactive' || sensor.signal === 'Offline') {
+    return 'offline';
+  }
+
+  return sensor.maintenanceState || 'healthy';
+};
+
+const createMaintenanceMarkerSvgMarkup = (sensor, selected = false) => {
+  const markerState = getMaintenanceMarkerState(sensor);
+  const markerStyle = MAINTENANCE_MARKER_STYLES[markerState] || MAINTENANCE_MARKER_STYLES.healthy;
+  const marker = markerConfig[markerStyle.severity] || markerConfig.low;
+  const strokeWidth = selected ? 2.7 : 1.6;
+
+  return `
+    <svg class="leaflet-maintenance-marker leaflet-maintenance-marker--${markerState}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="${marker.shape}" fill="${markerStyle.fill}" stroke="#fff" stroke-width="${strokeWidth}" stroke-linejoin="round"></path>
+      <path d="${marker.icon}" fill="none" stroke="${markerStyle.iconStroke}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  `;
+};
+
 const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') => {
   const healthState = getSensorHealthState(sensor);
   const badgeVariantByMode = {
@@ -178,7 +217,8 @@ const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') 
   const isDedicatedHealthMode = sensorDisplayMode === 'health'
     || sensorDisplayMode === 'healthLevel'
     || sensorDisplayMode === 'healthBattery'
-    || sensorDisplayMode === 'healthBatteryBare';
+    || sensorDisplayMode === 'healthBatteryBare'
+    || sensorDisplayMode === 'maintenance';
   const healthVariantByMode = {
     health: 'number',
     healthLevel: 'level',
@@ -186,7 +226,9 @@ const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') 
     healthBatteryBare: 'batteryBare',
   };
   const healthVariant = healthVariantByMode[sensorDisplayMode];
-  const html = healthVariant
+  const html = sensorDisplayMode === 'maintenance'
+    ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createMaintenanceMarkerSvgMarkup(sensor, selected)}</span>`
+    : healthVariant
     ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createHealthMarkerSvgMarkup(sensor, selected, healthVariant)}</span>`
     : `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">
         ${getRiskMarkerSvgMarkup(sensor.severity, selected)}
@@ -283,10 +325,10 @@ export const InteractiveMap = ({
 
       return {
         ...boundaryBase,
-        color: 'rgba(255, 255, 255, 0.86)',
-        fillOpacity: 0.04,
-        opacity: 0.86,
-        weight: 2,
+        color: 'rgba(255, 255, 255, 0.98)',
+        fillOpacity: 0.035,
+        opacity: 0.98,
+        weight: 2.4,
         dashArray: null,
       };
     }
@@ -383,7 +425,7 @@ export const InteractiveMap = ({
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
-              ? `${sensor.name}: ${sensor.maintenanceReason || getHealthLabel(getSensorHealthState(sensor))}, battery ${sensor.battery}%, last sync ${sensor.lastSync}`
+              ? `${sensor.name}: battery ${sensor.battery}%, connectivity ${sensor.signal}, lure ${sensor.lureStatus || 'not recorded'}, last sync ${sensor.lastSync}`
               : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
@@ -396,7 +438,8 @@ export const InteractiveMap = ({
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
                 <>
                   Battery: {sensor.battery}%<br />
-                  Health: {sensor.maintenanceReason || getHealthLabel(getSensorHealthState(sensor))}<br />
+                  Connectivity: {sensor.signal}<br />
+                  Lure: {sensor.lureStatus || 'Not recorded'}<br />
                   Last sync: {sensor.lastSync}
                 </>
               ) : (

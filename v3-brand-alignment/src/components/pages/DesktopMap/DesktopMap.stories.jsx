@@ -42,14 +42,20 @@ export const SensorDetail = {
   },
 };
 
-export const SensorDetailHealth = {
-  args: {
-    initialPageId: 'consolidated-sensor-health',
-  },
-};
-
 export const MaintenanceModeExperiment = {
   args: {
     initialPageId: 'experimental-maintenance-mode',
+  },
+};
+
+export const MaintenanceSensorDetailExperiment = {
+  args: {
+    initialPageId: 'experimental-maintenance-sensor',
+  },
+};
+
+export const MaintenanceNoteModal = {
+  args: {
+    initialPageId: 'maintenance-note-modal',
   },
 };

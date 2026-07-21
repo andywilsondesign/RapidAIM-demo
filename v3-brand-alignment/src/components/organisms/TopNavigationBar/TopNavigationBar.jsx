@@ -7,6 +7,8 @@ import logo from '../../../assets/rapidaim_logo.svg';
 
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
+  modeLabel,
+  profileMenuItems = [],
   onSearch,
   onMenuClick,
   onTasksClick,
@@ -14,6 +16,7 @@ export const TopNavigationBar = ({
   className = '',
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   return (
     <header className={`${styles.header} ${isSearchOpen ? styles.searchActive : ''} ${className}`}>
@@ -39,6 +42,7 @@ export const TopNavigationBar = ({
             <div className={styles.logo}>
               <img src={logo} alt={organizationName} />
             </div>
+            {modeLabel && <span className={styles.modeChip}>{modeLabel}</span>}
           </div>
 
           <div className={styles.rightSection}>
@@ -48,9 +52,41 @@ export const TopNavigationBar = ({
             <Button variant="ghost" size="sm" onClick={onTasksClick} aria-label="Tasks">
               <span className="material-symbols-rounded">assignment</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={onProfileClick} aria-label="User Profile">
-              <span className="material-symbols-rounded">account_circle</span>
-            </Button>
+            <div className={styles.profileMenuWrap}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(event) => {
+                  onProfileClick?.(event);
+                  if (profileMenuItems.length > 0) {
+                    setIsProfileMenuOpen((current) => !current);
+                  }
+                }}
+                aria-label="User Profile"
+                aria-expanded={profileMenuItems.length > 0 ? isProfileMenuOpen : undefined}
+              >
+                <span className="material-symbols-rounded">account_circle</span>
+              </Button>
+              {profileMenuItems.length > 0 && isProfileMenuOpen && (
+                <div className={styles.profileMenu} role="menu">
+                  {profileMenuItems.map((item) => (
+                    <button
+                      className={item.active ? styles.activeProfileMenuItem : ''}
+                      key={item.label}
+                      onClick={() => {
+                        item.onClick?.();
+                        setIsProfileMenuOpen(false);
+                      }}
+                      role="menuitem"
+                      type="button"
+                    >
+                      <span className="material-symbols-rounded" aria-hidden="true">{item.icon || 'settings'}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -60,6 +96,13 @@ export const TopNavigationBar = ({
 
 TopNavigationBar.propTypes = {
   organizationName: PropTypes.string,
+  modeLabel: PropTypes.string,
+  profileMenuItems: PropTypes.arrayOf(PropTypes.shape({
+    active: PropTypes.bool,
+    icon: PropTypes.string,
+    label: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+  })),
   onSearch: PropTypes.func,
   onMenuClick: PropTypes.func,
   onTasksClick: PropTypes.func,

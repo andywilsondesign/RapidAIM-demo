@@ -654,6 +654,13 @@
   padding-bottom: calc(var(--layout-panel-action-tray-height) + var(--spacing-6));
 }
 
+.maintenanceStatGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-3);
+}
+
 .maintenanceListItem {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -729,9 +736,22 @@
   color: var(--color-text-primary);
 }
 
+.maintenanceListItem--critical {
+  border-left: 4px solid var(--maintenance-critical);
+}
+
+.maintenanceListItem--warning {
+  border-left: 4px solid var(--maintenance-warning);
+}
+
+.maintenanceListItem--healthy {
+  border-left: 4px solid rgba(8, 8, 26, 0.16);
+}
+
 .maintenanceDetailCard,
 .maintenanceNoteMock,
-.maintenanceTimeline {
+.maintenanceTimeline,
+.maintenanceHistory {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4);
@@ -749,6 +769,20 @@
 }
 
 .maintenanceTimeline > div {
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.maintenanceHistory {
+  gap: var(--spacing-3);
+}
+
+.maintenanceHistoryItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
   padding: var(--spacing-3);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
@@ -786,6 +820,47 @@
   font: inherit;
 }
 
+.maintenanceModal {
+  display: flex;
+  width: min(34rem, calc(100vw - var(--spacing-8)));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.maintenanceModalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  background: var(--color-panel-header-bg);
+}
+
+.maintenanceModalHeader h3,
+.maintenanceModalHeader p {
+  color: var(--color-panel-header-text);
+}
+
+.maintenanceModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+}
+
+.maintenanceModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-5);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-data-surface);
+}
+
 .maintenanceControlsPanel {
   display: flex;
   width: var(--layout-control-panel-width);
@@ -799,9 +874,14 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--spacing-3);
+  width: 100%;
   padding: var(--spacing-4);
+  border: 0;
   background: var(--color-panel-header-bg);
   color: var(--color-panel-header-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .maintenanceControlHeader > span {
@@ -884,6 +964,22 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+}
+
+.maintenanceLegendCriticalMarker {
+  --marker-fill: var(--maintenance-critical);
+}
+
+.maintenanceLegendWarningMarker {
+  --marker-fill: var(--maintenance-warning);
+}
+
+.maintenanceLegendHealthyMarker {
+  --marker-fill: rgba(255, 255, 255, 0.94);
+}
+
+.maintenanceLegendHealthyMarker svg path:last-child {
+  stroke: var(--maintenance-critical);
 }
 
 .maintenanceLegendMarker {
