@@ -66,6 +66,88 @@ const healthExperimentSensors = sensors.map((sensor) => {
 
   return sensor;
 });
+const maintenanceSensors = [
+  {
+    ...sensors[3],
+    battery: 0,
+    signal: 'Offline',
+    status: 'Inactive',
+    lastSync: '32 hours ago',
+    severity: 'offline',
+    maintenanceState: 'critical',
+    maintenanceReason: 'Offline over 24h',
+    maintenanceDetails: 'Device has not uploaded data for 32 hours. Check power, placement, and local service before relying on recent pest readings.',
+    lureStatus: 'Due in 3 days',
+    lastService: 'Jun 14, 2026',
+    nextAction: 'Replace or relocate device',
+  },
+  {
+    ...sensors[4],
+    battery: 18,
+    signal: 'Poor',
+    status: 'Online',
+    lastSync: '2 hours ago',
+    severity: 'medium',
+    maintenanceState: 'critical',
+    maintenanceReason: 'Battery below 30%',
+    maintenanceDetails: 'Battery has crossed the 30% maintenance threshold. Charge may decline quickly from here.',
+    lureStatus: 'Changed 9 days ago',
+    lastService: 'Jun 28, 2026',
+    nextAction: 'Replace battery',
+  },
+  {
+    ...sensors[2],
+    battery: 31,
+    signal: 'Intermittent',
+    status: 'Online',
+    lastSync: '7 hours ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Intermittent signal',
+    maintenanceDetails: 'Device is online but upload cadence is inconsistent. Data may arrive late if connectivity drops again.',
+    lureStatus: 'Due in 8 days',
+    lastService: 'Jul 2, 2026',
+    nextAction: 'Check placement / LTE service',
+  },
+  {
+    ...sensors[1],
+    battery: 43,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '54 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    maintenanceDetails: 'Device is healthy, but lure replacement should be logged during the next visit.',
+    lureStatus: 'Due tomorrow',
+    lastService: 'Jul 1, 2026',
+    nextAction: 'Replace lure',
+  },
+  {
+    ...sensors[0],
+    battery: 82,
+    signal: 'Excellent',
+    status: 'Online',
+    lastSync: '12 min ago',
+    severity: 'low',
+    maintenanceState: 'healthy',
+    maintenanceReason: 'No action required',
+    maintenanceDetails: 'Device is connected and above the operational battery threshold.',
+    lureStatus: 'Changed 5 days ago',
+    lastService: 'Jul 10, 2026',
+    nextAction: 'Monitor',
+  },
+];
+const selectedMaintenanceSensor = maintenanceSensors[0];
+const maintenanceRank = {
+  critical: 3,
+  warning: 2,
+  healthy: 1,
+};
+const rankedMaintenanceSensors = [...maintenanceSensors].sort((a, b) => (
+  maintenanceRank[b.maintenanceState] - maintenanceRank[a.maintenanceState]
+  || a.name.localeCompare(b.name)
+));
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
   riskLevel: 'high',
@@ -245,6 +327,20 @@ const buildRanchBlockOverlays = (selectedBlockId, previewBlockId) => (
   buildBlockOverlays(selectedRanchBlocks.slice(0, 10), selectedBlockId, previewBlockId)
 );
 
+const buildMaintenanceBlockOverlays = () => {
+  const maintenanceBlocks = selectedRanchBlocks.slice(0, 8);
+  const blockMapPolygons = buildBlockMapPolygons(maintenanceBlocks);
+
+  return maintenanceBlocks.map((block) => ({
+    id: block.id,
+    label: block.name,
+    positions: blockMapPolygons[block.id],
+    severity: 'low',
+    state: 'default',
+    visualStyle: 'boundary',
+  }));
+};
+
 const rankedRanches = ranches
   .filter((ranch) => ranch.organization === selectedOrganization.name)
   .sort((a, b) => b.currentCount - a.currentCount);
@@ -304,6 +400,12 @@ const pageGroups = [
       { id: 'consolidated-block', label: 'Block Detail', component: <DesktopDetailPage type="block" scopeExperiment /> },
       { id: 'consolidated-sensor', label: 'Sensor Detail', component: <DesktopDetailPage type="sensor" scopeExperiment /> },
       { id: 'consolidated-sensor-health', label: 'Sensor Detail (Health)', component: <DesktopDetailPage type="sensor-health" scopeExperiment /> },
+    ],
+  },
+  {
+    title: 'Experiments',
+    pages: [
+      { id: 'experimental-maintenance-mode', label: 'Maintenance Mode', component: <MaintenanceModePage /> },
     ],
   },
   {
@@ -492,7 +594,11 @@ function DesktopShell({
   selectedSensorIdOverride,
   sensorDisplayMode = 'pest',
   controlCenterProps = {},
+  rightRailContent,
   mapNotice,
+  mapClassName = '',
+  shellClassName = '',
+  onSensorSelect,
 }) {
   const [pestFocus, setPestFocus] = useState('all');
   const [previewBlockId, setPreviewBlockId] = useState('');
@@ -508,7 +614,7 @@ function DesktopShell({
   const selectedSensorId = selectedSensorIdOverride ?? (scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '');
 
   return (
-    <div className={styles.desktopShell}>
+    <div className={`${styles.desktopShell} ${shellClassName}`}>
       <TopNavigationBar />
       <div className={styles.desktopMain}>
         <ScopeNavigation level={scopeExperiment ? scopeLevel : 'block'} />
@@ -525,17 +631,21 @@ function DesktopShell({
             sensorDisplayMode={sensorDisplayMode}
             blockSeverity={selectedBlock.riskLevel}
             mapStyle="satellite"
+            className={mapClassName}
+            onSensorSelect={onSensorSelect}
           />
           <WeatherWidget weather={weather} className={styles.weather} />
           {mapNotice}
         </section>
-        <ControlCenter
-          {...controlCenterProps}
-          className={`${styles.rightRail} ${scopeExperiment ? styles.rightRailStack : ''} ${controlCenterProps.className || ''}`}
-          mode={scopeExperiment ? 'scopeExperiment' : 'default'}
-          pestFocus={pestFocus}
-          onPestFocusChange={setPestFocus}
-        />
+        {rightRailContent || (
+          <ControlCenter
+            {...controlCenterProps}
+            className={`${styles.rightRail} ${scopeExperiment ? styles.rightRailStack : ''} ${controlCenterProps.className || ''}`}
+            mode={scopeExperiment ? 'scopeExperiment' : 'default'}
+            pestFocus={pestFocus}
+            onPestFocusChange={setPestFocus}
+          />
+        )}
       </div>
       {children}
     </div>
@@ -565,6 +675,252 @@ function PestPressureRankingPage() {
       blockOverlays={buildRankingBlockOverlays(selectedBlockId, previewBlockId)}
       activeBlockLabel={activeBlock.name}
     />
+  );
+}
+
+function getMaintenanceSeverity(sensor) {
+  if (sensor.maintenanceState === 'critical') return 'critical';
+  if (sensor.maintenanceState === 'warning') return 'warning';
+  return 'healthy';
+}
+
+function MaintenanceModePage() {
+  const [selectedSensorId, setSelectedSensorId] = useState(selectedMaintenanceSensor.id);
+  const activeSensor = maintenanceSensors.find((sensor) => sensor.id === selectedSensorId) || selectedMaintenanceSensor;
+
+  return (
+    <DesktopShell
+      detailPanel={(
+        <MaintenancePanel
+          activeSensor={activeSensor}
+          onSensorSelect={setSelectedSensorId}
+        />
+      )}
+      scopeExperiment
+      scopeLevel="sensor"
+      parentContext={{
+        items: [
+          { label: selectedOrganization.name },
+          { label: selectedRanch.name },
+          { label: 'All blocks' },
+        ],
+      }}
+      mapSensors={maintenanceSensors}
+      selectedSensorIdOverride={activeSensor.id}
+      sensorDisplayMode="healthBatteryBare"
+      blockOverlays={buildMaintenanceBlockOverlays()}
+      activeBlockLabel=""
+      mapClassName={styles.maintenanceMap}
+      shellClassName={styles.maintenanceShell}
+      onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
+      rightRailContent={<MaintenanceControlsPanel />}
+      mapNotice={(
+        <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
+          <span className="material-symbols-rounded" aria-hidden="true">construction</span>
+          <Typography variant="caption">Maintenance mode is on</Typography>
+          <Button variant="ghost" size="sm">Return to pest analytics</Button>
+        </div>
+      )}
+    />
+  );
+}
+
+function MaintenancePanel({ activeSensor, onSensorSelect }) {
+  const criticalCount = maintenanceSensors.filter((sensor) => sensor.maintenanceState === 'critical').length;
+  const warningCount = maintenanceSensors.filter((sensor) => sensor.maintenanceState === 'warning').length;
+
+  return (
+    <div className={`${styles.panel} ${styles.maintenancePanel}`}>
+      <div className={styles.panelHeader}>
+        <div className={styles.panelTitleGroup}>
+          <div className={styles.panelTitleRow}>
+            <div className={styles.panelTitleCluster}>
+              <Typography variant="h3">Maintenance Mode</Typography>
+            </div>
+            <InfoDisclosure
+              title="Maintenance mode"
+              description="Sensors are ranked by device-health priority, using offline duration, battery, signal, and maintenance cadence rather than pest pressure."
+            />
+          </div>
+          <div className={styles.maintenanceSummaryGrid}>
+            <div>
+              <Typography variant="caption">Critical</Typography>
+              <Typography variant="h5">{criticalCount}</Typography>
+            </div>
+            <div>
+              <Typography variant="caption">Warning</Typography>
+              <Typography variant="h5">{warningCount}</Typography>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
+        <section className={styles.childList}>
+          <div className={styles.sectionHeader}>
+            <Typography variant="h5">Sensors needing attention</Typography>
+            <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+          </div>
+          {rankedMaintenanceSensors.map((sensor, index) => (
+            <MaintenanceListItem
+              active={sensor.id === activeSensor.id}
+              key={sensor.id}
+              rank={index + 1}
+              sensor={sensor}
+              onSelect={() => onSensorSelect(sensor.id)}
+            />
+          ))}
+        </section>
+        <MaintenanceDeviceDetail sensor={activeSensor} />
+      </div>
+      <div className={`${styles.panelBottomFade} ${styles.panelBottomFadeCompact}`} />
+      <div className={styles.bottomActionTray}>
+        <div className={styles.actionRow}>
+          <Button variant="primary" fullWidth>
+            <span className="material-symbols-rounded">edit_note</span>
+            Add note
+          </Button>
+          <Button variant="secondary" fullWidth>
+            <span className="material-symbols-rounded">assignment_add</span>
+            Add field task
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
+  const state = getMaintenanceSeverity(sensor);
+  const stateLabel = {
+    critical: 'Critical',
+    warning: 'Warning',
+    healthy: 'Healthy',
+  }[state];
+
+  return (
+    <button
+      className={`${styles.maintenanceListItem} ${styles[`maintenanceListItem--${state}`]} ${active ? styles.activeMaintenanceListItem : ''}`}
+      type="button"
+      onClick={onSelect}
+      onFocus={onSelect}
+      onMouseEnter={onSelect}
+    >
+      <span className={styles.maintenanceRankBadge}>{rank}</span>
+      <span className={styles.maintenanceItemContent}>
+        <Typography variant="body-sm" weight="semibold">{sensor.name}</Typography>
+        <Typography variant="caption" color="secondary">
+          {sensor.blockName} / {sensor.maintenanceReason} / Battery {sensor.battery}% / {sensor.signal}
+        </Typography>
+      </span>
+      <span className={`${styles.maintenanceStatusPill} ${styles[`maintenanceStatusPill--${state}`]}`}>{stateLabel}</span>
+    </button>
+  );
+}
+
+function MaintenanceDeviceDetail({ sensor }) {
+  const batteryTone = sensor.battery < 30 ? 'error' : sensor.battery < 45 ? 'warning' : 'positive';
+  const signalTone = sensor.signal === 'Poor' || sensor.signal === 'Offline' ? 'error' : sensor.signal === 'Intermittent' ? 'warning' : 'positive';
+  const syncTone = sensor.lastSync.includes('day') || sensor.lastSync.includes('hours') && Number.parseInt(sensor.lastSync, 10) >= 24 ? 'error' : 'positive';
+
+  return (
+    <section className={styles.maintenanceDetailCard}>
+      <div className={styles.sectionHeader}>
+        <Typography variant="h5">{sensor.name}</Typography>
+        <Typography variant="caption" color="secondary">{sensor.ranchName} / {sensor.blockName}</Typography>
+      </div>
+      <div className={`${styles.healthAlert} ${sensor.maintenanceState === 'critical' ? styles.healthAlertCritical : styles.healthAlertWarning}`}>
+        <div className={styles.healthAlertContent}>
+          <Typography variant="body-sm" weight="bold">{sensor.maintenanceReason}</Typography>
+          <Typography variant="caption">{sensor.maintenanceDetails}</Typography>
+        </div>
+      </div>
+      <SensorMetaGrid items={[
+        { label: 'Connection', value: sensor.status, tone: sensor.status === 'Inactive' ? 'error' : 'positive' },
+        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
+        { label: 'Signal', value: sensor.signal, tone: signalTone },
+        { label: 'Last Sync', value: sensor.lastSync, tone: syncTone },
+      ]} />
+      <div className={styles.maintenanceTimeline}>
+        <div>
+          <Typography variant="caption" color="secondary">Lure status</Typography>
+          <Typography variant="body-sm" weight="semibold">{sensor.lureStatus}</Typography>
+        </div>
+        <div>
+          <Typography variant="caption" color="secondary">Last service</Typography>
+          <Typography variant="body-sm" weight="semibold">{sensor.lastService}</Typography>
+        </div>
+        <div>
+          <Typography variant="caption" color="secondary">Suggested next action</Typography>
+          <Typography variant="body-sm" weight="semibold">{sensor.nextAction}</Typography>
+        </div>
+      </div>
+      <div className={styles.maintenanceNoteMock}>
+        <Typography variant="body-sm" weight="bold">Add maintenance note</Typography>
+        <div className={styles.maintenanceNoteFields}>
+          <FormField label="Category">
+            <Select options={[
+              { label: 'Battery change', value: 'battery' },
+              { label: 'Lure change', value: 'lure' },
+              { label: 'Device moved', value: 'moved' },
+              { label: 'Device replaced', value: 'replaced' },
+              { label: 'General visit note', value: 'note' },
+            ]} />
+          </FormField>
+          <label className={styles.maintenanceTextareaLabel}>
+            <Typography variant="caption" color="secondary">Note</Typography>
+            <textarea rows="3" placeholder="Add field note or maintenance outcome" />
+          </label>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MaintenanceControlsPanel() {
+  return (
+    <aside className={`${styles.rightRail} ${styles.maintenanceControlsPanel}`}>
+      <div className={styles.maintenanceControlHeader}>
+        <span className="material-symbols-rounded" aria-hidden="true">construction</span>
+        <div>
+          <Typography variant="h4">Maintenance</Typography>
+          <Typography variant="caption">Fleet analytics view</Typography>
+        </div>
+        <label className={styles.maintenanceSwitch}>
+          <input type="checkbox" defaultChecked aria-label="Maintenance mode enabled" />
+          <span />
+        </label>
+      </div>
+      <div className={styles.maintenanceControlBody}>
+        <section className={styles.maintenanceControlSection}>
+          <Typography variant="h6">Priority filters</Typography>
+          <label><input type="checkbox" defaultChecked /> Offline over 24h</label>
+          <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+          <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+          <label><input type="checkbox" defaultChecked /> Lure due soon</label>
+        </section>
+        <section className={styles.maintenanceControlSection}>
+          <Typography variant="h6">Maintenance Legend</Typography>
+          <div className={styles.maintenanceLegendItem}>
+            <span className={`${styles.maintenanceLegendMarker} ${styles.maintenanceLegendCritical}`}>!</span>
+            <Typography variant="body-sm">Critical device issue</Typography>
+          </div>
+          <div className={styles.maintenanceLegendItem}>
+            <span className={`${styles.maintenanceLegendMarker} ${styles.maintenanceLegendWarning}`}>!</span>
+            <Typography variant="body-sm">Maintenance warning</Typography>
+          </div>
+          <div className={styles.maintenanceLegendItem}>
+            <span className={`${styles.maintenanceLegendMarker} ${styles.maintenanceLegendHealthy}`}>
+              <span className="material-symbols-rounded" aria-hidden="true">check</span>
+            </span>
+            <Typography variant="body-sm">Healthy / no action</Typography>
+          </div>
+          <div className={styles.maintenanceLegendItem}>
+            <span className={styles.maintenanceBoundaryLegend} />
+            <Typography variant="body-sm">Block boundary only</Typography>
+          </div>
+        </section>
+      </div>
+    </aside>
   );
 }
 

@@ -26,6 +26,10 @@ const getSensorHealthState = (sensor) => {
     return 'offline';
   }
 
+  if (sensor.maintenanceState === 'critical' || sensor.maintenanceState === 'warning') {
+    return 'warning';
+  }
+
   if (sensor.battery <= 10 || sensor.status === 'Needs Maintenance') {
     return 'warning';
   }
@@ -247,7 +251,46 @@ export const InteractiveMap = ({
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
 
-  const getBlockPathOptions = (severity, state = 'default') => {
+  const getBlockPathOptions = (severity, state = 'default', visualStyle = 'risk') => {
+    if (visualStyle === 'boundary') {
+      const boundaryBase = {
+        fillColor: '#FFFFFF',
+        lineCap: 'round',
+        lineJoin: 'round',
+      };
+
+      if (state === 'selected') {
+        return {
+          ...boundaryBase,
+          color: '#FFFFFF',
+          fillOpacity: 0.08,
+          opacity: 1,
+          weight: 4,
+          dashArray: null,
+        };
+      }
+
+      if (state === 'hover') {
+        return {
+          ...boundaryBase,
+          color: '#FFFFFF',
+          fillOpacity: 0.1,
+          opacity: 0.96,
+          weight: 3,
+          dashArray: '8 5',
+        };
+      }
+
+      return {
+        ...boundaryBase,
+        color: 'rgba(255, 255, 255, 0.86)',
+        fillOpacity: 0.04,
+        opacity: 0.86,
+        weight: 2,
+        dashArray: null,
+      };
+    }
+
     const palette = BLOCK_RISK_COLORS[severity] || BLOCK_RISK_COLORS.low;
     const baseOptions = {
       fillColor: palette.fill,
@@ -316,7 +359,7 @@ export const InteractiveMap = ({
           <Polygon
             key={block.id}
             positions={block.positions}
-            pathOptions={getBlockPathOptions(block.severity, block.visualState)}
+            pathOptions={getBlockPathOptions(block.severity, block.visualState, block.visualStyle)}
             eventHandlers={{
               mouseover: () => setHoveredBlockId(block.id),
               mouseout: () => setHoveredBlockId(''),
@@ -340,7 +383,7 @@ export const InteractiveMap = ({
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
-              ? `${sensor.name}: ${getHealthLabel(getSensorHealthState(sensor))}, battery ${sensor.battery}%, last sync ${sensor.lastSync}`
+              ? `${sensor.name}: ${sensor.maintenanceReason || getHealthLabel(getSensorHealthState(sensor))}, battery ${sensor.battery}%, last sync ${sensor.lastSync}`
               : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
@@ -353,7 +396,7 @@ export const InteractiveMap = ({
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
                 <>
                   Battery: {sensor.battery}%<br />
-                  Health: {getHealthLabel(getSensorHealthState(sensor))}<br />
+                  Health: {sensor.maintenanceReason || getHealthLabel(getSensorHealthState(sensor))}<br />
                   Last sync: {sensor.lastSync}
                 </>
               ) : (
@@ -380,6 +423,7 @@ InteractiveMap.propTypes = {
     positions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
     severity: PropTypes.oneOf(['high', 'medium', 'low']).isRequired,
     state: PropTypes.oneOf(['default', 'hover', 'selected']),
+    visualStyle: PropTypes.oneOf(['risk', 'boundary']),
   })),
   activeBlockLabel: PropTypes.string,
   sensors: PropTypes.arrayOf(PropTypes.shape({
@@ -389,6 +433,8 @@ InteractiveMap.propTypes = {
     name: PropTypes.string,
     count: PropTypes.number,
     severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
+    maintenanceState: PropTypes.oneOf(['critical', 'warning', 'healthy']),
+    maintenanceReason: PropTypes.string,
   })),
   selectedSensorId: PropTypes.string,
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),

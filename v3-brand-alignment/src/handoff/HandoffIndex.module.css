@@ -592,6 +592,345 @@
   color: var(--color-brand-primary);
 }
 
+.maintenanceShell {
+  --maintenance-critical: #08081a;
+  --maintenance-warning: #666666;
+  --maintenance-healthy: rgba(255, 255, 255, 0.94);
+}
+
+.maintenanceMap :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-shell),
+.maintenanceMap :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-cap) {
+  stroke: #fff;
+  stroke-width: 1.9;
+}
+
+.maintenanceMap :global(.leaflet-health-marker--battery-full .leaflet-health-marker__battery-fill) {
+  fill: var(--maintenance-healthy);
+}
+
+.maintenanceMap :global(.leaflet-health-marker--battery-mid .leaflet-health-marker__battery-fill),
+.maintenanceMap :global(.leaflet-health-marker--battery-low .leaflet-health-marker__battery-fill) {
+  fill: var(--maintenance-critical);
+}
+
+.maintenanceMap :global(.leaflet-health-marker--warning.leaflet-health-marker--battery-full .leaflet-health-marker__battery-fill) {
+  fill: var(--maintenance-warning);
+}
+
+.maintenanceToast {
+  border-color: rgba(8, 8, 26, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.maintenanceToast > span {
+  color: var(--maintenance-critical);
+}
+
+.maintenancePanel {
+  background: var(--color-bg-panel);
+}
+
+.maintenanceSummaryGrid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.maintenanceSummaryGrid > div {
+  padding: var(--spacing-3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.maintenanceSummaryGrid p,
+.maintenanceSummaryGrid h5 {
+  color: var(--color-panel-header-text);
+}
+
+.maintenancePanelBody {
+  gap: var(--spacing-4);
+  padding-bottom: calc(var(--layout-panel-action-tray-height) + var(--spacing-6));
+}
+
+.maintenanceListItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  width: 100%;
+  min-height: 4.75rem;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-data-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.maintenanceListItem:hover,
+.maintenanceListItem:focus-visible,
+.activeMaintenanceListItem {
+  border-color: rgba(8, 8, 26, 0.28);
+  background: rgba(8, 8, 26, 0.045);
+  outline: none;
+}
+
+.maintenanceRankBadge {
+  display: inline-flex;
+  width: var(--spacing-8);
+  height: var(--spacing-8);
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-border-subtle);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-metric);
+  font-weight: var(--font-weight-bold);
+}
+
+.maintenanceItemContent {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.maintenanceStatusPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.maintenanceStatusPill--critical {
+  background: var(--maintenance-critical);
+  color: #fff;
+}
+
+.maintenanceStatusPill--warning {
+  background: var(--maintenance-warning);
+  color: #fff;
+}
+
+.maintenanceStatusPill--healthy {
+  border: 1px solid var(--color-border-subtle);
+  background: #fff;
+  color: var(--color-text-primary);
+}
+
+.maintenanceDetailCard,
+.maintenanceNoteMock,
+.maintenanceTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.maintenanceDetailCard {
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-data-surface);
+}
+
+.maintenanceTimeline {
+  gap: var(--spacing-3);
+}
+
+.maintenanceTimeline > div {
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.maintenanceNoteMock {
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.maintenanceNoteFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.maintenanceTextareaLabel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.maintenanceTextareaLabel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.maintenanceControlsPanel {
+  display: flex;
+  width: var(--layout-control-panel-width);
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg-panel);
+}
+
+.maintenanceControlHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.maintenanceControlHeader > span {
+  font-size: var(--font-size-lg);
+}
+
+.maintenanceControlHeader p,
+.maintenanceControlHeader h4 {
+  color: var(--color-panel-header-text);
+}
+
+.maintenanceSwitch {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.maintenanceSwitch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.maintenanceSwitch span {
+  position: relative;
+  display: inline-flex;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.maintenanceSwitch span::after {
+  position: absolute;
+  top: 0.2rem;
+  left: 1.45rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  background: #fff;
+  content: '';
+}
+
+.maintenanceControlBody,
+.maintenanceControlSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.maintenanceControlBody {
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  overflow: auto;
+}
+
+.maintenanceControlSection {
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-data-surface);
+}
+
+.maintenanceControlSection label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.maintenanceControlSection input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--maintenance-critical);
+}
+
+.maintenanceLegendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.maintenanceLegendMarker {
+  display: inline-flex;
+  width: var(--size-map-marker);
+  height: var(--size-map-marker);
+  flex: 0 0 var(--size-map-marker);
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18);
+  font-family: var(--font-family-metric);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.maintenanceLegendCritical {
+  background: var(--maintenance-critical);
+  color: #fff;
+}
+
+.maintenanceLegendWarning {
+  background: var(--maintenance-warning);
+  color: #fff;
+}
+
+.maintenanceLegendHealthy {
+  background: #fff;
+  color: var(--maintenance-critical);
+}
+
+.maintenanceLegendHealthy span {
+  font-size: var(--font-size-base);
+}
+
+.maintenanceBoundaryLegend {
+  display: inline-flex;
+  width: var(--size-map-marker);
+  height: var(--size-map-marker);
+  flex: 0 0 var(--size-map-marker);
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-xs);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(8, 8, 26, 0.14);
+}
+
 @media (max-width: 1000px) {
   .healthExperimentGrid,
   .healthExperimentLowerGrid {

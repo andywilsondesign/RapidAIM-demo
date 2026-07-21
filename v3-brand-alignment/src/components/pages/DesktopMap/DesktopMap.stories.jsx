@@ -47,3 +47,9 @@ export const SensorDetailHealth = {
     initialPageId: 'consolidated-sensor-health',
   },
 };
+
+export const MaintenanceModeExperiment = {
+  args: {
+    initialPageId: 'experimental-maintenance-mode',
+  },
+};
