@@ -1517,7 +1517,7 @@ function MaintenanceControlsPanel({
     <aside className={`${styles.rightRail} ${styles.maintenanceControlsPanel}`}>
       <button className={styles.maintenanceControlHeader} type="button" onClick={() => setIsOpen((current) => !current)}>
         <span className="material-symbols-rounded" aria-hidden="true">construction</span>
-        <Typography variant="h4">Maintenance</Typography>
+        <Typography variant="h4">Maintenance Controls</Typography>
         <span className="material-symbols-rounded" aria-hidden="true">{isOpen ? 'expand_less' : 'expand_more'}</span>
       </button>
       {isOpen && (
@@ -2411,7 +2411,7 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
   const controlCopy = {
     pest: { title: 'Pest Focus' },
     map: { title: 'Map Controls' },
-    maintenance: { title: 'Maintenance' },
+    maintenance: { title: 'Maintenance Controls' },
   };
   const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
 
@@ -2575,7 +2575,7 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
       <div className={styles.mobileSheetHeader}>
         <div className={styles.mobileSheetHeaderTop}>
           <div>
-            <Typography variant="h4">Maintenance</Typography>
+            <Typography variant="h4">Maintenance Controls</Typography>
           </div>
         </div>
       </div>
