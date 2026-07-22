@@ -1669,6 +1669,13 @@ function HealthIssueAlert({ sensor }) {
 
 function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
   const batteryTone = sensor.battery <= 10 ? 'error' : sensor.battery <= 25 ? 'warning' : 'positive';
+  const connectivityValue = sensor.signal === 'Offline' ? 'Offline' : sensor.signal;
+  const connectivityTone = sensor.signal === 'Offline' ? 'error' : ['Poor', 'Intermittent'].includes(sensor.signal) ? 'warning' : 'positive';
+  const deviceHealthValue = sensor.status === 'Needs Maintenance' || sensor.status === 'Inactive' ? 'Fault' : 'Healthy';
+  const deviceHealthTone = deviceHealthValue === 'Fault' ? 'error' : 'positive';
+  const lureValue = sensor.lureStatus || 'Current';
+  const lureTone = lureValue.toLowerCase().includes('due') ? 'warning' : 'positive';
+  const healthyTone = healthMode ? undefined : 'positive';
 
   return (
     <section className={styles.childList} id="sensor-health-section">
@@ -1679,10 +1686,11 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
         </Typography>
       </div>
       <SensorMetaGrid items={[
-        { label: 'Status', value: sensor.status, tone: sensor.status === 'Offline' ? 'error' : 'positive' },
-        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
-        { label: 'Signal', value: sensor.signal, tone: 'positive' },
-        { label: 'Last Sync', value: sensor.lastSync, tone: 'positive' },
+        { label: 'Battery', value: `${sensor.battery}%`, tone: healthyTone || batteryTone },
+        { label: 'Connectivity', value: connectivityValue, tone: healthyTone || connectivityTone },
+        { label: 'Device Health', value: deviceHealthValue, tone: healthyTone || deviceHealthTone },
+        { label: 'Lure', value: lureValue, tone: healthyTone || lureTone },
+        { label: 'Last Sync', value: sensor.lastSync.replace(' ago', ''), tone: healthyTone || 'positive' },
       ]} />
     </section>
   );
@@ -1701,6 +1709,7 @@ SensorMaintenance.propTypes = {
     battery: PropTypes.number.isRequired,
     signal: PropTypes.string.isRequired,
     lastSync: PropTypes.string.isRequired,
+    lureStatus: PropTypes.string,
   }),
   healthMode: PropTypes.bool,
 };
