@@ -20,14 +20,12 @@ export const StatCard = ({
 
   return (
     <div className={`${styles.card} ${styles[`card--${tone}`]} ${className}`}>
-      <div className={styles.labelRow}>
-        <Typography variant="body-sm" color="secondary" className={styles.label}>
-          {label}
-        </Typography>
-        {infoTitle && infoDescription && (
-          <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
-        )}
-      </div>
+      {infoTitle && infoDescription && (
+        <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
+      )}
+      <Typography variant="body-sm" color="secondary" className={styles.label}>
+        {label}
+      </Typography>
       
       <div className={styles.valueRow}>
         <Typography variant="h3" className="font-metric">{value}</Typography>

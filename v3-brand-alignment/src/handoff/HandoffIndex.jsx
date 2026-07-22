@@ -944,7 +944,7 @@ function MaintenancePanel({
               <StatCard
                 label="Offline sensors"
                 value={maintenanceStats.offline}
-                tone="neutral"
+                tone="high"
                 infoTitle="Offline sensors"
                 infoDescription="Sensors that are offline because battery is unavailable, the device has stopped uploading, or a field check is needed."
               />
@@ -963,10 +963,10 @@ function MaintenancePanel({
                 infoDescription="Sensors reporting poor, offline, or intermittent LTE connectivity based on recent upload cadence and RSRP signal readings."
               />
               <StatCard
-                label="Lure due"
+                label="Lure due soon"
                 value={maintenanceStats.lureDue}
                 tone="medium"
-                infoTitle="Lure due"
+                infoTitle="Lure due soon"
                 infoDescription="Sensors where lure replacement is due within the next seven days."
               />
             </div>

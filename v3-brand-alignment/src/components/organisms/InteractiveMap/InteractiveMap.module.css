@@ -8,7 +8,7 @@
 
 /* Ensure Leaflet controls don't conflict with our custom UI */
 :global(.leaflet-control-container) {
-  z-index: 1000;
+  z-index: 500;
 }
 
 :global(.leaflet-bottom.leaflet-right) {
