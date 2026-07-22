@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, Tooltip, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
@@ -295,6 +295,19 @@ const MapResizer = () => {
   return null;
 };
 
+const MapInteractionHandler = ({ onMapClick }) => {
+  useMapEvents({
+    click: () => onMapClick?.(),
+    mousedown: () => onMapClick?.(),
+    touchstart: () => onMapClick?.(),
+  });
+  return null;
+};
+
+MapInteractionHandler.propTypes = {
+  onMapClick: PropTypes.func,
+};
+
 export const InteractiveMap = ({
   center = [36.7378, -119.7871], // Default Fresno, CA
   zoom = 13,
@@ -307,8 +320,10 @@ export const InteractiveMap = ({
   mapStyle = 'satellite', // 'satellite' or 'stylized'
   sensorDisplayMode = 'pest',
   showSelectedSensorTooltip = false,
+  visibleSensorTooltipId = '',
   onBlockSelect,
   onSensorSelect,
+  onSensorTooltipChange,
   className = '',
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
@@ -403,14 +418,16 @@ export const InteractiveMap = ({
   }));
   const activeBlockOverlay = visualBlockOverlays.find((block) => block.visualState === 'hover')
     || visualBlockOverlays.find((block) => block.visualState === 'selected');
+  const clearVisibleSensorTooltip = () => onSensorTooltipChange?.('');
 
   const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const stylizedUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // CartoDB Positron for clean view
 
   return (
-    <div className={`${styles.mapWrapper} ${className}`}>
+    <div className={`${styles.mapWrapper} ${className}`} onPointerDown={clearVisibleSensorTooltip}>
       <MapContainer center={center} zoom={zoom} zoomControl={false} style={{ height: '100%', width: '100%' }}>
         <MapResizer />
+        <MapInteractionHandler onMapClick={clearVisibleSensorTooltip} />
         <ZoomControl position="bottomright" />
         <TileLayer
           url={mapStyle === 'satellite' ? satelliteUrl : stylizedUrl}
@@ -425,7 +442,10 @@ export const InteractiveMap = ({
             eventHandlers={{
               mouseover: () => setHoveredBlockId(block.id),
               mouseout: () => setHoveredBlockId(''),
-              click: () => onBlockSelect?.(block),
+              click: () => {
+                clearVisibleSensorTooltip();
+                onBlockSelect?.(block);
+              },
             }}
           />
         ))}
@@ -441,7 +461,7 @@ export const InteractiveMap = ({
 
         {sensors.map((sensor) => (
           <Marker
-            key={`${sensor.id}-${sensor.id === selectedSensorId ? 'selected' : 'default'}`}
+            key={`${sensor.id}-${sensor.id === selectedSensorId ? 'selected' : 'default'}-${sensor.id === visibleSensorTooltipId ? 'tooltip' : 'no-tooltip'}`}
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
@@ -450,7 +470,13 @@ export const InteractiveMap = ({
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
             eventHandlers={{
-              click: () => onSensorSelect?.(sensor),
+              click: (event) => {
+                if (event.originalEvent) {
+                  L.DomEvent.stopPropagation(event.originalEvent);
+                }
+                onSensorTooltipChange?.(sensor.id);
+                onSensorSelect?.(sensor);
+              },
             }}
           >
             <Tooltip
@@ -458,7 +484,7 @@ export const InteractiveMap = ({
               direction="top"
               offset={[0, -14]}
               opacity={1}
-              permanent={showSelectedSensorTooltip && sensor.id === selectedSensorId}
+              permanent={showSelectedSensorTooltip && sensor.id === visibleSensorTooltipId}
             >
               <strong>{sensor.name}</strong><br />
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
@@ -511,7 +537,9 @@ InteractiveMap.propTypes = {
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
   sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance']),
   showSelectedSensorTooltip: PropTypes.bool,
+  visibleSensorTooltipId: PropTypes.string,
   onBlockSelect: PropTypes.func,
   onSensorSelect: PropTypes.func,
+  onSensorTooltipChange: PropTypes.func,
   className: PropTypes.string,
 };

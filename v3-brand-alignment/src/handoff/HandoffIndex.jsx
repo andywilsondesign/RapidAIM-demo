@@ -2232,6 +2232,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
   const [mobileSensorMarkerMode, setMobileSensorMarkerMode] = useState(isHealthMobile ? 'health' : 'pest');
   const [selectedMobileBlockId, setSelectedMobileBlockId] = useState(type === 'block' ? selectedBlock.id : '');
   const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : isMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+  const [visibleMobileSensorTooltipId, setVisibleMobileSensorTooltipId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : isMaintenanceMobile ? selectedMaintenanceSensor.id : '');
   const [sheetSelectionKey, setSheetSelectionKey] = useState(0);
   const resolvedSheetKind = sheetKind;
   const sensorDisplayMode = isMaintenanceMobile ? 'maintenance' : mobileSensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest';
@@ -2258,6 +2259,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
     setSelectedMobileType(type);
     setSelectedMobileBlockId(type === 'block' ? selectedBlock.id : '');
     setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : nextIsMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+    setVisibleMobileSensorTooltipId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : nextIsMaintenanceMobile ? selectedMaintenanceSensor.id : '');
     setMobileSensorMarkerMode(type === 'sensor-health' ? 'health' : 'pest');
     setSheetKind(type === 'sensor-health' ? 'map' : 'content');
     setSheetState(type === 'sensor-health' ? 'full' : 'docked');
@@ -2285,11 +2287,13 @@ function MobileDeviceFrame({ type = 'ranking' }) {
   const handleBlockSelect = (block) => {
     setSelectedMobileBlockId(block.id);
     setSelectedMobileSensorId('');
+    setVisibleMobileSensorTooltipId('');
     setSelectedMobileType('block');
     showSelectedContentSheet();
   };
   const handleSensorSelect = (sensor) => {
     setSelectedMobileSensorId(sensor.id);
+    setVisibleMobileSensorTooltipId(sensor.id);
     setSelectedMobileBlockId('');
     setSelectedMobileType(isMaintenanceMobile ? 'maintenance-sensor' : isHealthMobile ? 'sensor-health' : 'sensor');
     showSelectedContentSheet();
@@ -2307,12 +2311,14 @@ function MobileDeviceFrame({ type = 'ranking' }) {
           activeBlockLabel={selectedMobileType === 'block' ? selectedMobileBlock.name : ''}
           sensors={mapSensors}
           selectedSensorId={selectedMobileSensorId}
+          visibleSensorTooltipId={visibleMobileSensorTooltipId}
           sensorDisplayMode={sensorDisplayMode}
           showSelectedSensorTooltip
           blockSeverity={selectedBlock.riskLevel}
           mapStyle="satellite"
           onBlockSelect={isMaintenanceMobile ? undefined : handleBlockSelect}
           onSensorSelect={handleSensorSelect}
+          onSensorTooltipChange={setVisibleMobileSensorTooltipId}
         />
         <div className={styles.mobileScopeDock}>
               <ScopeNavigation level={type === 'ranking' || type === 'maintenance-ranking' ? 'ranking' : isHealthMobile || selectedMobileType === 'maintenance-sensor' ? 'sensor' : type} />
