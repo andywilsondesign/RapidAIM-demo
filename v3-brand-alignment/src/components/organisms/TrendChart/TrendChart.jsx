@@ -64,6 +64,17 @@ export const TrendChart = ({
     const getLineColor = (val, fallback) => (
       colorScale === 'rsrp' ? getRsrpColor(val) : fallback
     );
+    const getRsrpGradient = (context, fallback) => {
+      const { chart } = context;
+      const { chartArea, ctx } = chart;
+      if (!chartArea) return fallback;
+
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, '#0F7A4F');
+      gradient.addColorStop(0.52, '#8A5A00');
+      gradient.addColorStop(1, '#C1121F');
+      return gradient;
+    };
 
     if (type === 'bar') {
       return {
@@ -87,7 +98,9 @@ export const TrendChart = ({
             return {
               label: item.label,
               data: item.data,
-              borderColor: colorScale === 'rsrp' ? getLineColor(item.data[0], fallbackColor) : fallbackColor,
+              borderColor: colorScale === 'rsrp'
+                ? (context) => getRsrpGradient(context, fallbackColor)
+                : fallbackColor,
               backgroundColor: fallbackColor,
               borderWidth: index === 0 ? 3 : 2,
               borderDash: item.dashed ? [6, 4] : [],
@@ -95,9 +108,7 @@ export const TrendChart = ({
               pointBorderColor: '#FFFFFF',
               pointBorderWidth: 1,
               pointRadius: 3,
-              segment: colorScale === 'rsrp'
-                ? { borderColor: (context) => getRsrpColor(context.p1.parsed.y) }
-                : undefined,
+              segment: undefined,
               fill: false,
               tension: 0.4,
             };
@@ -153,6 +164,8 @@ export const TrendChart = ({
     scales: {
       y: {
         beginAtZero: !hasNegativeValues,
+        suggestedMin: colorScale === 'rsrp' ? -125 : undefined,
+        suggestedMax: colorScale === 'rsrp' ? -65 : undefined,
         grid: { color: '#E2E8F0', drawBorder: false },
         ticks: { color: '#64748B', font: { family: '"Inter", sans-serif' } },
       },
