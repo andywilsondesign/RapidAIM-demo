@@ -9,6 +9,8 @@ export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
   modeLabel,
   modeOptions = [],
+  showModeOnMobile = false,
+  compactActions = false,
   defaultProfileMenuOpen = false,
   profileMenuItems = [],
   onSearch,
@@ -21,7 +23,7 @@ export const TopNavigationBar = ({
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(defaultProfileMenuOpen);
 
   return (
-    <header className={`${styles.header} ${isSearchOpen ? styles.searchActive : ''} ${className}`}>
+    <header className={`${styles.header} ${showModeOnMobile ? styles.showModeOnMobile : ''} ${isSearchOpen ? styles.searchActive : ''} ${className}`}>
       {isSearchOpen ? (
         <div className={styles.searchMode}>
           <SearchBar
@@ -62,44 +64,57 @@ export const TopNavigationBar = ({
             <Button variant="ghost" size="sm" onClick={() => setIsSearchOpen(true)} aria-label="Search">
               <span className="material-symbols-rounded">search</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={onTasksClick} aria-label="Tasks">
-              <span className="material-symbols-rounded">assignment</span>
-            </Button>
-            <div className={styles.profileMenuWrap}>
+            {compactActions ? (
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={(event) => {
-                  onProfileClick?.(event);
-                  if (profileMenuItems.length > 0) {
-                    setIsProfileMenuOpen((current) => !current);
-                  }
-                }}
-                aria-label="User Profile"
-                aria-expanded={profileMenuItems.length > 0 ? isProfileMenuOpen : undefined}
+                onClick={onMenuClick}
+                aria-label="Menu"
               >
-                <span className="material-symbols-rounded">account_circle</span>
+                <span className="material-symbols-rounded">menu</span>
               </Button>
-              {profileMenuItems.length > 0 && isProfileMenuOpen && (
-                <div className={styles.profileMenu} role="menu">
-                  {profileMenuItems.map((item) => (
-                    <button
-                      className={item.active ? styles.activeProfileMenuItem : ''}
-                      key={item.label}
-                      onClick={() => {
-                        item.onClick?.();
-                        setIsProfileMenuOpen(false);
-                      }}
-                      role="menuitem"
-                      type="button"
-                    >
-                      <span className="material-symbols-rounded" aria-hidden="true">{item.icon || 'settings'}</span>
-                      {item.label}
-                    </button>
-                  ))}
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={onTasksClick} aria-label="Tasks">
+                  <span className="material-symbols-rounded">assignment</span>
+                </Button>
+                <div className={styles.profileMenuWrap}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(event) => {
+                      onProfileClick?.(event);
+                      if (profileMenuItems.length > 0) {
+                        setIsProfileMenuOpen((current) => !current);
+                      }
+                    }}
+                    aria-label="User Profile"
+                    aria-expanded={profileMenuItems.length > 0 ? isProfileMenuOpen : undefined}
+                  >
+                    <span className="material-symbols-rounded">account_circle</span>
+                  </Button>
+                  {profileMenuItems.length > 0 && isProfileMenuOpen && (
+                    <div className={styles.profileMenu} role="menu">
+                      {profileMenuItems.map((item) => (
+                        <button
+                          className={item.active ? styles.activeProfileMenuItem : ''}
+                          key={item.label}
+                          onClick={() => {
+                            item.onClick?.();
+                            setIsProfileMenuOpen(false);
+                          }}
+                          role="menuitem"
+                          type="button"
+                        >
+                          <span className="material-symbols-rounded" aria-hidden="true">{item.icon || 'settings'}</span>
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </>
       )}
@@ -114,6 +129,8 @@ TopNavigationBar.propTypes = {
     label: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
   })),
+  showModeOnMobile: PropTypes.bool,
+  compactActions: PropTypes.bool,
   defaultProfileMenuOpen: PropTypes.bool,
   profileMenuItems: PropTypes.arrayOf(PropTypes.shape({
     active: PropTypes.bool,

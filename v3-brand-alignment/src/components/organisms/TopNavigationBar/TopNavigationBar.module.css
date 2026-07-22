@@ -195,6 +195,27 @@
   .modeSelectWrap {
     display: none;
   }
+
+  .showModeOnMobile .leftSection {
+    flex: 1 1 0;
+    padding-right: 9.5rem;
+  }
+
+  .showModeOnMobile .modeSelectWrap {
+    position: absolute;
+    left: 50%;
+    display: inline-grid;
+    min-height: 2.25rem;
+    transform: translateX(-50%);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-panel);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .showModeOnMobile .modeSelect {
+    min-width: 8.75rem;
+    text-align: center;
+  }
   
   .rightSection {
     min-width: auto;

@@ -2310,7 +2310,13 @@ function MobileDeviceFrame({ type = 'ranking' }) {
 
   return (
     <div className={styles.mobileDevice}>
-      <TopNavigationBar className={styles.mobileTopNavigation} />
+      <TopNavigationBar
+        className={styles.mobileTopNavigation}
+        compactActions={isMaintenanceMobile}
+        modeLabel={isMaintenanceMobile ? maintenanceTopNavProps.modeLabel : undefined}
+        modeOptions={isMaintenanceMobile ? maintenanceTopNavProps.modeOptions : []}
+        showModeOnMobile={isMaintenanceMobile}
+      />
       <div className={styles.mobileMap}>
         <InteractiveMap
           center={[36.647, -119.8]}
