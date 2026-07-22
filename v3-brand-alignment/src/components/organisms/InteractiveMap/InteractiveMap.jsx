@@ -440,7 +440,7 @@ export const InteractiveMap = ({
 
         {sensors.map((sensor) => (
           <Marker
-            key={sensor.id}
+            key={`${sensor.id}-${sensor.id === selectedSensorId ? 'selected' : 'default'}`}
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
@@ -452,7 +452,13 @@ export const InteractiveMap = ({
               click: () => onSensorSelect?.(sensor),
             }}
           >
-            <Tooltip className={styles.sensorTooltip} direction="top" offset={[0, -14]} opacity={1}>
+            <Tooltip
+              className={styles.sensorTooltip}
+              direction="top"
+              offset={[0, -14]}
+              opacity={1}
+              permanent={sensor.id === selectedSensorId}
+            >
               <strong>{sensor.name}</strong><br />
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
                 <>
@@ -502,7 +508,7 @@ InteractiveMap.propTypes = {
   selectedSensorId: PropTypes.string,
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
-  sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare']),
+  sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance']),
   onBlockSelect: PropTypes.func,
   onSensorSelect: PropTypes.func,
   className: PropTypes.string,
