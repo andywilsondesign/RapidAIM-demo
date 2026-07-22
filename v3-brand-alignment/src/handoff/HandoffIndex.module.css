@@ -1733,6 +1733,11 @@
   gap: var(--spacing-3);
 }
 
+#mobile-maintenance-overview-summary,
+#mobile-maintenance-sensors-list {
+  scroll-margin-top: var(--spacing-4);
+}
+
 .mobileDetailPanel {
   display: flex;
   width: 100%;

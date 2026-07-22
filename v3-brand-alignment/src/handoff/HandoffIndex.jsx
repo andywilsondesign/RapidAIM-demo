@@ -377,6 +377,10 @@ const maintenanceStats = {
     return daysMatch ? Number.parseInt(daysMatch[1], 10) <= 7 : false;
   }).length,
 };
+const maintenanceSensorTabCount = {
+  active: 12,
+  total: 14,
+};
 const signalHistoryLabels = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Today'];
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
@@ -960,8 +964,6 @@ function MaintenancePanel({
 }) {
   const visibleSensors = getVisibleMaintenanceSensors(showHealthySensors);
   const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
-  const onlineSensorCount = maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length;
-  const totalSensorCount = maintenanceSensors.length;
   const scrollToMaintenanceSection = (sectionId, activeTab) => {
     setActiveAnchorTab(activeTab);
     document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -1009,11 +1011,11 @@ function MaintenancePanel({
         <button
           className={activeAnchorTab === 'sensors' ? styles.activeAnchorTab : ''}
           type="button"
-          aria-label={`Sensors (${onlineSensorCount}/${totalSensorCount})`}
+          aria-label={`Sensors (${maintenanceSensorTabCount.active}/${maintenanceSensorTabCount.total})`}
           onClick={() => scrollToMaintenanceSection('maintenance-sensors-list', 'sensors')}
         >
           <span className={styles.anchorTabLabel} aria-hidden="true">
-            Sensors ({onlineSensorCount}/{totalSensorCount})
+            Sensors ({maintenanceSensorTabCount.active}/{maintenanceSensorTabCount.total})
           </span>
         </button>
       </div>
@@ -2293,7 +2295,11 @@ function MobileSheet({
 
 function MobileMaintenanceRankingSheet() {
   const visibleSensors = getVisibleMaintenanceSensors(false);
-  const onlineSensorCount = maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length;
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
 
   return (
     <div className={styles.sheetContent}>
@@ -2326,24 +2332,47 @@ function MobileMaintenanceRankingSheet() {
           </FormField>
         </div>
       </div>
-      <div className={styles.maintenanceStatGrid}>
-        <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
-        <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
-        <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
-        <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('mobile-maintenance-overview-summary', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'sensors' ? styles.activeAnchorTab : ''}
+          type="button"
+          aria-label={`Sensors (${maintenanceSensorTabCount.active}/${maintenanceSensorTabCount.total})`}
+          onClick={() => scrollToMaintenanceSection('mobile-maintenance-sensors-list', 'sensors')}
+        >
+          <span className={styles.anchorTabLabel} aria-hidden="true">
+            Sensors ({maintenanceSensorTabCount.active}/{maintenanceSensorTabCount.total})
+          </span>
+        </button>
       </div>
-      <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
-        <div>
-          <PanelSectionTitle>Sensors ({onlineSensorCount}/{maintenanceSensors.length})</PanelSectionTitle>
-          <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+      <section className={styles.maintenanceSection} id="mobile-maintenance-overview-summary">
+        <div className={styles.maintenanceStatGrid}>
+          <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
+          <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
+          <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
+          <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
         </div>
-      </div>
-      <div className={styles.mobileListSection}>
-        {visibleSensors.map((sensor, index) => (
-          <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
-        ))}
-        <Button variant="secondary" fullWidth>Load all sensors</Button>
-      </div>
+      </section>
+      <section className={styles.mobileListSection} id="mobile-maintenance-sensors-list">
+        <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+          <div>
+            <PanelSectionTitle>Sensors</PanelSectionTitle>
+            <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+          </div>
+        </div>
+        <div className={styles.mobileListSection}>
+          {visibleSensors.map((sensor, index) => (
+            <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
+          ))}
+          <Button variant="secondary" fullWidth>Load all sensors</Button>
+        </div>
+      </section>
     </div>
   );
 }
