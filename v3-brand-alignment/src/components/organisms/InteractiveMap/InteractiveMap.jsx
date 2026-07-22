@@ -168,13 +168,13 @@ const MAINTENANCE_MARKER_STYLES = {
   },
   warning: {
     severity: 'medium',
-    fill: '#666666',
+    fill: 'var(--color-status-amber)',
     iconStroke: '#FFFFFF',
   },
   healthy: {
     severity: 'low',
-    fill: 'rgba(255, 255, 255, 0.92)',
-    iconStroke: '#08081A',
+    fill: 'var(--color-status-green)',
+    iconStroke: '#FFFFFF',
   },
 };
 

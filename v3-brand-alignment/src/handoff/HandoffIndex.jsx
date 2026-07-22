@@ -449,7 +449,7 @@ const pageGroups = [
     ],
   },
   {
-    title: 'Experiments',
+    title: 'Maintenance',
     pages: [
       { id: 'experimental-maintenance-mode', label: 'Maintenance Ranking', component: <MaintenanceModePage /> },
       { id: 'experimental-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MaintenanceSensorDetailPage /> },
@@ -476,13 +476,6 @@ const pageGroups = [
     ],
   },
   {
-    title: 'Holding Area',
-    pages: [
-      { id: 'consolidated-sensor-health', label: 'Sensor Detail (Health)', component: <DesktopDetailPage type="sensor-health" scopeExperiment /> },
-      { id: 'mobile-sensor-health', label: 'Mobile Sensor Detail (Health)', component: <MobileMapPage type="sensor-health" /> },
-    ],
-  },
-  {
     title: 'Enterprise',
     pages: [
       { id: 'account', label: 'Account Settings', component: <AccountPage /> },
@@ -492,20 +485,12 @@ const pageGroups = [
 
 const flatPages = pageGroups.flatMap((group) => group.pages);
 const pageIds = new Set(flatPages.map((page) => page.id));
-const reviewLinks = [
-  { label: 'Maintenance Ranking Experiment', pageId: 'experimental-maintenance-mode' },
-  { label: 'Maintenance Sensor Detail', pageId: 'experimental-maintenance-sensor' },
-  { label: 'Shelved Desktop Sensor Health Flow', pageId: 'consolidated-sensor-health' },
-  { label: 'Shelved Mobile Sensor Health Flow', pageId: 'mobile-sensor-health' },
-];
-
 const desktopToMobileType = {
   'consolidated-pest-pressure-ranking': 'ranking',
   'consolidated-organization': 'organization',
   'consolidated-ranch': 'ranch',
   'consolidated-block': 'block',
   'consolidated-sensor': 'sensor',
-  'consolidated-sensor-health': 'sensor-health',
 };
 
 function useResponsiveMobileView() {
@@ -581,22 +566,6 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
           Hide navigator
         </button>
         <div className={styles.navGroups}>
-          <div className={styles.navGroup}>
-            <Typography variant="h6">Sensor Health Review Links</Typography>
-            {reviewLinks.map((link) => (
-              <a
-                className={`${styles.navItem} ${styles.navLink} ${link.pageId === activePageId ? styles.activeNavItem : ''}`}
-                href={getPageHref(link.pageId)}
-                key={link.pageId}
-                onClick={(event) => {
-                  event.preventDefault();
-                  selectPage(link.pageId);
-                }}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
           {pageGroups.map((group) => (
             <div className={styles.navGroup} key={group.title}>
               <Typography variant="h6">{group.title}</Typography>
@@ -777,14 +746,11 @@ function MaintenanceModePage() {
 }
 
 const maintenanceTopNavProps = {
-  modeLabel: 'Maintenance',
-  defaultProfileMenuOpen: true,
-  profileMenuItems: [
-    { label: 'My account', icon: 'manage_accounts' },
-    { label: 'Maintenance mode', icon: 'construction', active: true },
-    { label: 'Pest View', icon: 'pest_control' },
-    { label: 'Account settings', icon: 'manage_accounts' },
-    { label: 'Sign out', icon: 'logout' },
+  modeLabel: 'maintenance',
+  modeOptions: [
+    { label: 'Maintenance', value: 'maintenance' },
+    { label: 'Pest View', value: 'pest' },
+    { label: 'Admin', value: 'admin' },
   ],
 };
 
@@ -824,9 +790,9 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
         </div>
       </div>
       <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
-        <section>
+        <section className={styles.maintenanceSection}>
           <div className={styles.sectionHeader}>
-            <Typography variant="h5">Fleet Health</Typography>
+            <Typography variant="body" weight="semibold">Fleet Health</Typography>
             <Typography variant="caption" color="secondary">Current sensor availability and maintenance signals</Typography>
           </div>
           <div className={styles.maintenanceStatGrid}>
@@ -837,9 +803,9 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
           </div>
         </section>
         <section className={styles.childList}>
-          <div className={styles.sectionHeader}>
+          <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
             <div>
-              <Typography variant="h5">Sensors</Typography>
+              <Typography variant="body" weight="semibold">Sensors</Typography>
               <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
             </div>
             <label className={styles.inlineToggle}>
@@ -1049,7 +1015,7 @@ function MaintenanceDeviceDetail({ sensor }) {
       </div>
       <div className={styles.maintenanceHistory} id="maintenance-history">
         <div className={`${styles.sectionHeader} ${styles.maintenanceSectionHeader}`}>
-          <Typography variant="h4">Recent history</Typography>
+          <Typography variant="body" weight="semibold">Recent history</Typography>
           <Typography variant="caption" color="secondary">Newest field and device events</Typography>
         </div>
         {historyItems.map((event) => (
@@ -1087,16 +1053,16 @@ function MaintenanceControlsPanel() {
           <section className={styles.maintenanceControlSection}>
             <Typography variant="h6">Maintenance Legend</Typography>
             <div className={styles.maintenanceLegendItem}>
+              <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
+              <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
+            </div>
+            <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
               <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
               <Typography variant="body-sm">Healthy (no action required)</Typography>
-            </div>
-            <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
-              <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
             </div>
           </section>
         </div>
@@ -1722,13 +1688,17 @@ function MaintenanceNoteModalPage() {
         <div className={styles.maintenanceModalHeader}>
           <div>
             <Typography variant="h3">Add maintenance note</Typography>
-            <Typography variant="caption">Sensor S4-D / Sierra Orchards / Block 4</Typography>
           </div>
           <Button variant="ghost" size="sm" aria-label="Close maintenance note modal">
             <span className="material-symbols-rounded">close</span>
           </Button>
         </div>
         <div className={styles.maintenanceModalBody}>
+          <div className={styles.maintenanceModalContext}>
+            <Badge variant="neutral">Sierra Orchards</Badge>
+            <Badge variant="neutral">Block 4</Badge>
+            <Badge variant="offline">Sensor S4-D</Badge>
+          </div>
           <FormField label="Category">
             <Select options={[
               { label: 'Battery change', value: 'battery' },

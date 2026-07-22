@@ -8,6 +8,7 @@ import logo from '../../../assets/rapidaim_logo.svg';
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
   modeLabel,
+  modeOptions = [],
   defaultProfileMenuOpen = false,
   profileMenuItems = [],
   onSearch,
@@ -43,7 +44,18 @@ export const TopNavigationBar = ({
             <div className={styles.logo}>
               <img src={logo} alt={organizationName} />
             </div>
-            {modeLabel && <span className={styles.modeChip}>{modeLabel}</span>}
+            {modeOptions.length > 0 ? (
+              <label className={styles.modeSelectWrap}>
+                <select aria-label="Product mode" className={styles.modeSelect} defaultValue={modeLabel || modeOptions[0].value}>
+                  {modeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+                <span className="material-symbols-rounded" aria-hidden="true">expand_more</span>
+              </label>
+            ) : modeLabel ? (
+              <span className={styles.modeChip}>{modeLabel}</span>
+            ) : null}
           </div>
 
           <div className={styles.rightSection}>
@@ -98,6 +110,10 @@ export const TopNavigationBar = ({
 TopNavigationBar.propTypes = {
   organizationName: PropTypes.string,
   modeLabel: PropTypes.string,
+  modeOptions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+  })),
   defaultProfileMenuOpen: PropTypes.bool,
   profileMenuItems: PropTypes.arrayOf(PropTypes.shape({
     active: PropTypes.bool,

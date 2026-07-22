@@ -654,11 +654,16 @@
   padding-bottom: calc(var(--layout-panel-action-tray-height) + var(--spacing-6));
 }
 
+.maintenanceSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+}
+
 .maintenanceStatGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-3);
+  gap: var(--spacing-5);
 }
 
 .maintenanceRankingItem:hover,
@@ -785,6 +790,15 @@
   flex-direction: column;
   gap: var(--spacing-4);
   padding: var(--spacing-5);
+}
+
+.maintenanceModalContext {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
 }
 
 .maintenanceModalFooter {
@@ -914,15 +928,11 @@
 }
 
 .maintenanceLegendWarningMarker {
-  --marker-fill: var(--maintenance-warning);
+  --marker-fill: var(--color-status-amber);
 }
 
 .maintenanceLegendHealthyMarker {
-  --marker-fill: rgba(255, 255, 255, 0.94);
-}
-
-.maintenanceLegendHealthyMarker svg path:last-child {
-  stroke: var(--maintenance-critical);
+  --marker-fill: var(--color-status-green);
 }
 
 .inlineToggle {
@@ -938,6 +948,10 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
+}
+
+.maintenanceListHeader {
+  gap: var(--spacing-3);
 }
 
 .inlineToggle input {
