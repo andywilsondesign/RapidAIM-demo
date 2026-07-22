@@ -10,6 +10,7 @@ import { RankingListItem } from '../components/molecules/RankingListItem/Ranking
 import { StatCard } from '../components/molecules/StatCard/StatCard';
 import { DetectionGrid } from '../components/molecules/DetectionGrid/DetectionGrid';
 import { SensorMetaGrid } from '../components/molecules/SensorMetaGrid/SensorMetaGrid';
+import { Alert } from '../components/molecules/Alert/Alert';
 import { InfoDisclosure } from '../components/molecules/InfoDisclosure/InfoDisclosure';
 import { ScopeNavigation as ScopeNavigationControl } from '../components/molecules/ScopeNavigation/ScopeNavigation';
 import { TaskListItem } from '../components/molecules/TaskListItem/TaskListItem';
@@ -876,24 +877,21 @@ function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
+  const riskLevel = state === 'critical' ? 'high' : state === 'warning' ? 'medium' : 'low';
 
   return (
-    <button
-      className={`${styles.maintenanceListItem} ${styles[`maintenanceListItem--${state}`]} ${active ? styles.activeMaintenanceListItem : ''}`}
-      type="button"
+    <RankingListItem
+      className={`${styles.maintenanceRankingItem} ${styles[`maintenanceRankingItem--${state}`]} ${active ? styles.activeMaintenanceListItem : ''}`}
+      rank={rank}
+      title={sensor.name}
+      subtitle={`Battery ${sensor.battery}% / Connectivity: ${sensor.connectivity} / Lure: ${sensor.lureStatus}`}
+      riskLevel={riskLevel}
+      riskLabelOverride={stateLabel}
+      statusLabel={sensor.blockName}
       onClick={onSelect}
       onFocus={onSelect}
       onMouseEnter={onSelect}
-    >
-      <span className={styles.maintenanceRankBadge}>{rank}</span>
-      <span className={styles.maintenanceItemContent}>
-        <Typography variant="body-sm" weight="semibold">{sensor.name}</Typography>
-        <Typography variant="caption" color="secondary">
-          Battery {sensor.battery}% / Connectivity: {sensor.connectivity} / Lure: {sensor.lureStatus}
-        </Typography>
-      </span>
-      <span className={`${styles.maintenanceStatusPill} ${styles[`maintenanceStatusPill--${state}`]}`}>{stateLabel}</span>
-    </button>
+    />
   );
 }
 
@@ -1000,10 +998,12 @@ function MaintenanceDeviceDetail({ sensor }) {
       <div className={styles.sectionHeader}>
         <Typography variant="h5">Device overview</Typography>
       </div>
-      <div className={styles.maintenanceInlineMessage}>
-        <Typography variant="body-sm" weight="bold">{sensor.maintenanceReason}</Typography>
-        <Typography variant="caption" color="secondary">{sensor.maintenanceDetails}</Typography>
-      </div>
+      <Alert
+        title={sensor.maintenanceReason}
+        message={sensor.maintenanceDetails}
+        variant={sensor.maintenanceState === 'critical' ? 'error' : 'warning'}
+        type="inline"
+      />
       <SensorMetaGrid items={[
         { label: 'Connection', value: 'Intermittent', tone: 'warning' },
         { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
@@ -1080,19 +1080,19 @@ function MaintenanceControlsPanel() {
             <Typography variant="h6">Maintenance Legend</Typography>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
-              <Typography variant="body-sm">Critical device issue</Typography>
+              <Typography variant="body-sm">Critical (device issue)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
-              <Typography variant="body-sm">Maintenance warning</Typography>
+              <Typography variant="body-sm">Warning (may affect read quality)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
-              <Typography variant="body-sm">Healthy / no action</Typography>
+              <Typography variant="body-sm">Healthy (no action required)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="offline" className={styles.maintenanceLegendCriticalMarker} label="Offline maintenance marker" />
-              <Typography variant="body-sm">Offline / fault</Typography>
+              <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
             </div>
           </section>
         </div>

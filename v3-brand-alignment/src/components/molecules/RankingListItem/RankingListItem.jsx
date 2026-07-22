@@ -9,6 +9,7 @@ export const RankingListItem = ({
   title,
   subtitle,
   riskLevel, // 'high', 'medium', 'low'
+  riskLabelOverride,
   statusLabel,
   disabled = false,
   onClick,
@@ -24,7 +25,7 @@ export const RankingListItem = ({
     low: 'Low Risk',
     offline: 'Offline',
   };
-  const riskLabel = riskLabels[riskLevel];
+  const riskLabel = riskLabelOverride || riskLabels[riskLevel];
 
   return (
     <button
@@ -55,6 +56,7 @@ RankingListItem.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,
   riskLevel: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
+  riskLabelOverride: PropTypes.string,
   statusLabel: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
