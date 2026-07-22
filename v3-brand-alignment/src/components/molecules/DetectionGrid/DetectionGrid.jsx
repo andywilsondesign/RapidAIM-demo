@@ -24,7 +24,7 @@ export const DetectionGrid = ({
 }) => (
   <div className={`${styles.wrapper} ${showStatus ? styles.withStatus : ''} ${className}`}>
     <div className={styles.header}>
-      <Typography variant="body-sm" weight="semibold">{title}</Typography>
+      <Typography variant="h6" className="ra-section-title">{title}</Typography>
       {timezone && (
         <InfoDisclosure
           title={title}

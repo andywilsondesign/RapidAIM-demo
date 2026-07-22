@@ -35,3 +35,13 @@ button, input, select, textarea {
 .font-title {
   font-family: var(--font-family-title);
 }
+
+.ra-section-title {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family-title);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold) !important;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}

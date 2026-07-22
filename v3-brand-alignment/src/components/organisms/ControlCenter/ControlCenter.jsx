@@ -203,7 +203,7 @@ function PestThresholdsPanel({
           </div>
           <div className={styles.body}>
             <div className={styles.section}>
-              <Typography variant="h6" className={styles.sectionTitle}>Thresholds</Typography>
+              <Typography variant="h6" className={`${styles.sectionTitle} ra-section-title`}>Thresholds</Typography>
               <ThresholdList pests={visiblePestThresholds} />
             </div>
           </div>
@@ -298,7 +298,7 @@ function ThresholdList({ pests }) {
 function MapLayerSection() {
   return (
     <div className={styles.section}>
-      <Typography variant="h6" className={styles.sectionTitle}>Map Layers</Typography>
+      <Typography variant="h6" className={`${styles.sectionTitle} ra-section-title`}>Map Layers</Typography>
       <div className={styles.controls}>
         <Checkbox label="Heatmap (Pest Pressure)" defaultChecked />
         <Checkbox label="Sensors" defaultChecked />
@@ -312,7 +312,7 @@ function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerM
 
   return (
     <div className={styles.section}>
-      <Typography variant="h6" className={styles.sectionTitle}>Sensor Marker View</Typography>
+      <Typography variant="h6" className={`${styles.sectionTitle} ra-section-title`}>Sensor Marker View</Typography>
       <div className={styles.viewModeOptions} role="radiogroup" aria-label="Sensor marker view">
         <label className={`${styles.viewModeOption} ${sensorMarkerMode === 'pest' ? styles.activeViewModeOption : ''}`}>
           <input
@@ -340,7 +340,7 @@ function SensorViewModeSection({ showSensorHealthControls = false, sensorMarkerM
 function RiskLegendSection({ title = 'Risk Legend' }) {
   return (
     <div className={styles.section}>
-      <Typography variant="h6" className={styles.sectionTitle}>{title}</Typography>
+      <Typography variant="h6" className={`${styles.sectionTitle} ra-section-title`}>{title}</Typography>
       <div className={styles.legend}>
         <div className={styles.legendItem}>
           <RiskMarker severity="high" size="md" />
@@ -370,7 +370,7 @@ RiskLegendSection.propTypes = {
 function SensorHealthLegendSection() {
   return (
     <div className={styles.section}>
-      <Typography variant="h6" className={styles.sectionTitle}>Sensor Health Legend</Typography>
+      <Typography variant="h6" className={`${styles.sectionTitle} ra-section-title`}>Sensor Health Legend</Typography>
       <div className={styles.legend}>
         <div className={styles.legendItem}>
           <BatteryLegendGlyph level="full" />

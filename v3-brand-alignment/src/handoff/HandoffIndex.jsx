@@ -1024,7 +1024,7 @@ function MaintenancePanel({
           <section className={styles.childList}>
             <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
               <div>
-                <Typography variant="body" weight="semibold">Sensors</Typography>
+                <PanelSectionTitle>Sensors</PanelSectionTitle>
                 <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
               </div>
               <label className={styles.inlineToggle}>
@@ -1245,7 +1245,7 @@ function MaintenanceDeviceDetail({ sensor }) {
       </div>
       <div className={styles.maintenanceHistory} id="maintenance-history">
         <div className={`${styles.sectionHeader} ${styles.maintenanceSectionHeader}`}>
-          <Typography variant="body" weight="semibold">Recent history</Typography>
+          <PanelSectionTitle>Recent history</PanelSectionTitle>
           <Typography variant="caption" color="secondary">Newest field and device events</Typography>
         </div>
         {historyItems.map((event) => (
@@ -1278,7 +1278,7 @@ function MaintenanceControlsPanel({
         <div className={styles.maintenanceControlScrollFrame}>
           <div className={styles.maintenanceControlBody}>
             <section className={styles.maintenanceControlSection}>
-              <Typography variant="h6" className={styles.maintenanceControlSectionTitle}>Filters</Typography>
+              <PanelSectionTitle>Filters</PanelSectionTitle>
               <label>
                 <input
                   checked={showHealthySensors}
@@ -1292,7 +1292,7 @@ function MaintenanceControlsPanel({
               <label><input type="checkbox" defaultChecked /> Lure due soon</label>
             </section>
             <section className={styles.maintenanceControlSection}>
-              <Typography variant="h6" className={styles.maintenanceControlSectionTitle}>Maintenance Legend</Typography>
+              <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
               <div className={styles.maintenanceLegendItem}>
                 <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
                 <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
@@ -1511,10 +1511,20 @@ function PestPressureGrid({ pestFocus = 'all' }) {
   );
 }
 
+function PanelSectionTitle({ children }) {
+  return (
+    <Typography variant="h6" className="ra-section-title">{children}</Typography>
+  );
+}
+
+PanelSectionTitle.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 function PestWeekComparison({ children }) {
   return (
     <section className={styles.pestComparison}>
-      <Typography variant="h5">Pest Overview (vs last week)</Typography>
+      <PanelSectionTitle>Pest Overview (vs last week)</PanelSectionTitle>
       {children}
     </section>
   );
@@ -1680,7 +1690,7 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
   return (
     <section className={styles.childList} id="sensor-health-section">
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Sensor Health</Typography>
+        <PanelSectionTitle>Sensor Health</PanelSectionTitle>
         <Typography variant="caption" color="secondary">
           {healthMode ? 'Battery and device status for field maintenance.' : 'Operational status for this sensor.'}
         </Typography>
@@ -1791,7 +1801,7 @@ function RanchLinks() {
   return (
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Ranches</Typography>
+        <PanelSectionTitle>Ranches</PanelSectionTitle>
         <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
       {rankedRanches.map((ranch, index) => (
@@ -1811,7 +1821,7 @@ function BlockLinks({ onBlockPreviewChange }) {
   return (
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Blocks</Typography>
+        <PanelSectionTitle>Blocks</PanelSectionTitle>
         <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
       {selectedRanchBlocks.slice(0, 10).map((block, index) => (
@@ -1836,7 +1846,7 @@ function SensorLinks() {
   return (
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Sensors</Typography>
+        <PanelSectionTitle>Sensors</PanelSectionTitle>
         <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
       </div>
       {rankedSensors.slice(0, 10).map((sensor, index) => (
@@ -1858,7 +1868,7 @@ function OrganizationTasks() {
   return (
     <section className={styles.childList}>
       <div className={styles.sectionHeader}>
-        <Typography variant="h5">Tasks</Typography>
+        <PanelSectionTitle>Tasks</PanelSectionTitle>
         <Typography variant="caption" color="secondary">High-level operational snapshot</Typography>
       </div>
       {taskStreams.map((stream) => (

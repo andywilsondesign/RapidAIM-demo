@@ -147,7 +147,7 @@ export const TrendChart = ({
   return (
     <div className={`${styles.container} ${className}`}>
       <div className={styles.header}>
-        <Typography variant="body" weight="semibold">{title}</Typography>
+        <Typography variant="h6" className="ra-section-title">{title}</Typography>
       </div>
       {hasMultipleSeries && (
         <div className={styles.legendList} aria-label={`${title} legend`}>
