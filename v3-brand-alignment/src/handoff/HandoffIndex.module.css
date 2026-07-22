@@ -900,7 +900,7 @@
 }
 
 .maintenanceLegendCriticalMarker {
-  --marker-fill: var(--maintenance-critical);
+  --marker-fill: var(--color-status-red);
 }
 
 .maintenanceLegendOfflineMarker {

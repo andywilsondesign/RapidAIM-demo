@@ -1312,11 +1312,11 @@ function MaintenancePanel({
 function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
   const state = getMaintenanceSeverity(sensor);
   const stateLabel = {
-    offline: 'Offline',
+    offline: 'Critical',
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
-  const riskLevel = state === 'offline' ? 'offline' : state === 'warning' ? 'medium' : 'low';
+  const riskLevel = state === 'offline' ? 'high' : state === 'warning' ? 'medium' : 'low';
   const subtitle = [
     `Battery ${sensor.battery}%`,
     `Connectivity ${sensor.connectivity}`,
@@ -1388,7 +1388,7 @@ function MaintenanceSensorPanel({ sensor }) {
   const scrollContainerRef = useRef(null);
   const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
   const statusLabel = {
-    offline: 'Offline',
+    offline: 'Critical',
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
@@ -1411,7 +1411,7 @@ function MaintenanceSensorPanel({ sensor }) {
             </div>
             <Badge
               className={styles.maintenanceSensorBadge}
-              variant={state === 'offline' ? 'offline' : state === 'warning' ? 'medium' : 'low'}
+              variant={state === 'offline' ? 'high' : state === 'warning' ? 'medium' : 'low'}
             >
               {statusLabel}
             </Badge>
@@ -1540,8 +1540,8 @@ function MaintenanceControlsPanel({
             <section className={styles.maintenanceControlSection}>
               <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
               <div className={styles.maintenanceLegendItem}>
-                <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
-                <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
+                <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
+                <Typography variant="body-sm">Critical (battery or device issue resulting in offline sensor)</Typography>
               </div>
               <div className={styles.maintenanceLegendItem}>
                 <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
@@ -2378,7 +2378,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
 
 const getMaintenanceBadgeVariant = (sensor) => {
   const state = getMaintenanceSeverity(sensor);
-  if (state === 'offline') return 'offline';
+  if (state === 'offline') return 'high';
   if (state === 'warning') return 'medium';
   return 'low';
 };
@@ -2392,7 +2392,7 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
       meta: currentSensor.maintenanceReason || currentSensor.blockName,
       badge: getMaintenanceBadgeVariant(currentSensor),
       badgeLabel: {
-        offline: 'Offline',
+        offline: 'Critical',
         warning: 'Warning',
         healthy: 'Healthy',
       }[getMaintenanceSeverity(currentSensor)],
@@ -2593,8 +2593,8 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
       <section className={styles.maintenanceControlSection}>
         <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
         <div className={styles.maintenanceLegendItem}>
-          <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
-          <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
+          <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
+          <Typography variant="body-sm">Critical (battery or device issue resulting in offline sensor)</Typography>
         </div>
         <div className={styles.maintenanceLegendItem}>
           <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
