@@ -1251,6 +1251,9 @@ function MaintenanceDeviceDetail({ sensor }) {
       <TrendChart
         type="line"
         title="Connectivity quality"
+        colorScale="rsrp"
+        infoTitle="Connectivity quality"
+        infoDescription="RSRP measures LTE signal strength in dBm. Values closer to 0 are stronger: about -65 to -95 dBm is healthy, -96 to -105 dBm is a warning range, and below -106 dBm is poor or unstable."
         labels={signalHistoryLabels}
         series={[{
           label: 'RSRP (dBm)',

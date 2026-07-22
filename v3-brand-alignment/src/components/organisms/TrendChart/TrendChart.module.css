@@ -11,7 +11,16 @@
 }
 
 .header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
   margin-bottom: var(--spacing-3);
+}
+
+.header > :first-child {
+  min-width: 0;
 }
 
 .legendList {

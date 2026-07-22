@@ -15,6 +15,7 @@ import {
 import { Bar, Line } from 'react-chartjs-2';
 import styles from './TrendChart.module.css';
 import { Typography } from '../../atoms/Typography/Typography';
+import { InfoDisclosure } from '../../molecules/InfoDisclosure/InfoDisclosure';
 
 ChartJS.register(
   CategoryScale,
@@ -35,6 +36,9 @@ export const TrendChart = ({
   type = 'bar', // 'bar' or 'line'
   title = 'Chart',
   threshold = 25,
+  colorScale,
+  infoTitle,
+  infoDescription,
   className = '',
 }) => {
   const [hiddenSeries, setHiddenSeries] = useState([]);
@@ -52,6 +56,14 @@ export const TrendChart = ({
       if (val >= threshold) return '#FB8C00';
       return '#43A047';
     };
+    const getRsrpColor = (val) => {
+      if (val >= -95) return '#2E7D32';
+      if (val >= -105) return '#FB8C00';
+      return '#D32F2F';
+    };
+    const getLineColor = (val, fallback) => (
+      colorScale === 'rsrp' ? getRsrpColor(val) : fallback
+    );
 
     if (type === 'bar') {
       return {
@@ -69,20 +81,27 @@ export const TrendChart = ({
       if (series?.length) {
         return {
           labels,
-          datasets: visibleSeries.map((item, index) => ({
-            label: item.label,
-            data: item.data,
-            borderColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
-            backgroundColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
-            borderWidth: index === 0 ? 3 : 2,
-            borderDash: item.dashed ? [6, 4] : [],
-            pointBackgroundColor: item.color || (index === 0 ? '#2563EB' : '#C2410C'),
-            pointBorderColor: '#FFFFFF',
-            pointBorderWidth: 1,
-            pointRadius: 3,
-            fill: false,
-            tension: 0.4,
-          })),
+          datasets: visibleSeries.map((item, index) => {
+            const fallbackColor = item.color || (index === 0 ? '#2563EB' : '#C2410C');
+
+            return {
+              label: item.label,
+              data: item.data,
+              borderColor: colorScale === 'rsrp' ? getLineColor(item.data[0], fallbackColor) : fallbackColor,
+              backgroundColor: fallbackColor,
+              borderWidth: index === 0 ? 3 : 2,
+              borderDash: item.dashed ? [6, 4] : [],
+              pointBackgroundColor: item.data.map((val) => getLineColor(val, fallbackColor)),
+              pointBorderColor: '#FFFFFF',
+              pointBorderWidth: 1,
+              pointRadius: 3,
+              segment: colorScale === 'rsrp'
+                ? { borderColor: (context) => getRsrpColor(context.p1.parsed.y) }
+                : undefined,
+              fill: false,
+              tension: 0.4,
+            };
+          }),
         };
       }
 
@@ -103,7 +122,7 @@ export const TrendChart = ({
     }
 
     return { labels, datasets: [] };
-  }, [data, labels, series, type, threshold, visibleSeries]);
+  }, [colorScale, data, labels, series, type, threshold, visibleSeries]);
 
   const hasMultipleSeries = type === 'line' && Boolean(series?.length);
   const chartValues = series?.length ? series.flatMap((item) => item.data) : data;
@@ -148,6 +167,12 @@ export const TrendChart = ({
     <div className={`${styles.container} ${className}`}>
       <div className={styles.header}>
         <Typography variant="h6" className="ra-section-title">{title}</Typography>
+        {infoTitle && infoDescription && (
+          <InfoDisclosure
+            title={infoTitle}
+            description={infoDescription}
+          />
+        )}
       </div>
       {hasMultipleSeries && (
         <div className={styles.legendList} aria-label={`${title} legend`}>
@@ -192,5 +217,8 @@ TrendChart.propTypes = {
   type: PropTypes.oneOf(['bar', 'line']),
   title: PropTypes.string,
   threshold: PropTypes.number,
+  colorScale: PropTypes.oneOf(['rsrp']),
+  infoTitle: PropTypes.string,
+  infoDescription: PropTypes.string,
   className: PropTypes.string,
 };
