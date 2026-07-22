@@ -955,6 +955,13 @@ function MaintenancePanel({
   onShowHealthySensorsChange,
 }) {
   const visibleSensors = getVisibleMaintenanceSensors(showHealthySensors);
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
+  const onlineSensorCount = maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length;
+  const totalSensorCount = maintenanceSensors.length;
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
 
   return (
     <div className={`${styles.panel} ${styles.maintenancePanel}`}>
@@ -987,9 +994,31 @@ function MaintenancePanel({
           </div>
         </div>
       </div>
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('maintenance-overview-summary', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'sensors' ? styles.activeAnchorTab : ''}
+          type="button"
+          aria-label={`Sensors (${onlineSensorCount}/${totalSensorCount})`}
+          onClick={() => scrollToMaintenanceSection('maintenance-sensors-list', 'sensors')}
+        >
+          <span className={styles.anchorTabWithCount} aria-hidden="true">
+            <span className={styles.anchorTabLabel}>Sensors</span>
+            <span className={styles.anchorTabParen}>(</span>
+            <span className={styles.anchorTabCount}>{onlineSensorCount}/{totalSensorCount}</span>
+            <span className={styles.anchorTabParen}>)</span>
+          </span>
+        </button>
+      </div>
       <div className={styles.maintenanceScrollFrame}>
         <div className={`${styles.panelBody} ${styles.maintenancePanelBody} ${styles.maintenanceOverviewPanelBody}`}>
-          <section className={styles.maintenanceSection}>
+          <section className={styles.maintenanceSection} id="maintenance-overview-summary">
             <div className={styles.maintenanceStatGrid}>
               <StatCard
                 label="Offline sensors"
@@ -1021,7 +1050,7 @@ function MaintenancePanel({
               />
             </div>
           </section>
-          <section className={styles.childList}>
+          <section className={styles.childList} id="maintenance-sensors-list">
             <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
               <div>
                 <PanelSectionTitle>Sensors</PanelSectionTitle>
