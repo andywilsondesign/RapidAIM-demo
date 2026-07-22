@@ -2385,11 +2385,10 @@ const getMaintenanceBadgeVariant = (sensor) => {
 
 function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = selectedBlock, selectedSensor: currentSensor = selectedSensor }) {
   const contentCopy = {
-    ranking: { title: 'Pest Pressure Ranking', meta: 'Blocks ranked highest risk to lowest' },
-    'maintenance-ranking': { title: 'Maintenance Overview', meta: '' },
+    ranking: { title: 'Pest Pressure Ranking' },
+    'maintenance-ranking': { title: 'Maintenance Overview' },
     'maintenance-sensor': {
       title: currentSensor.name,
-      meta: currentSensor.maintenanceReason || currentSensor.blockName,
       badge: getMaintenanceBadgeVariant(currentSensor),
       badgeLabel: {
         offline: 'Critical',
@@ -2397,15 +2396,15 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
         healthy: 'Healthy',
       }[getMaintenanceSeverity(currentSensor)],
     },
-    organization: { title: selectedOrganization.name, meta: 'Organisation detail', badge: selectedOrganization.riskLevel },
-    ranch: { title: selectedRanch.name, meta: selectedRanch.organization, badge: selectedRanch.riskLevel },
-    block: { title: currentBlock.name, meta: currentBlock.ranchName, badge: currentBlock.riskLevel },
-    sensor: { title: currentSensor.name, meta: currentSensor.blockName, badge: currentSensor.severity },
-    'sensor-health': { title: currentSensor.name, meta: 'Low battery detected', badge: currentSensor.severity },
+    organization: { title: selectedOrganization.name, badge: selectedOrganization.riskLevel },
+    ranch: { title: selectedRanch.name, badge: selectedRanch.riskLevel },
+    block: { title: currentBlock.name, badge: currentBlock.riskLevel },
+    sensor: { title: currentSensor.name, badge: currentSensor.severity },
+    'sensor-health': { title: currentSensor.name, badge: currentSensor.severity },
   };
   const controlCopy = {
-    pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },
-    map: { title: 'Map Controls', meta: 'Layers, legend, and map display' },
+    pest: { title: 'Pest Focus' },
+    map: { title: 'Map Controls' },
     maintenance: { title: 'Maintenance' },
   };
   const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
@@ -2414,7 +2413,6 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
     <div className={styles.mobileDockSummary}>
       <div>
         <Typography variant="h4">{resolved.title}</Typography>
-        {resolved.meta && <Typography variant="caption">{resolved.meta}</Typography>}
       </div>
       {resolved.badge && <Badge variant={resolved.badge}>{resolved.badgeLabel || `${resolved.badge} risk`}</Badge>}
     </div>
@@ -2615,7 +2613,6 @@ function MobileRankingSheet() {
         <div className={styles.mobileSheetHeaderTop}>
           <div>
             <Typography variant="h4">Pest Pressure Ranking</Typography>
-            <Typography variant="caption" color="secondary">Blocks ranked highest risk to lowest</Typography>
           </div>
           <InfoDisclosure
             title="Ranking logic"
