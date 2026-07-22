@@ -937,65 +937,67 @@ function MaintenancePanel({
           </div>
         </div>
       </div>
-      <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
-        <section className={styles.maintenanceSection}>
-          <div className={styles.maintenanceStatGrid}>
-            <StatCard
-              label="Offline sensors"
-              value={maintenanceStats.offline}
-              tone="neutral"
-              infoTitle="Offline sensors"
-              infoDescription="Sensors that are offline because battery is unavailable, the device has stopped uploading, or a field check is needed."
-            />
-            <StatCard
-              label="Low battery"
-              value={maintenanceStats.lowBattery}
-              tone="medium"
-              infoTitle="Low battery"
-              infoDescription="Sensors with battery levels below 30%. Battery discharge can decline quickly once it crosses this threshold."
-            />
-            <StatCard
-              label="Connectivity issues"
-              value={maintenanceStats.signalIssues}
-              tone="medium"
-              infoTitle="Connectivity issues"
-              infoDescription="Sensors reporting poor, offline, or intermittent LTE connectivity based on recent upload cadence and RSRP signal readings."
-            />
-            <StatCard
-              label="Lure due"
-              value={maintenanceStats.lureDue}
-              tone="medium"
-              infoTitle="Lure due"
-              infoDescription="Sensors where lure replacement is due within the next seven days."
-            />
-          </div>
-        </section>
-        <section className={styles.childList}>
-          <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
-            <div>
-              <Typography variant="body" weight="semibold">Sensors</Typography>
-              <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
-            </div>
-            <label className={styles.inlineToggle}>
-              <input
-                checked={showHealthySensors}
-                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
-                type="checkbox"
+      <div className={styles.maintenanceScrollFrame}>
+        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
+          <section className={styles.maintenanceSection}>
+            <div className={styles.maintenanceStatGrid}>
+              <StatCard
+                label="Offline sensors"
+                value={maintenanceStats.offline}
+                tone="neutral"
+                infoTitle="Offline sensors"
+                infoDescription="Sensors that are offline because battery is unavailable, the device has stopped uploading, or a field check is needed."
               />
-              Show healthy sensors
-            </label>
-          </div>
-          {visibleSensors.map((sensor, index) => (
-            <MaintenanceListItem
-              active={sensor.id === activeSensor.id}
-              key={sensor.id}
-              rank={index + 1}
-              sensor={sensor}
-              onSelect={() => onSensorSelect(sensor.id)}
-            />
-          ))}
-          <Button variant="secondary" fullWidth>Load more sensors</Button>
-        </section>
+              <StatCard
+                label="Low battery"
+                value={maintenanceStats.lowBattery}
+                tone="medium"
+                infoTitle="Low battery"
+                infoDescription="Sensors with battery levels below 30%. Battery discharge can decline quickly once it crosses this threshold."
+              />
+              <StatCard
+                label="Connectivity issues"
+                value={maintenanceStats.signalIssues}
+                tone="medium"
+                infoTitle="Connectivity issues"
+                infoDescription="Sensors reporting poor, offline, or intermittent LTE connectivity based on recent upload cadence and RSRP signal readings."
+              />
+              <StatCard
+                label="Lure due"
+                value={maintenanceStats.lureDue}
+                tone="medium"
+                infoTitle="Lure due"
+                infoDescription="Sensors where lure replacement is due within the next seven days."
+              />
+            </div>
+          </section>
+          <section className={styles.childList}>
+            <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+              <div>
+                <Typography variant="body" weight="semibold">Sensors</Typography>
+                <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+              </div>
+              <label className={styles.inlineToggle}>
+                <input
+                  checked={showHealthySensors}
+                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+                  type="checkbox"
+                />
+                Show healthy sensors
+              </label>
+            </div>
+            {visibleSensors.map((sensor, index) => (
+              <MaintenanceListItem
+                active={sensor.id === activeSensor.id}
+                key={sensor.id}
+                rank={index + 1}
+                sensor={sensor}
+                onSelect={() => onSensorSelect(sensor.id)}
+              />
+            ))}
+            <Button variant="secondary" fullWidth>Load more sensors</Button>
+          </section>
+        </div>
       </div>
     </div>
   );
@@ -1112,8 +1114,10 @@ function MaintenanceSensorPanel({ sensor }) {
           History
         </button>
       </div>
-      <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
-        <MaintenanceDeviceDetail sensor={sensor} />
+      <div className={styles.maintenanceScrollFrame}>
+        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
+          <MaintenanceDeviceDetail sensor={sensor} />
+        </div>
       </div>
       <div className={`${styles.panelBottomFade} ${styles.panelBottomFadeCompact}`} />
       <div className={styles.bottomActionTray}>
@@ -1221,36 +1225,38 @@ function MaintenanceControlsPanel({
         <span className="material-symbols-rounded" aria-hidden="true">{isOpen ? 'expand_less' : 'expand_more'}</span>
       </button>
       {isOpen && (
-        <div className={styles.maintenanceControlBody}>
-          <section className={styles.maintenanceControlSection}>
-            <Typography variant="body" weight="semibold" color="secondary">Filters</Typography>
-            <label>
-              <input
-                checked={showHealthySensors}
-                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
-                type="checkbox"
-              />
-              Show healthy sensors
-            </label>
-            <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
-            <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
-            <label><input type="checkbox" defaultChecked /> Lure due soon</label>
-          </section>
-          <section className={styles.maintenanceControlSection}>
-            <Typography variant="body" weight="semibold" color="secondary">Maintenance Legend</Typography>
-            <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
-              <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
-            </div>
-            <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
-              <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
-            </div>
-            <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
-              <Typography variant="body-sm">Healthy (no action required)</Typography>
-            </div>
-          </section>
+        <div className={styles.maintenanceControlScrollFrame}>
+          <div className={styles.maintenanceControlBody}>
+            <section className={styles.maintenanceControlSection}>
+              <Typography variant="body" weight="semibold" color="secondary">Filters</Typography>
+              <label>
+                <input
+                  checked={showHealthySensors}
+                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+                  type="checkbox"
+                />
+                Show healthy sensors
+              </label>
+              <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+              <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+              <label><input type="checkbox" defaultChecked /> Lure due soon</label>
+            </section>
+            <section className={styles.maintenanceControlSection}>
+              <Typography variant="body" weight="semibold" color="secondary">Maintenance Legend</Typography>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
+                <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
+              </div>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
+                <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
+              </div>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
+                <Typography variant="body-sm">Healthy (no action required)</Typography>
+              </div>
+            </section>
+          </div>
         </div>
       )}
     </aside>

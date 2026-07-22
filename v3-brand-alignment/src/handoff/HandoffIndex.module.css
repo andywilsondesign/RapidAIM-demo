@@ -630,6 +630,40 @@
   background: var(--color-bg-panel);
 }
 
+.maintenanceScrollFrame,
+.maintenanceControlScrollFrame {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.maintenanceScrollFrame::before,
+.maintenanceScrollFrame::after,
+.maintenanceControlScrollFrame::before,
+.maintenanceControlScrollFrame::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  height: var(--layout-panel-fade-height);
+  pointer-events: none;
+  content: '';
+}
+
+.maintenanceScrollFrame::before,
+.maintenanceControlScrollFrame::before {
+  top: 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0), var(--color-bg-panel) 78%, var(--color-bg-panel));
+}
+
+.maintenanceScrollFrame::after,
+.maintenanceControlScrollFrame::after {
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-bg-panel) 78%, var(--color-bg-panel));
+}
+
 .maintenanceSummaryGrid {
   display: grid;
   width: 100%;
@@ -825,7 +859,7 @@
   display: flex;
   width: var(--layout-control-panel-width);
   height: auto;
-  max-height: calc(100% - var(--spacing-5) - 2.25rem - var(--spacing-5));
+  max-height: calc(100vh - (var(--spacing-5) * 3) - 2.25rem);
   flex-direction: column;
   overflow: hidden;
   bottom: auto;
@@ -898,9 +932,11 @@
 }
 
 .maintenanceControlBody {
+  flex: 1;
   gap: var(--spacing-5);
   padding: var(--spacing-4);
-  overflow: visible;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
 .maintenanceControlSection {
