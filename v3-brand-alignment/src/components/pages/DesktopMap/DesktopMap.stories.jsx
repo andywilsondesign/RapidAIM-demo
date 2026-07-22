@@ -42,13 +42,13 @@ export const SensorDetail = {
   },
 };
 
-export const MaintenanceModeExperiment = {
+export const MaintenanceRanking = {
   args: {
     initialPageId: 'experimental-maintenance-mode',
   },
 };
 
-export const MaintenanceSensorDetailExperiment = {
+export const MaintenanceSensorDetail = {
   args: {
     initialPageId: 'experimental-maintenance-sensor',
   },
