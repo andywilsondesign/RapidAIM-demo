@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
+import { InfoDisclosure } from '../InfoDisclosure/InfoDisclosure';
 import styles from './StatCard.module.css';
 
 export const StatCard = ({
@@ -10,6 +11,8 @@ export const StatCard = ({
   trendContext,
   trendLabel,
   benchmark,
+  infoTitle,
+  infoDescription,
   tone = 'neutral',
   className = '',
 }) => {
@@ -17,9 +20,14 @@ export const StatCard = ({
 
   return (
     <div className={`${styles.card} ${styles[`card--${tone}`]} ${className}`}>
-      <Typography variant="body-sm" color="secondary" className={styles.label}>
-        {label}
-      </Typography>
+      <div className={styles.labelRow}>
+        <Typography variant="body-sm" color="secondary" className={styles.label}>
+          {label}
+        </Typography>
+        {infoTitle && infoDescription && (
+          <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
+        )}
+      </div>
       
       <div className={styles.valueRow}>
         <Typography variant="h3" className="font-metric">{value}</Typography>
@@ -65,6 +73,8 @@ StatCard.propTypes = {
   trendContext: PropTypes.string,
   trendLabel: PropTypes.string,
   benchmark: PropTypes.string,
+  infoTitle: PropTypes.string,
+  infoDescription: PropTypes.string,
   tone: PropTypes.oneOf(['neutral', 'high', 'medium', 'low', 'positive']),
   className: PropTypes.string,
 };

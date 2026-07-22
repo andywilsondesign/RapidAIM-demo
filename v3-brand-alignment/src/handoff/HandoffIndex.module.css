@@ -785,6 +785,17 @@
   color: var(--color-panel-header-text);
 }
 
+.maintenanceModalTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.maintenanceModalTitle span {
+  color: var(--color-panel-header-text);
+  font-size: var(--font-size-xl);
+}
+
 .maintenanceModalBody {
   display: flex;
   flex-direction: column;
@@ -813,8 +824,11 @@
 .maintenanceControlsPanel {
   display: flex;
   width: var(--layout-control-panel-width);
+  height: auto;
+  max-height: calc(100% - var(--spacing-5) - 2.25rem - var(--spacing-5));
   flex-direction: column;
   overflow: hidden;
+  bottom: auto;
   background: var(--color-bg-panel);
 }
 
@@ -884,17 +898,21 @@
 }
 
 .maintenanceControlBody {
-  gap: var(--spacing-4);
+  gap: var(--spacing-5);
   padding: var(--spacing-4);
-  overflow: auto;
+  overflow: visible;
 }
 
 .maintenanceControlSection {
   gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-data-surface);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.maintenanceControlSection > p:first-child {
+  color: var(--color-text-secondary);
 }
 
 .maintenanceControlSection label {

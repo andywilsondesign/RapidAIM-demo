@@ -84,7 +84,7 @@ const maintenanceSensors = [
     lureStatus: 'Due in 3 days',
     lastService: 'Jun 14, 2026',
     nextAction: 'Replace or relocate device',
-    signalHistory: [42, 38, 26, 18, 0, 0, 0],
+    signalHistory: [-98, -104, -111, -118, -121, -123, -124],
     eventHistory: [
       { date: 'Jul 20, 2026', title: 'Device disconnected', detail: 'No upload received after 07:12.' },
       { date: 'Jun 14, 2026', title: 'Lure replaced', detail: 'Field visit logged by operations.' },
@@ -106,7 +106,7 @@ const maintenanceSensors = [
     lureStatus: 'Changed 9 days ago',
     lastService: 'Jun 28, 2026',
     nextAction: 'Replace battery',
-    signalHistory: [72, 66, 61, 49, 42, 36, 31],
+    signalHistory: [-86, -89, -94, -99, -106, -109, -112],
     eventHistory: [
       { date: 'Jul 21, 2026', title: 'Battery warning raised', detail: 'Battery dropped below the 30% maintenance threshold.' },
       { date: 'Jun 28, 2026', title: 'Device inspected', detail: 'Signal quality marked as poor near edge of block.' },
@@ -127,7 +127,7 @@ const maintenanceSensors = [
     lureStatus: 'Due in 8 days',
     lastService: 'Jul 2, 2026',
     nextAction: 'Check placement / LTE service',
-    signalHistory: [64, 59, 34, 68, 31, 72, 45],
+    signalHistory: [-91, -96, -109, -95, -114, -93, -107],
     eventHistory: [
       { date: 'Jul 21, 2026', title: 'Signal warning raised', detail: 'Upload cadence changed from regular to intermittent.' },
       { date: 'Jul 2, 2026', title: 'Device moved', detail: 'Device moved 12m north to improve coverage.' },
@@ -148,7 +148,7 @@ const maintenanceSensors = [
     lureStatus: 'Due tomorrow',
     lastService: 'Jul 1, 2026',
     nextAction: 'Replace lure',
-    signalHistory: [82, 84, 79, 81, 76, 78, 80],
+    signalHistory: [-78, -80, -82, -81, -84, -83, -82],
     eventHistory: [
       { date: 'Jul 20, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due tomorrow.' },
       { date: 'Jul 1, 2026', title: 'Lure replaced', detail: 'Replacement logged during scheduled visit.' },
@@ -169,10 +169,136 @@ const maintenanceSensors = [
     lureStatus: 'Changed 5 days ago',
     lastService: 'Jul 10, 2026',
     nextAction: 'Monitor',
-    signalHistory: [94, 91, 92, 90, 93, 95, 94],
+    signalHistory: [-72, -74, -73, -75, -71, -70, -72],
     eventHistory: [
       { date: 'Jul 10, 2026', title: 'Battery replaced', detail: 'Battery pack replaced during scheduled service.' },
       { date: 'Jul 10, 2026', title: 'Lure replaced', detail: 'Lure refreshed during the same field visit.' },
+    ],
+  },
+  {
+    ...sensors[0],
+    id: 'sensor-sierra-5-a',
+    name: 'Sensor S5-A',
+    blockName: 'Block 5',
+    lat: 36.649,
+    lng: -119.797,
+    battery: 24,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '36 min ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Battery below 30%',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Battery is below the maintenance threshold. Sensor is still connected.',
+    lureStatus: 'Changed 4 days ago',
+    lastService: 'Jul 8, 2026',
+    nextAction: 'Replace battery',
+    signalHistory: [-82, -83, -86, -88, -87, -89, -90],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Battery warning raised', detail: 'Battery dropped below 30%.' },
+      { date: 'Jul 8, 2026', title: 'Device inspected', detail: 'No device fault found.' },
+    ],
+  },
+  {
+    ...sensors[1],
+    id: 'sensor-sierra-5-b',
+    name: 'Sensor S5-B',
+    blockName: 'Block 5',
+    lat: 36.643,
+    lng: -119.797,
+    battery: 58,
+    signal: 'Poor',
+    status: 'Online',
+    lastSync: '1 hour ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Poor LTE signal',
+    connectivity: 'Poor LTE signal',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'RSRP has stayed in the poor range during recent uploads.',
+    lureStatus: 'Changed 11 days ago',
+    lastService: 'Jul 4, 2026',
+    nextAction: 'Check placement / LTE service',
+    signalHistory: [-108, -109, -111, -113, -110, -112, -114],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Connectivity warning raised', detail: 'RSRP moved into the poor range.' },
+    ],
+  },
+  {
+    ...sensors[2],
+    id: 'sensor-sierra-6-a',
+    name: 'Sensor S6-A',
+    blockName: 'Block 6',
+    lat: 36.641,
+    lng: -119.801,
+    battery: 71,
+    signal: 'Excellent',
+    status: 'Online',
+    lastSync: '20 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Lure replacement is due within one week.',
+    lureStatus: 'Due in 5 days',
+    lastService: 'Jul 3, 2026',
+    nextAction: 'Replace lure',
+    signalHistory: [-70, -72, -71, -74, -73, -72, -71],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due within one week.' },
+    ],
+  },
+  {
+    ...sensors[3],
+    id: 'sensor-sierra-6-b',
+    name: 'Sensor S6-B',
+    blockName: 'Block 6',
+    lat: 36.641,
+    lng: -119.796,
+    battery: 0,
+    signal: 'Offline',
+    status: 'Inactive',
+    lastSync: '26 hours ago',
+    severity: 'offline',
+    maintenanceState: 'offline',
+    maintenanceReason: 'Offline',
+    connectivity: 'Offline for 26h',
+    faultStatus: 'Needs field check',
+    maintenanceDetails: 'Device has not uploaded data for 26 hours.',
+    lureStatus: 'Changed 8 days ago',
+    lastService: 'Jun 30, 2026',
+    nextAction: 'Check power and device state',
+    signalHistory: [-94, -101, -116, -121, -123, -124, -124],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Device disconnected', detail: 'No upload received for more than 24 hours.' },
+    ],
+  },
+  {
+    ...sensors[4],
+    id: 'sensor-sierra-7-a',
+    name: 'Sensor S7-A',
+    blockName: 'Block 7',
+    lat: 36.639,
+    lng: -119.799,
+    battery: 88,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '8 min ago',
+    severity: 'low',
+    maintenanceState: 'healthy',
+    maintenanceReason: 'No action required',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Device is online and above the maintenance battery threshold.',
+    lureStatus: 'Changed 2 days ago',
+    lastService: 'Jul 11, 2026',
+    nextAction: 'Monitor',
+    signalHistory: [-82, -81, -83, -80, -79, -81, -82],
+    eventHistory: [
+      { date: 'Jul 11, 2026', title: 'Device inspected', detail: 'Routine service completed.' },
     ],
   },
 ];
@@ -192,7 +318,12 @@ const maintenanceStats = {
   offline: maintenanceSensors.filter((sensor) => sensor.status === 'Inactive' || sensor.signal === 'Offline').length,
   lowBattery: maintenanceSensors.filter((sensor) => sensor.battery > 0 && sensor.battery < 30).length,
   signalIssues: maintenanceSensors.filter((sensor) => ['Poor', 'Intermittent', 'Offline'].includes(sensor.signal)).length,
-  lureDue: maintenanceSensors.filter((sensor) => sensor.lureStatus?.toLowerCase().includes('due')).length,
+  lureDue: maintenanceSensors.filter((sensor) => {
+    const lureStatus = sensor.lureStatus?.toLowerCase() || '';
+    if (lureStatus.includes('tomorrow')) return true;
+    const daysMatch = lureStatus.match(/due in (\d+) days?/);
+    return daysMatch ? Number.parseInt(daysMatch[1], 10) <= 7 : false;
+  }).length,
 };
 const signalHistoryLabels = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Today'];
 const selectedOrganization = {
@@ -710,9 +841,15 @@ function getMaintenanceSeverity(sensor) {
   return 'healthy';
 }
 
+const getVisibleMaintenanceSensors = (showHealthySensors) => (
+  showHealthySensors ? rankedMaintenanceSensors : maintenanceAttentionSensors
+);
+
 function MaintenanceModePage() {
   const [selectedSensorId, setSelectedSensorId] = useState(selectedMaintenanceSensor.id);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
   const activeSensor = maintenanceSensors.find((sensor) => sensor.id === selectedSensorId) || selectedMaintenanceSensor;
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
 
   return (
     <DesktopShell
@@ -720,11 +857,13 @@ function MaintenanceModePage() {
         <MaintenancePanel
           activeSensor={activeSensor}
           onSensorSelect={setSelectedSensorId}
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
         />
       )}
       scopeExperiment
       scopeLevel="sensor"
-      mapSensors={maintenanceSensors}
+      mapSensors={visibleMaintenanceSensors}
       selectedSensorIdOverride={activeSensor.id}
       sensorDisplayMode="maintenance"
       blockOverlays={buildMaintenanceBlockOverlays()}
@@ -733,7 +872,12 @@ function MaintenanceModePage() {
       shellClassName={styles.maintenanceShell}
       topNavigationProps={maintenanceTopNavProps}
       onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
-      rightRailContent={<MaintenanceControlsPanel />}
+      rightRailContent={(
+        <MaintenanceControlsPanel
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      )}
       mapNotice={(
         <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
           <span className="material-symbols-rounded" aria-hidden="true">construction</span>
@@ -748,15 +892,19 @@ function MaintenanceModePage() {
 const maintenanceTopNavProps = {
   modeLabel: 'maintenance',
   modeOptions: [
-    { label: 'Maintenance', value: 'maintenance' },
     { label: 'Pest View', value: 'pest' },
+    { label: 'Maintenance', value: 'maintenance' },
     { label: 'Admin', value: 'admin' },
   ],
 };
 
-function MaintenancePanel({ activeSensor, onSensorSelect }) {
-  const [showHealthySensors, setShowHealthySensors] = useState(false);
-  const visibleSensors = showHealthySensors ? rankedMaintenanceSensors : maintenanceAttentionSensors;
+function MaintenancePanel({
+  activeSensor,
+  onSensorSelect,
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
+  const visibleSensors = getVisibleMaintenanceSensors(showHealthySensors);
 
   return (
     <div className={`${styles.panel} ${styles.maintenancePanel}`}>
@@ -764,7 +912,7 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
         <div className={styles.panelTitleGroup}>
           <div className={styles.panelTitleRow}>
             <div className={styles.panelTitleCluster}>
-              <Typography variant="h3">Maintenance Mode</Typography>
+              <Typography variant="h3">Maintenance Overview</Typography>
             </div>
             <InfoDisclosure
               title="Maintenance mode"
@@ -791,15 +939,35 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
       </div>
       <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
         <section className={styles.maintenanceSection}>
-          <div className={styles.sectionHeader}>
-            <Typography variant="body" weight="semibold">Fleet Health</Typography>
-            <Typography variant="caption" color="secondary">Current sensor availability and maintenance signals</Typography>
-          </div>
           <div className={styles.maintenanceStatGrid}>
-            <StatCard label="Active sensors" value={`${maintenanceStats.active}/${maintenanceSensors.length}`} trendContext={`${maintenanceStats.offline} offline`} tone="positive" />
-            <StatCard label="Low battery" value={maintenanceStats.lowBattery} trendContext="Below 30%" tone="high" />
-            <StatCard label="Signal issues" value={maintenanceStats.signalIssues} trendContext="Poor, offline, or intermittent" tone="medium" />
-            <StatCard label="Lure due soon" value={maintenanceStats.lureDue} trendContext="Due within 8 days" tone="medium" />
+            <StatCard
+              label="Offline sensors"
+              value={maintenanceStats.offline}
+              tone="neutral"
+              infoTitle="Offline sensors"
+              infoDescription="Sensors that are offline because battery is unavailable, the device has stopped uploading, or a field check is needed."
+            />
+            <StatCard
+              label="Low battery"
+              value={maintenanceStats.lowBattery}
+              tone="medium"
+              infoTitle="Low battery"
+              infoDescription="Sensors with battery levels below 30%. Battery discharge can decline quickly once it crosses this threshold."
+            />
+            <StatCard
+              label="Connectivity issues"
+              value={maintenanceStats.signalIssues}
+              tone="medium"
+              infoTitle="Connectivity issues"
+              infoDescription="Sensors reporting poor, offline, or intermittent LTE connectivity based on recent upload cadence and RSRP signal readings."
+            />
+            <StatCard
+              label="Lure due"
+              value={maintenanceStats.lureDue}
+              tone="medium"
+              infoTitle="Lure due"
+              infoDescription="Sensors where lure replacement is due within the next seven days."
+            />
           </div>
         </section>
         <section className={styles.childList}>
@@ -811,7 +979,7 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
             <label className={styles.inlineToggle}>
               <input
                 checked={showHealthySensors}
-                onChange={(event) => setShowHealthySensors(event.target.checked)}
+                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
                 type="checkbox"
               />
               Show healthy sensors
@@ -826,6 +994,7 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
               onSelect={() => onSensorSelect(sensor.id)}
             />
           ))}
+          <Button variant="secondary" fullWidth>Load more sensors</Button>
         </section>
       </div>
     </div>
@@ -864,7 +1033,9 @@ function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
 
 function MaintenanceSensorDetailPage() {
   const [selectedSensorId, setSelectedSensorId] = useState(selectedMaintenanceSensor.id);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
   const activeSensor = maintenanceSensors.find((sensor) => sensor.id === selectedSensorId) || selectedMaintenanceSensor;
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
 
   return (
     <DesktopShell
@@ -878,7 +1049,7 @@ function MaintenanceSensorDetailPage() {
           { label: activeSensor.blockName },
         ],
       }}
-      mapSensors={maintenanceSensors}
+      mapSensors={visibleMaintenanceSensors}
       selectedSensorIdOverride={activeSensor.id}
       sensorDisplayMode="maintenance"
       blockOverlays={buildMaintenanceBlockOverlays()}
@@ -887,7 +1058,12 @@ function MaintenanceSensorDetailPage() {
       shellClassName={styles.maintenanceShell}
       topNavigationProps={maintenanceTopNavProps}
       onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
-      rightRailContent={<MaintenanceControlsPanel />}
+      rightRailContent={(
+        <MaintenanceControlsPanel
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      )}
       mapNotice={(
         <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
           <span className="material-symbols-rounded" aria-hidden="true">construction</span>
@@ -991,10 +1167,10 @@ function MaintenanceDeviceDetail({ sensor }) {
       ]} />
       <TrendChart
         type="line"
-        title="Connection quality"
+        title="Connectivity quality"
         labels={signalHistoryLabels}
         series={[{
-          label: 'LTE signal',
+          label: 'RSRP (dBm)',
           data: sensor.signalHistory,
           color: '#151560',
         }]}
@@ -1031,7 +1207,10 @@ function MaintenanceDeviceDetail({ sensor }) {
   );
 }
 
-function MaintenanceControlsPanel() {
+function MaintenanceControlsPanel({
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -1044,14 +1223,21 @@ function MaintenanceControlsPanel() {
       {isOpen && (
         <div className={styles.maintenanceControlBody}>
           <section className={styles.maintenanceControlSection}>
-            <Typography variant="h6">Priority filters</Typography>
-            <label><input type="checkbox" defaultChecked /> Offline over 24h</label>
+            <Typography variant="body" weight="semibold" color="secondary">Filters</Typography>
+            <label>
+              <input
+                checked={showHealthySensors}
+                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+                type="checkbox"
+              />
+              Show healthy sensors
+            </label>
             <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
             <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
             <label><input type="checkbox" defaultChecked /> Lure due soon</label>
           </section>
           <section className={styles.maintenanceControlSection}>
-            <Typography variant="h6">Maintenance Legend</Typography>
+            <Typography variant="body" weight="semibold" color="secondary">Maintenance Legend</Typography>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
               <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
@@ -1684,9 +1870,10 @@ function ReportPage() {
 function MaintenanceNoteModalPage() {
   return (
     <CenteredPreview>
-      <div className={styles.maintenanceModal}>
+        <div className={styles.maintenanceModal}>
         <div className={styles.maintenanceModalHeader}>
-          <div>
+          <div className={styles.maintenanceModalTitle}>
+            <span className="material-symbols-rounded" aria-hidden="true">edit_note</span>
             <Typography variant="h3">Add maintenance note</Typography>
           </div>
           <Button variant="ghost" size="sm" aria-label="Close maintenance note modal">

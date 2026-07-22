@@ -29,9 +29,25 @@
   background-color: var(--color-status-green-bg);
 }
 
+.labelRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
 .label {
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.infoDisclosure {
+  margin-top: calc(var(--spacing-1) * -1);
+}
+
+.infoDisclosure button {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .valueRow {

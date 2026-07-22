@@ -106,6 +106,8 @@ export const TrendChart = ({
   }, [data, labels, series, type, threshold, visibleSeries]);
 
   const hasMultipleSeries = type === 'line' && Boolean(series?.length);
+  const chartValues = series?.length ? series.flatMap((item) => item.data) : data;
+  const hasNegativeValues = chartValues.some((value) => value < 0);
   const toggleSeries = (label) => {
     setHiddenSeries((current) => (
       current.includes(label)
@@ -131,7 +133,7 @@ export const TrendChart = ({
     },
     scales: {
       y: {
-        beginAtZero: true,
+        beginAtZero: !hasNegativeValues,
         grid: { color: '#E2E8F0', drawBorder: false },
         ticks: { color: '#64748B', font: { family: '"Inter", sans-serif' } },
       },
