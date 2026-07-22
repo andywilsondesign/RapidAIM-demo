@@ -277,6 +277,56 @@ const maintenanceSensors = [
     ],
   },
   {
+    ...sensors[0],
+    id: 'sensor-sierra-8-a',
+    name: 'Sensor S8-A',
+    blockName: 'Block 8',
+    lat: 36.637,
+    lng: -119.802,
+    battery: 27,
+    signal: 'Intermittent',
+    status: 'Online',
+    lastSync: '3 hours ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Battery and signal warning',
+    connectivity: 'Intermittent uploads',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Battery is below 30% and upload cadence has become intermittent.',
+    lureStatus: 'Changed 6 days ago',
+    lastService: 'Jul 6, 2026',
+    nextAction: 'Replace battery and check signal',
+    signalHistory: [-92, -94, -101, -108, -106, -112, -109],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Maintenance warning raised', detail: 'Battery and connectivity both crossed warning thresholds.' },
+    ],
+  },
+  {
+    ...sensors[1],
+    id: 'sensor-sierra-8-b',
+    name: 'Sensor S8-B',
+    blockName: 'Block 8',
+    lat: 36.637,
+    lng: -119.796,
+    battery: 66,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '18 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Lure replacement is due within one week.',
+    lureStatus: 'Due in 6 days',
+    lastService: 'Jul 4, 2026',
+    nextAction: 'Replace lure',
+    signalHistory: [-80, -81, -79, -82, -83, -81, -80],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due within one week.' },
+    ],
+  },
+  {
     ...sensors[4],
     id: 'sensor-sierra-7-a',
     name: 'Sensor S7-A',
@@ -938,7 +988,7 @@ function MaintenancePanel({
         </div>
       </div>
       <div className={styles.maintenanceScrollFrame}>
-        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
+        <div className={`${styles.panelBody} ${styles.maintenancePanelBody} ${styles.maintenanceOverviewPanelBody}`}>
           <section className={styles.maintenanceSection}>
             <div className={styles.maintenanceStatGrid}>
               <StatCard
@@ -995,7 +1045,7 @@ function MaintenancePanel({
                 onSelect={() => onSensorSelect(sensor.id)}
               />
             ))}
-            <Button variant="secondary" fullWidth>Load more sensors</Button>
+            <Button variant="secondary" fullWidth>Load all sensors</Button>
           </section>
         </div>
       </div>
@@ -1011,18 +1061,18 @@ function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
     healthy: 'Healthy',
   }[state];
   const riskLevel = state === 'offline' ? 'offline' : state === 'warning' ? 'medium' : 'low';
-  const subtitleParts = [
+  const subtitle = [
     `Battery ${sensor.battery}%`,
     `Connectivity ${sensor.connectivity}`,
     `Lure ${sensor.lureStatus}`,
-  ].join(' · ');
+  ].join(' | ');
 
   return (
     <RankingListItem
       className={`${styles.maintenanceRankingItem} ${active ? styles.activeMaintenanceListItem : ''}`}
       rank={rank}
       title={sensor.name}
-      subtitle={subtitleParts}
+      subtitle={subtitle}
       riskLevel={riskLevel}
       riskLabelOverride={stateLabel}
       statusLabel={sensor.blockName}

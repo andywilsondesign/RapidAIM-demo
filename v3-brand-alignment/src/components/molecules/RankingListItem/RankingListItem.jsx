@@ -54,7 +54,7 @@ export const RankingListItem = ({
 RankingListItem.propTypes = {
   rank: PropTypes.number.isRequired,
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string.isRequired,
+  subtitle: PropTypes.node.isRequired,
   riskLevel: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
   riskLabelOverride: PropTypes.string,
   statusLabel: PropTypes.string,

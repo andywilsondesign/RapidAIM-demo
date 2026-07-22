@@ -688,6 +688,10 @@
   padding-bottom: calc(var(--layout-panel-action-tray-height) + var(--spacing-6));
 }
 
+.maintenanceOverviewPanelBody {
+  padding-bottom: var(--spacing-5);
+}
+
 .maintenanceSection {
   display: flex;
   flex-direction: column;
@@ -706,6 +710,12 @@
   border-color: rgba(8, 8, 26, 0.28);
   background: rgba(8, 8, 26, 0.045);
   outline: none;
+}
+
+.maintenanceRankingItem [class*='badge--offline'] {
+  border-color: rgba(8, 8, 26, 0.36);
+  background: var(--color-brand-ink);
+  color: var(--color-bg-panel);
 }
 
 .maintenanceDetailCard,
@@ -1226,6 +1236,10 @@
 
 .panelBody > * {
   flex-shrink: 0;
+}
+
+.panelBody.maintenanceOverviewPanelBody {
+  padding-bottom: var(--spacing-5);
 }
 
 .panelSection,
