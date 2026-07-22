@@ -1278,7 +1278,7 @@ function MaintenanceControlsPanel({
         <div className={styles.maintenanceControlScrollFrame}>
           <div className={styles.maintenanceControlBody}>
             <section className={styles.maintenanceControlSection}>
-              <Typography variant="body" weight="semibold" color="secondary">Filters</Typography>
+              <Typography variant="h6" className={styles.maintenanceControlSectionTitle}>Filters</Typography>
               <label>
                 <input
                   checked={showHealthySensors}
@@ -1292,7 +1292,7 @@ function MaintenanceControlsPanel({
               <label><input type="checkbox" defaultChecked /> Lure due soon</label>
             </section>
             <section className={styles.maintenanceControlSection}>
-              <Typography variant="body" weight="semibold" color="secondary">Maintenance Legend</Typography>
+              <Typography variant="h6" className={styles.maintenanceControlSectionTitle}>Maintenance Legend</Typography>
               <div className={styles.maintenanceLegendItem}>
                 <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
                 <Typography variant="body-sm">Offline (no battery or device issue)</Typography>

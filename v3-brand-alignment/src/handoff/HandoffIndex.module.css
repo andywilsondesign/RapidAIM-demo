@@ -639,9 +639,7 @@
   overflow: hidden;
 }
 
-.maintenanceScrollFrame::before,
 .maintenanceScrollFrame::after,
-.maintenanceControlScrollFrame::before,
 .maintenanceControlScrollFrame::after {
   position: absolute;
   right: 0;
@@ -650,12 +648,6 @@
   height: var(--layout-panel-fade-height);
   pointer-events: none;
   content: '';
-}
-
-.maintenanceScrollFrame::before,
-.maintenanceControlScrollFrame::before {
-  top: 0;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0), var(--color-bg-panel) 78%, var(--color-bg-panel));
 }
 
 .maintenanceScrollFrame::after,
@@ -944,7 +936,7 @@
 .maintenanceControlBody {
   flex: 1;
   gap: var(--spacing-5);
-  padding: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-5);
   overflow: auto;
   scroll-behavior: smooth;
 }
@@ -957,7 +949,7 @@
   background: transparent;
 }
 
-.maintenanceControlSection > p:first-child {
+.maintenanceControlSectionTitle {
   color: var(--color-text-secondary);
 }
 
