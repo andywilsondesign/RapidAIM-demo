@@ -20,6 +20,6 @@ export const Desktop = {
 
 export const Mobile = {
   args: {
-    initialPageId: 'mobile-overlays',
+    initialPageId: 'scouting-mobile',
   },
 };

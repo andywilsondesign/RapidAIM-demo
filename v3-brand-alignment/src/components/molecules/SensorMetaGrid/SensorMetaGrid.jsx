@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '../../atoms/Typography/Typography';
+import { InfoDisclosure } from '../InfoDisclosure/InfoDisclosure';
 import styles from './SensorMetaGrid.module.css';
 
 export const SensorMetaGrid = ({ items, className = '' }) => (
@@ -11,6 +12,11 @@ export const SensorMetaGrid = ({ items, className = '' }) => (
 
       return (
       <div className={`${styles.item} ${styles[`item--${tone}`]}`} key={item.label}>
+        {item.infoTitle && item.infoDescription && (
+          <span className={styles.infoSlot}>
+            <InfoDisclosure title={item.infoTitle} description={item.infoDescription} className={styles.infoDisclosure} />
+          </span>
+        )}
         <Typography variant="body-sm" color="secondary" className={styles.label}>
           {item.label}
         </Typography>
@@ -31,6 +37,8 @@ SensorMetaGrid.propTypes = {
     label: PropTypes.string.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     tone: PropTypes.oneOf(['positive', 'warning', 'error']),
+    infoTitle: PropTypes.string,
+    infoDescription: PropTypes.string,
   })).isRequired,
   className: PropTypes.string,
 };

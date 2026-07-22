@@ -53,9 +53,3 @@ export const MaintenanceSensorDetail = {
     initialPageId: 'mobile-maintenance-sensor',
   },
 };
-
-export const Overlays = {
-  args: {
-    initialPageId: 'mobile-overlays',
-  },
-};

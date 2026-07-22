@@ -53,9 +53,3 @@ export const MaintenanceSensorDetail = {
     initialPageId: 'experimental-maintenance-sensor',
   },
 };
-
-export const MaintenanceNoteModal = {
-  args: {
-    initialPageId: 'maintenance-note-modal',
-  },
-};

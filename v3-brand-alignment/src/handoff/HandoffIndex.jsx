@@ -24,6 +24,7 @@ import { WeatherWidget } from '../components/organisms/WeatherWidget/WeatherWidg
 import { TaskDropdown } from '../components/organisms/TaskDropdown/TaskDropdown';
 import { ScoutingAssignmentModal } from '../components/organisms/ScoutingAssignmentModal/ScoutingAssignmentModal';
 import { ReportModal } from '../components/organisms/ReportModal/ReportModal';
+import { MaintenanceNoteModal } from '../components/organisms/MaintenanceNoteModal/MaintenanceNoteModal';
 import { AccountSettings } from '../components/pages/AccountSettings/AccountSettings';
 import {
   blocks,
@@ -421,6 +422,15 @@ function formatShortServiceDate(dateValue) {
   }).format(parsedDate);
 }
 
+function getDaysSince(dateValue) {
+  if (!dateValue) return null;
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return null;
+
+  const today = new Date('2026-07-22T12:00:00');
+  return Math.max(0, Math.round((today - parsedDate) / (1000 * 60 * 60 * 24)));
+}
+
 function getLureShelfLife(sensor) {
   const lureStatus = sensor.lureStatus || 'Current';
   const normalizedStatus = lureStatus.toLowerCase();
@@ -489,16 +499,60 @@ function getSensorHealthIndicators(sensor, { forceHealthy = false } = {}) {
   const connectivity = getConnectivityMeta(sensor);
   const deviceHealth = getDeviceHealthMeta(sensor);
   const lureShelfLife = getLureShelfLife(sensor);
-  const lastService = formatShortServiceDate(sensor.lastService);
+  const daysSinceLastService = getDaysSince(sensor.lastService);
+  const lastServiceValue = daysSinceLastService == null ? formatShortServiceDate(sensor.lastService) : `${daysSinceLastService} days ago`;
+  const lastServiceTone = daysSinceLastService == null
+    ? 'positive'
+    : daysSinceLastService > 90
+      ? 'error'
+      : daysSinceLastService > 30
+        ? 'warning'
+        : 'positive';
   const overrideTone = forceHealthy ? 'positive' : undefined;
 
   return [
-    { label: 'Battery', value: `${sensor.battery}%`, tone: overrideTone || batteryTone },
-    { label: 'Connectivity', value: connectivity.value, tone: overrideTone || connectivity.tone },
-    { label: 'Device Health', value: deviceHealth.value, tone: overrideTone || deviceHealth.tone },
-    { label: 'Last Sync', value: sensor.lastSync.replace(' ago', ''), tone: overrideTone || getLastSyncTone(sensor.lastSync) },
-    { label: 'Lure Status', value: lureShelfLife.value, tone: overrideTone || lureShelfLife.tone },
-    { label: 'Last Service', value: lastService, tone: overrideTone || 'positive' },
+    {
+      label: 'Battery',
+      value: `${sensor.battery}%`,
+      tone: overrideTone || batteryTone,
+      infoTitle: 'Battery',
+      infoDescription: 'Battery level remaining on the device. Healthy is 30% or above, warning is below 30%, and critical/offline is 10% or below.',
+    },
+    {
+      label: 'Connectivity',
+      value: connectivity.value,
+      tone: overrideTone || connectivity.tone,
+      infoTitle: 'Connectivity',
+      infoDescription: 'Current LTE upload state for this sensor. Poor or intermittent connectivity is a warning, while offline means the device is not currently uploading data. Historical connectivity is shown in the chart below.',
+    },
+    {
+      label: 'Device Health',
+      value: deviceHealth.value,
+      tone: overrideTone || deviceHealth.tone,
+      infoTitle: 'Device health',
+      infoDescription: 'Whether the device is responding normally. Faults cover reported hardware errors, unusual reporting behaviour, or a device that needs a field check.',
+    },
+    {
+      label: 'Last Sync',
+      value: sensor.lastSync.replace(' ago', ''),
+      tone: overrideTone || getLastSyncTone(sensor.lastSync),
+      infoTitle: 'Last sync',
+      infoDescription: 'How recently the sensor uploaded data. Recent syncs are healthy, under 24 hours without upload is a warning, and 24 hours or more is treated as critical.',
+    },
+    {
+      label: 'Lure Status',
+      value: lureShelfLife.value,
+      tone: overrideTone || lureShelfLife.tone,
+      infoTitle: 'Lure status',
+      infoDescription: 'Estimated lure shelf life remaining. Healthy means more than seven days left, warning means replacement is due within seven days, and critical means the lure is overdue.',
+    },
+    {
+      label: 'Last Service',
+      value: lastServiceValue,
+      tone: overrideTone || lastServiceTone,
+      infoTitle: 'Last service',
+      infoDescription: 'Time since the last logged service visit. Healthy is within 30 days, warning is over 30 days, and critical is over 90 days without a service record.',
+    },
   ];
 }
 
@@ -803,8 +857,11 @@ const pageGroups = [
     title: 'Overlays',
     pages: [
       { id: 'tasks', label: 'Tasks Dropdown', component: <TasksPage /> },
+      { id: 'tasks-mobile', label: 'Tasks Dropdown Mobile', component: <MobileTasksPage /> },
       { id: 'scouting', label: 'Scouting Modal', component: <ScoutingPage /> },
+      { id: 'scouting-mobile', label: 'Scouting Modal Mobile', component: <MobileScoutingPage /> },
       { id: 'report', label: 'AI Report Modal', component: <ReportPage /> },
+      { id: 'maintenance-note-modal-mobile', label: 'Maintenance Note Modal Mobile', component: <MobileMaintenanceNoteModalPage /> },
     ],
   },
   {
@@ -817,7 +874,6 @@ const pageGroups = [
       { id: 'mobile-sensor', label: 'Sensor Detail', component: <MobileMapPage type="sensor" /> },
       { id: 'mobile-maintenance-ranking', label: 'Maintenance Ranking', component: <MobileMapPage type="maintenance-ranking" /> },
       { id: 'mobile-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MobileMapPage type="maintenance-sensor" /> },
-      { id: 'mobile-overlays', label: 'Mobile Overlays', component: <MobileOverlaysPage /> },
     ],
   },
   {
@@ -2098,6 +2154,14 @@ function ScoutingPage() {
   );
 }
 
+function MobileScoutingPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <ScoutingAssignmentModal compact entityName={selectedBlock.name} riskLevel={selectedBlock.riskLevel} pestName="Female NOW" />
+    </CenteredPreview>
+  );
+}
+
 function ReportPage() {
   return (
     <SplitPreview
@@ -2109,44 +2173,26 @@ function ReportPage() {
   );
 }
 
+function MobileTasksPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <TaskDropdown tasks={tasks} />
+    </CenteredPreview>
+  );
+}
+
 function MaintenanceNoteModalPage() {
   return (
     <CenteredPreview>
-        <div className={styles.maintenanceModal}>
-        <div className={styles.maintenanceModalHeader}>
-          <div className={styles.maintenanceModalTitle}>
-            <span className="material-symbols-rounded" aria-hidden="true">edit_note</span>
-            <Typography variant="h4">Add maintenance note</Typography>
-          </div>
-          <Button variant="ghost" size="sm" aria-label="Close maintenance note modal">
-            <span className="material-symbols-rounded">close</span>
-          </Button>
-        </div>
-        <div className={styles.maintenanceModalBody}>
-          <div className={styles.maintenanceModalContext}>
-            <Badge variant="neutral">Sierra Orchards</Badge>
-            <Badge variant="neutral">Block 4</Badge>
-            <Badge variant="offline">Sensor S4-D</Badge>
-          </div>
-          <FormField label="Category">
-            <Select options={[
-              { label: 'Battery change', value: 'battery' },
-              { label: 'Lure change', value: 'lure' },
-              { label: 'Device moved', value: 'moved' },
-              { label: 'Device replaced', value: 'replaced' },
-              { label: 'General visit note', value: 'note' },
-            ]} />
-          </FormField>
-          <label className={styles.maintenanceTextareaLabel}>
-            <Typography variant="caption" color="secondary">Note</Typography>
-            <textarea rows="6" placeholder="Add field note or maintenance outcome" />
-          </label>
-        </div>
-        <div className={styles.maintenanceModalFooter}>
-          <Button variant="secondary">Cancel</Button>
-          <Button variant="primary">Save note</Button>
-        </div>
-      </div>
+      <MaintenanceNoteModal />
+    </CenteredPreview>
+  );
+}
+
+function MobileMaintenanceNoteModalPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <MaintenanceNoteModal compact />
     </CenteredPreview>
   );
 }
@@ -2624,17 +2670,6 @@ function MobileControlsSheet({ scopePanel = 'pest', healthMode = false, sensorMa
         />
       </div>
     </div>
-  );
-}
-
-function MobileOverlaysPage() {
-  return (
-    <SplitPreview
-      left={<ScoutingAssignmentModal compact entityName={selectedBlock.name} riskLevel={selectedBlock.riskLevel} pestName="Female NOW" />}
-      right={<TaskDropdown tasks={tasks} />}
-      leftLabel="Mobile scouting modal"
-      rightLabel="Mobile tasks overlay"
-    />
   );
 }
 

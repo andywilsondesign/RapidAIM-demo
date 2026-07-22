@@ -2,7 +2,7 @@ import React from 'react';
 import { HandoffIndex } from '../../../handoff/HandoffIndex';
 
 export default {
-  title: 'Organisms/TaskDropdown',
+  title: 'Organisms/MaintenanceNoteModal',
   component: HandoffIndex,
   args: {
     showNavigator: false,
@@ -14,12 +14,12 @@ export default {
 
 export const Desktop = {
   args: {
-    initialPageId: 'tasks',
+    initialPageId: 'maintenance-note-modal',
   },
 };
 
 export const Mobile = {
   args: {
-    initialPageId: 'tasks-mobile',
+    initialPageId: 'maintenance-note-modal-mobile',
   },
 };
