@@ -426,14 +426,14 @@ function getLureShelfLife(sensor) {
   const normalizedStatus = lureStatus.toLowerCase();
 
   if (normalizedStatus.includes('tomorrow')) {
-    return { value: '1 day', tone: 'warning' };
+    return { value: '1 day left', tone: 'warning' };
   }
 
   const dueMatch = normalizedStatus.match(/due in (\d+) days?/);
   if (dueMatch) {
     const days = Number.parseInt(dueMatch[1], 10);
     return {
-      value: `${days} days`,
+      value: `${days} days left`,
       tone: days <= 0 ? 'error' : days <= 7 ? 'warning' : 'positive',
     };
   }
@@ -443,13 +443,13 @@ function getLureShelfLife(sensor) {
     const daysSinceChange = Number.parseInt(changedMatch[1], 10);
     const daysRemaining = Math.max(0, 30 - daysSinceChange);
     return {
-      value: `${daysRemaining} days`,
+      value: `${daysRemaining} days left`,
       tone: daysRemaining <= 0 ? 'error' : daysRemaining <= 7 ? 'warning' : 'positive',
     };
   }
 
   return {
-    value: normalizedStatus.includes('current') ? '30 days' : lureStatus,
+    value: normalizedStatus.includes('current') ? '30 days left' : lureStatus,
     tone: normalizedStatus.includes('overdue') ? 'error' : 'positive',
   };
 }
@@ -1218,7 +1218,6 @@ function MaintenancePanel({
             <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
               <div>
                 <PanelSectionTitle>Sensors</PanelSectionTitle>
-                <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
               </div>
               <label className={styles.inlineToggle}>
                 <input
@@ -2332,7 +2331,7 @@ const getMaintenanceBadgeVariant = (sensor) => {
 function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = selectedBlock, selectedSensor: currentSensor = selectedSensor }) {
   const contentCopy = {
     ranking: { title: 'Pest Pressure Ranking', meta: 'Blocks ranked highest risk to lowest' },
-    'maintenance-ranking': { title: 'Maintenance Overview', meta: 'Sensors ranked by maintenance urgency' },
+    'maintenance-ranking': { title: 'Maintenance Overview', meta: '' },
     'maintenance-sensor': {
       title: currentSensor.name,
       meta: currentSensor.maintenanceReason || currentSensor.blockName,
@@ -2360,7 +2359,7 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
     <div className={styles.mobileDockSummary}>
       <div>
         <Typography variant="h4">{resolved.title}</Typography>
-        <Typography variant="caption">{resolved.meta}</Typography>
+        {resolved.meta && <Typography variant="caption">{resolved.meta}</Typography>}
       </div>
       {resolved.badge && <Badge variant={resolved.badge}>{resolved.badgeLabel || `${resolved.badge} risk`}</Badge>}
     </div>
@@ -2428,12 +2427,11 @@ function MobileMaintenanceRankingSheet() {
   useScrollAnchorTabs(scrollContainerRef, mobileMaintenanceOverviewAnchorSections, setActiveAnchorTab);
 
   return (
-    <div className={styles.sheetContent} ref={scrollContainerRef}>
+    <div className={`${styles.sheetContent} ${styles.mobileMaintenanceRankingSheet}`}>
       <div className={styles.mobileSheetHeader}>
         <div className={styles.mobileSheetHeaderTop}>
           <div>
             <Typography variant="h4">Maintenance Overview</Typography>
-            <Typography variant="caption" color="secondary">Sensors ranked by maintenance urgency</Typography>
           </div>
           <InfoDisclosure
             title="Maintenance mode"
@@ -2458,7 +2456,7 @@ function MobileMaintenanceRankingSheet() {
           </FormField>
         </div>
       </div>
-      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+      <div className={`${styles.anchorTabs} ${styles.mobileMaintenanceAnchorTabs}`} style={{ '--tab-count': 2 }}>
         <button
           className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
           type="button"
@@ -2477,28 +2475,29 @@ function MobileMaintenanceRankingSheet() {
           </span>
         </button>
       </div>
-      <section className={styles.maintenanceSection} id="mobile-maintenance-overview-summary">
-        <div className={styles.maintenanceStatGrid}>
-          <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
-          <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
-          <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
-          <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
-        </div>
-      </section>
-      <section className={styles.mobileListSection} id="mobile-maintenance-sensors-list">
-        <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
-          <div>
-            <PanelSectionTitle>Sensors</PanelSectionTitle>
-            <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+      <div className={styles.mobileMaintenanceRankingScroll} ref={scrollContainerRef}>
+        <section className={styles.maintenanceSection} id="mobile-maintenance-overview-summary">
+          <div className={styles.maintenanceStatGrid}>
+            <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
+            <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
+            <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
+            <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
           </div>
-        </div>
-        <div className={styles.mobileListSection}>
-          {visibleSensors.map((sensor, index) => (
-            <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
-          ))}
-          <Button variant="secondary" fullWidth>Load all sensors</Button>
-        </div>
-      </section>
+        </section>
+        <section className={styles.mobileListSection} id="mobile-maintenance-sensors-list">
+          <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+            <div>
+              <PanelSectionTitle>Sensors</PanelSectionTitle>
+            </div>
+          </div>
+          <div className={styles.mobileListSection}>
+            {visibleSensors.map((sensor, index) => (
+              <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
+            ))}
+            <Button variant="secondary" fullWidth>Load all sensors</Button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

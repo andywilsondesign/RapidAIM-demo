@@ -1666,6 +1666,35 @@
   background: var(--color-bg-panel);
 }
 
+.mobileMaintenanceRankingSheet {
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.mobileMaintenanceRankingSheet .mobileSheetHeader {
+  position: relative;
+  top: auto;
+  margin: 0;
+}
+
+.mobileMaintenanceAnchorTabs {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.mobileMaintenanceRankingScroll {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  overflow: auto;
+  padding: var(--spacing-4);
+  scroll-behavior: smooth;
+}
+
 .mobileSheetHeader {
   position: sticky;
   top: 0;
