@@ -655,6 +655,8 @@ const pageGroups = [
       { id: 'mobile-ranch', label: 'Ranch Detail', component: <MobileMapPage type="ranch" /> },
       { id: 'mobile-block', label: 'Block Detail', component: <MobileMapPage type="block" /> },
       { id: 'mobile-sensor', label: 'Sensor Detail', component: <MobileMapPage type="sensor" /> },
+      { id: 'mobile-maintenance-ranking', label: 'Maintenance Ranking', component: <MobileMapPage type="maintenance-ranking" /> },
+      { id: 'mobile-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MobileMapPage type="maintenance-sensor" /> },
       { id: 'mobile-overlays', label: 'Mobile Overlays', component: <MobileOverlaysPage /> },
     ],
   },
@@ -2043,29 +2045,40 @@ function ResponsiveMobilePage({ type = 'ranking' }) {
 
 function MobileDeviceFrame({ type = 'ranking' }) {
   const isHealthMobile = type === 'sensor-health';
+  const isMaintenanceMobile = type === 'maintenance-ranking' || type === 'maintenance-sensor';
   const [sheetKind, setSheetKind] = useState(isHealthMobile ? 'map' : 'content');
   const [sheetState, setSheetState] = useState(isHealthMobile ? 'full' : 'docked');
   const [selectedMobileType, setSelectedMobileType] = useState(type);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
   const [mobileSensorMarkerMode, setMobileSensorMarkerMode] = useState(isHealthMobile ? 'health' : 'pest');
   const [selectedMobileBlockId, setSelectedMobileBlockId] = useState(type === 'block' ? selectedBlock.id : '');
-  const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : '');
+  const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : isMaintenanceMobile ? selectedMaintenanceSensor.id : '');
   const [sheetSelectionKey, setSheetSelectionKey] = useState(0);
-  const sensorDisplayMode = mobileSensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest';
-  const mapSensors = isHealthMobile ? healthExperimentSensors : sensors;
   const resolvedSheetKind = sheetKind;
-  const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map';
+  const sensorDisplayMode = isMaintenanceMobile ? 'maintenance' : mobileSensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest';
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
+  const mapSensors = isMaintenanceMobile ? visibleMaintenanceSensors : isHealthMobile ? healthExperimentSensors : sensors;
+  const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map' || resolvedSheetKind === 'maintenance';
   const selectedMobileBlock = [...rankingBlocks, ...selectedRanchBlocks].find((block) => block.id === selectedMobileBlockId) || selectedBlock;
-  const selectedMobileSensor = mapSensors.find((sensor) => sensor.id === selectedMobileSensorId) || (isHealthMobile ? healthIssueSensor : selectedSensor);
+  const selectedMobileSensor = mapSensors.find((sensor) => sensor.id === selectedMobileSensorId) || (isMaintenanceMobile ? selectedMaintenanceSensor : isHealthMobile ? healthIssueSensor : selectedSensor);
   const sheetLabel = {
-    content: selectedMobileType === 'ranking' ? 'Pest pressure ranking' : `${isHealthMobile || selectedMobileType === 'sensor-health' ? 'sensor health' : selectedMobileType} detail`,
+    content: selectedMobileType === 'ranking'
+      ? 'Pest pressure ranking'
+      : selectedMobileType === 'maintenance-ranking'
+        ? 'Maintenance overview'
+        : selectedMobileType === 'maintenance-sensor'
+          ? 'Maintenance sensor detail'
+          : `${isHealthMobile || selectedMobileType === 'sensor-health' ? 'sensor health' : selectedMobileType} detail`,
     pest: 'Pest focus',
     map: 'Map controls',
+    maintenance: 'Maintenance controls',
   }[resolvedSheetKind];
 
   useEffect(() => {
+    const nextIsMaintenanceMobile = type === 'maintenance-ranking' || type === 'maintenance-sensor';
     setSelectedMobileType(type);
     setSelectedMobileBlockId(type === 'block' ? selectedBlock.id : '');
-    setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : '');
+    setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : nextIsMaintenanceMobile ? selectedMaintenanceSensor.id : '');
     setMobileSensorMarkerMode(type === 'sensor-health' ? 'health' : 'pest');
     setSheetKind(type === 'sensor-health' ? 'map' : 'content');
     setSheetState(type === 'sensor-health' ? 'full' : 'docked');
@@ -2099,7 +2112,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
   const handleSensorSelect = (sensor) => {
     setSelectedMobileSensorId(sensor.id);
     setSelectedMobileBlockId('');
-    setSelectedMobileType(isHealthMobile ? 'sensor-health' : 'sensor');
+    setSelectedMobileType(isMaintenanceMobile ? 'maintenance-sensor' : isHealthMobile ? 'sensor-health' : 'sensor');
     showSelectedContentSheet();
   };
 
@@ -2111,38 +2124,53 @@ function MobileDeviceFrame({ type = 'ranking' }) {
           center={[36.647, -119.8]}
           zoom={15}
           blockPolygon={selectedBlock.polygon}
-          blockOverlays={buildRankingBlockOverlays(selectedMobileBlockId, '')}
+          blockOverlays={isMaintenanceMobile ? buildMaintenanceBlockOverlays() : buildRankingBlockOverlays(selectedMobileBlockId, '')}
           activeBlockLabel={selectedMobileType === 'block' ? selectedMobileBlock.name : ''}
           sensors={mapSensors}
           selectedSensorId={selectedMobileSensorId}
           sensorDisplayMode={sensorDisplayMode}
           blockSeverity={selectedBlock.riskLevel}
           mapStyle="satellite"
-          onBlockSelect={handleBlockSelect}
+          onBlockSelect={isMaintenanceMobile ? undefined : handleBlockSelect}
           onSensorSelect={handleSensorSelect}
         />
         <div className={styles.mobileScopeDock}>
-              <ScopeNavigation level={type === 'ranking' ? 'ranking' : isHealthMobile ? 'sensor' : type} />
+              <ScopeNavigation level={type === 'ranking' || type === 'maintenance-ranking' ? 'ranking' : isHealthMobile || selectedMobileType === 'maintenance-sensor' ? 'sensor' : type} />
         </div>
         <WeatherWidget weather={weather} compact className={styles.mobileWeather} />
         <div className={styles.fabs}>
-          <Button
-            variant="secondary"
-            className={styles.fab}
-            aria-label="Open pest focus"
-            onClick={() => openSheet('pest')}
-          >
-            <span className="material-symbols-rounded">pest_control</span>
-          </Button>
-          <Button
-            variant="secondary"
-            className={styles.fab}
-            aria-label="Open map controls"
-            onClick={() => openSheet('map')}
-          >
-            <span className="material-symbols-rounded">layers</span>
-          </Button>
-          <Button variant="secondary" className={styles.fab} aria-label="Locate"><span className="material-symbols-rounded">my_location</span></Button>
+          {isMaintenanceMobile ? (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open maintenance controls"
+              onClick={() => openSheet('maintenance')}
+            >
+              <span className="material-symbols-rounded">construction</span>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open pest focus"
+              onClick={() => openSheet('pest')}
+            >
+              <span className="material-symbols-rounded">pest_control</span>
+            </Button>
+          )}
+          {!isMaintenanceMobile && (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open map controls"
+              onClick={() => openSheet('map')}
+            >
+              <span className="material-symbols-rounded">layers</span>
+            </Button>
+          )}
+          {!isMaintenanceMobile && (
+            <Button variant="secondary" className={styles.fab} aria-label="Locate"><span className="material-symbols-rounded">my_location</span></Button>
+          )}
         </div>
       </div>
       <MobileBottomSheet
@@ -2156,18 +2184,39 @@ function MobileDeviceFrame({ type = 'ranking' }) {
         <MobileSheet
           type={selectedMobileType}
           sheetKind={resolvedSheetKind}
+          selectedSensor={selectedMobileSensor}
           healthMode={isHealthMobile || selectedMobileType === 'sensor-health'}
           sensorMarkerMode={mobileSensorMarkerMode}
           onSensorMarkerModeChange={setMobileSensorMarkerMode}
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
         />
       </MobileBottomSheet>
     </div>
   );
 }
 
+const getMaintenanceBadgeVariant = (sensor) => {
+  const state = getMaintenanceSeverity(sensor);
+  if (state === 'offline') return 'offline';
+  if (state === 'warning') return 'medium';
+  return 'low';
+};
+
 function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = selectedBlock, selectedSensor: currentSensor = selectedSensor }) {
   const contentCopy = {
     ranking: { title: 'Pest Pressure Ranking', meta: 'Blocks ranked highest risk to lowest' },
+    'maintenance-ranking': { title: 'Maintenance Overview', meta: 'Sensors ranked by maintenance urgency' },
+    'maintenance-sensor': {
+      title: currentSensor.name,
+      meta: currentSensor.maintenanceReason || currentSensor.blockName,
+      badge: getMaintenanceBadgeVariant(currentSensor),
+      badgeLabel: {
+        offline: 'Offline',
+        warning: 'Warning',
+        healthy: 'Healthy',
+      }[getMaintenanceSeverity(currentSensor)],
+    },
     organization: { title: selectedOrganization.name, meta: 'Organisation detail', badge: selectedOrganization.riskLevel },
     ranch: { title: selectedRanch.name, meta: selectedRanch.organization, badge: selectedRanch.riskLevel },
     block: { title: currentBlock.name, meta: currentBlock.ranchName, badge: currentBlock.riskLevel },
@@ -2177,6 +2226,7 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
   const controlCopy = {
     pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },
     map: { title: 'Map Controls', meta: 'Layers, legend, and map display' },
+    maintenance: { title: 'Maintenance', meta: 'Filters and maintenance legend' },
   };
   const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
 
@@ -2186,12 +2236,30 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
         <Typography variant="h4">{resolved.title}</Typography>
         <Typography variant="caption">{resolved.meta}</Typography>
       </div>
-      {resolved.badge && <Badge variant={resolved.badge}>{`${resolved.badge} risk`}</Badge>}
+      {resolved.badge && <Badge variant={resolved.badge}>{resolved.badgeLabel || `${resolved.badge} risk`}</Badge>}
     </div>
   );
 }
 
-function MobileSheet({ type, sheetKind, healthMode = false, sensorMarkerMode = 'pest', onSensorMarkerModeChange }) {
+function MobileSheet({
+  type,
+  sheetKind,
+  selectedSensor: selectedSheetSensor = selectedSensor,
+  healthMode = false,
+  sensorMarkerMode = 'pest',
+  onSensorMarkerModeChange,
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
+  if (sheetKind === 'maintenance') {
+    return (
+      <MobileMaintenanceControlsSheet
+        showHealthySensors={showHealthySensors}
+        onShowHealthySensorsChange={onShowHealthySensorsChange}
+      />
+    );
+  }
+
   if (sheetKind === 'pest') {
     return <MobileControlsSheet scopePanel="pest" healthMode={healthMode} sensorMarkerMode={sensorMarkerMode} onSensorMarkerModeChange={onSensorMarkerModeChange} />;
   }
@@ -2204,6 +2272,14 @@ function MobileSheet({ type, sheetKind, healthMode = false, sensorMarkerMode = '
     return <MobileRankingSheet />;
   }
 
+  if (type === 'maintenance-ranking') {
+    return <MobileMaintenanceRankingSheet />;
+  }
+
+  if (type === 'maintenance-sensor') {
+    return <MobileMaintenanceSensorSheet sensor={selectedSheetSensor} />;
+  }
+
   const panelMap = {
     organization: <OrganizationDetailPanel scopeExperiment />,
     ranch: <RanchDetailPanel scopeExperiment />,
@@ -2213,6 +2289,115 @@ function MobileSheet({ type, sheetKind, healthMode = false, sensorMarkerMode = '
   };
 
   return <div className={styles.mobileDetailPanel}>{panelMap[type]}</div>;
+}
+
+function MobileMaintenanceRankingSheet() {
+  const visibleSensors = getVisibleMaintenanceSensors(false);
+  const onlineSensorCount = maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length;
+
+  return (
+    <div className={styles.sheetContent}>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Maintenance Overview</Typography>
+            <Typography variant="caption" color="secondary">Sensors ranked by maintenance urgency</Typography>
+          </div>
+          <InfoDisclosure
+            title="Maintenance mode"
+            description="Sensors are ranked by device-health priority, using offline duration, battery, signal, and lure cadence rather than pest pressure."
+            align="end"
+          />
+        </div>
+        <div className={styles.mobileFilterRow}>
+          <FormField label="Organisation">
+            <Select options={[
+              { label: 'Show all', value: 'all' },
+              { label: 'RapidAIM Growers Co.', value: 'rapid' },
+              { label: 'Agrii UK', value: 'agrii' },
+            ]} />
+          </FormField>
+          <FormField label="Ranch">
+            <Select options={[
+              { label: 'Show all', value: 'all' },
+              { label: 'Sierra Orchards', value: 'sierra' },
+              { label: 'Fresno North Ranch', value: 'fresno-north' },
+            ]} />
+          </FormField>
+        </div>
+      </div>
+      <div className={styles.maintenanceStatGrid}>
+        <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
+        <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
+        <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
+        <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
+      </div>
+      <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+        <div>
+          <PanelSectionTitle>Sensors ({onlineSensorCount}/{maintenanceSensors.length})</PanelSectionTitle>
+          <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+        </div>
+      </div>
+      <div className={styles.mobileListSection}>
+        {visibleSensors.map((sensor, index) => (
+          <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
+        ))}
+        <Button variant="secondary" fullWidth>Load all sensors</Button>
+      </div>
+    </div>
+  );
+}
+
+function MobileMaintenanceSensorSheet({ sensor = selectedMaintenanceSensor }) {
+  return (
+    <div className={styles.mobileDetailPanel}>
+      <MaintenanceSensorPanel sensor={sensor} />
+    </div>
+  );
+}
+
+function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHealthySensorsChange }) {
+  return (
+    <div className={styles.sheetContent}>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Maintenance</Typography>
+            <Typography variant="caption" color="secondary">Filters and maintenance legend</Typography>
+          </div>
+        </div>
+      </div>
+      <section className={styles.maintenanceControlSection}>
+        <PanelSectionTitle>Filters</PanelSectionTitle>
+        <label>
+          <input
+            checked={showHealthySensors}
+            onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+            type="checkbox"
+          />
+          Show healthy sensors
+        </label>
+        <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+        <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+        <label><input type="checkbox" defaultChecked /> Lure due soon</label>
+      </section>
+      <section className={styles.maintenanceControlSection}>
+        <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
+          <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
+        </div>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
+          <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
+        </div>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
+          <Typography variant="body-sm">Healthy (no action required)</Typography>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function MobileRankingSheet() {

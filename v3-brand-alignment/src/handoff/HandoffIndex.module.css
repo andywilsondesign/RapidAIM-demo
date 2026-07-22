@@ -1745,7 +1745,8 @@
   background: var(--color-bg-panel);
 }
 
-.mobileDetailPanel > section {
+.mobileDetailPanel > section,
+.mobileDetailPanel > div {
   width: 100%;
   max-width: 100%;
   height: 100%;
@@ -1777,6 +1778,15 @@
 
 .mobileDetailPanel [class*='panelTitleRow'] {
   grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.mobileDetailPanel .maintenanceSensorTitleRow {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.mobileDetailPanel .maintenanceSensorTitleRow [class*='panelTitleCluster'] {
+  align-items: flex-start;
+  text-align: left;
 }
 
 .mobileDetailPanel [class*='panelTitleCluster'] {

@@ -42,6 +42,18 @@ export const SensorDetail = {
   },
 };
 
+export const MaintenanceRanking = {
+  args: {
+    initialPageId: 'mobile-maintenance-ranking',
+  },
+};
+
+export const MaintenanceSensorDetail = {
+  args: {
+    initialPageId: 'mobile-maintenance-sensor',
+  },
+};
+
 export const Overlays = {
   args: {
     initialPageId: 'mobile-overlays',
