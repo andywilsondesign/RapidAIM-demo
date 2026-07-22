@@ -952,16 +952,14 @@ function MaintenanceSensorPanel({ sensor }) {
             </button>
             <div className={styles.panelTitleCluster}>
               <Typography variant="h3">{sensor.name}</Typography>
-              <Typography variant="caption">{sensor.ranchName} / {sensor.blockName}</Typography>
             </div>
             <Badge variant={state === 'critical' ? 'high' : state === 'warning' ? 'medium' : 'low'}>{statusLabel}</Badge>
           </div>
         </div>
       </div>
-      <div className={styles.anchorTabs} style={{ '--tab-count': 3 }}>
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
         <button className={styles.activeAnchorTab} type="button">Overview</button>
         <button type="button">History</button>
-        <button type="button">Notes</button>
       </div>
       <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
         <MaintenanceDeviceDetail sensor={sensor} />
@@ -987,20 +985,32 @@ function MaintenanceDeviceDetail({ sensor }) {
   const batteryTone = sensor.battery < 30 ? 'error' : sensor.battery < 45 ? 'warning' : 'positive';
   const signalTone = sensor.signal === 'Poor' || sensor.signal === 'Offline' ? 'error' : sensor.signal === 'Intermittent' ? 'warning' : 'positive';
   const syncTone = sensor.lastSync.includes('day') || (sensor.lastSync.includes('hours') && Number.parseInt(sensor.lastSync, 10) >= 24) ? 'error' : 'positive';
+  const lastSyncValue = sensor.lastSync.replace(' ago', '');
+  const historyItems = [
+    {
+      date: 'Jul 21, 2026',
+      title: 'Field note added',
+      detail: 'Checked access route. Device is reachable from the north service track.',
+    },
+    ...sensor.eventHistory,
+  ];
 
   return (
     <section className={styles.maintenanceDetailCard}>
       <div className={styles.sectionHeader}>
         <Typography variant="h5">Device overview</Typography>
+      </div>
+      <div className={styles.maintenanceInlineMessage}>
+        <Typography variant="body-sm" weight="bold">{sensor.maintenanceReason}</Typography>
         <Typography variant="caption" color="secondary">{sensor.maintenanceDetails}</Typography>
       </div>
       <SensorMetaGrid items={[
-        { label: 'Connection', value: sensor.status, tone: sensor.status === 'Inactive' ? 'error' : 'positive' },
+        { label: 'Connection', value: 'Intermittent', tone: 'warning' },
         { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
         { label: 'Signal', value: sensor.signal, tone: signalTone },
-        { label: 'Last Sync', value: sensor.lastSync, tone: syncTone },
+        { label: 'Last Sync', value: lastSyncValue, tone: syncTone },
         { label: 'Lure', value: sensor.lureStatus, tone: sensor.lureStatus.toLowerCase().includes('due') ? 'warning' : 'positive' },
-        { label: 'Fault', value: sensor.faultStatus, tone: sensor.faultStatus.includes('No') ? 'positive' : 'error' },
+        { label: 'Device Health', value: sensor.faultStatus.includes('No') ? 'Healthy' : 'Fault', tone: sensor.faultStatus.includes('No') ? 'positive' : 'error' },
       ]} />
       <TrendChart
         type="line"
@@ -1031,7 +1041,7 @@ function MaintenanceDeviceDetail({ sensor }) {
           <Typography variant="h5">Recent history</Typography>
           <Typography variant="caption" color="secondary">Newest field and device events</Typography>
         </div>
-        {sensor.eventHistory.map((event) => (
+        {historyItems.map((event) => (
           <div className={styles.maintenanceHistoryItem} key={`${event.date}-${event.title}`}>
             <Typography variant="caption" color="secondary">{event.date}</Typography>
             <Typography variant="body-sm" weight="bold">{event.title}</Typography>
