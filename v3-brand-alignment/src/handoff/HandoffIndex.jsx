@@ -42,6 +42,10 @@ import styles from './HandoffIndex.module.css';
 const selectedBlock = blocks[0];
 const selectedRanch = { ...ranches[0], blocks: 12, pestName: 'Female Navel Orangeworm' };
 const selectedSensor = { ...sensors[0], pestName: selectedBlock.pestName };
+const maintenanceWeather = {
+  ...weather,
+  location: 'Brisbane, AU',
+};
 const healthIssueSensor = {
   ...selectedSensor,
   pestName: selectedBlock.pestName,
@@ -1026,6 +1030,7 @@ function DesktopShell({
   shellClassName = '',
   onSensorSelect,
   topNavigationProps = {},
+  weatherData = weather,
 }) {
   const [pestFocus, setPestFocus] = useState('all');
   const [previewBlockId, setPreviewBlockId] = useState('');
@@ -1061,7 +1066,7 @@ function DesktopShell({
             className={mapClassName}
             onSensorSelect={onSensorSelect}
           />
-          <WeatherWidget weather={weather} className={styles.weather} />
+          <WeatherWidget weather={weatherData} className={styles.weather} />
           {mapNotice}
         </section>
         {rightRailContent || (
@@ -1141,6 +1146,7 @@ function MaintenanceModePage() {
       mapClassName={styles.maintenanceMap}
       shellClassName={styles.maintenanceShell}
       topNavigationProps={maintenanceTopNavProps}
+      weatherData={maintenanceWeather}
       onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
       rightRailContent={(
         <MaintenanceControlsPanel
@@ -1356,6 +1362,7 @@ function MaintenanceSensorDetailPage() {
       mapClassName={styles.maintenanceMap}
       shellClassName={styles.maintenanceShell}
       topNavigationProps={maintenanceTopNavProps}
+      weatherData={maintenanceWeather}
       onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
       rightRailContent={(
         <MaintenanceControlsPanel
@@ -2308,7 +2315,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
         <div className={styles.mobileScopeDock}>
               <ScopeNavigation level={type === 'ranking' || type === 'maintenance-ranking' ? 'ranking' : isHealthMobile || selectedMobileType === 'maintenance-sensor' ? 'sensor' : type} />
         </div>
-        <WeatherWidget weather={weather} compact className={styles.mobileWeather} />
+        <WeatherWidget weather={isMaintenanceMobile ? maintenanceWeather : weather} compact className={styles.mobileWeather} />
         <div className={styles.fabs}>
           {isMaintenanceMobile ? (
             <Button
