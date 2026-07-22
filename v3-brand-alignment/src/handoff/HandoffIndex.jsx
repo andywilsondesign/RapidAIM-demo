@@ -1175,7 +1175,6 @@ function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
       subtitle={subtitle}
       riskLevel={riskLevel}
       riskLabelOverride={stateLabel}
-      statusLabel={sensor.blockName}
       onClick={onSelect}
       onFocus={onSelect}
       onMouseEnter={onSelect}
