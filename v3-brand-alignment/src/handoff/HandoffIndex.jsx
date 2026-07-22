@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge } from '../components/atoms/Badge/Badge';
 import { Button } from '../components/atoms/Button/Button';
@@ -382,6 +382,69 @@ const maintenanceSensorTabCount = {
   total: 14,
 };
 const signalHistoryLabels = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Today'];
+const maintenanceOverviewAnchorSections = [
+  { id: 'maintenance-overview-summary', tab: 'overview' },
+  { id: 'maintenance-sensors-list', tab: 'sensors' },
+];
+const mobileMaintenanceOverviewAnchorSections = [
+  { id: 'mobile-maintenance-overview-summary', tab: 'overview' },
+  { id: 'mobile-maintenance-sensors-list', tab: 'sensors' },
+];
+const maintenanceSensorAnchorSections = [
+  { id: 'maintenance-sensor-overview', tab: 'overview' },
+  { id: 'maintenance-history', tab: 'history' },
+];
+
+function getSectionScrollTop(container, sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!container || !section) return null;
+  const containerRect = container.getBoundingClientRect();
+  const sectionRect = section.getBoundingClientRect();
+  return sectionRect.top - containerRect.top + container.scrollTop;
+}
+
+function scrollContainerToSection(container, sectionId) {
+  const top = getSectionScrollTop(container, sectionId);
+  if (top == null) return;
+  container.scrollTo({ top, behavior: 'smooth' });
+}
+
+function useScrollAnchorTabs(containerRef, sections, setActiveTab) {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const updateActiveTab = () => {
+      const activationOffset = Math.min(80, container.clientHeight * 0.25);
+      const containerRect = container.getBoundingClientRect();
+      const maxScrollTop = container.scrollHeight - container.clientHeight;
+      const activeSection = sections.reduce((currentSection, section, index) => {
+        const element = document.getElementById(section.id);
+        const top = getSectionScrollTop(container, section.id);
+        if (top == null || !element) return currentSection;
+
+        const isLastSection = index === sections.length - 1;
+        const sectionTop = element.getBoundingClientRect().top - containerRect.top;
+        const isLastSectionVisible = isLastSection
+          && sectionTop < container.clientHeight - activationOffset
+          && container.scrollTop >= maxScrollTop * 0.5;
+
+        return container.scrollTop >= top - activationOffset || isLastSectionVisible ? section : currentSection;
+      }, sections[0]);
+
+      if (activeSection) setActiveTab(activeSection.tab);
+    };
+
+    updateActiveTab();
+    container.addEventListener('scroll', updateActiveTab, { passive: true });
+    window.addEventListener('resize', updateActiveTab);
+
+    return () => {
+      container.removeEventListener('scroll', updateActiveTab);
+      window.removeEventListener('resize', updateActiveTab);
+    };
+  }, [containerRef, sections, setActiveTab]);
+}
 const selectedOrganization = {
   name: 'RapidAIM Growers Co.',
   riskLevel: 'high',
@@ -963,11 +1026,13 @@ function MaintenancePanel({
   onShowHealthySensorsChange,
 }) {
   const visibleSensors = getVisibleMaintenanceSensors(showHealthySensors);
+  const scrollContainerRef = useRef(null);
   const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
   const scrollToMaintenanceSection = (sectionId, activeTab) => {
     setActiveAnchorTab(activeTab);
-    document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
   };
+  useScrollAnchorTabs(scrollContainerRef, maintenanceOverviewAnchorSections, setActiveAnchorTab);
 
   return (
     <div className={`${styles.panel} ${styles.maintenancePanel}`}>
@@ -1020,7 +1085,10 @@ function MaintenancePanel({
         </button>
       </div>
       <div className={styles.maintenanceScrollFrame}>
-        <div className={`${styles.panelBody} ${styles.maintenancePanelBody} ${styles.maintenanceOverviewPanelBody}`}>
+        <div
+          className={`${styles.panelBody} ${styles.maintenancePanelBody} ${styles.maintenanceOverviewPanelBody}`}
+          ref={scrollContainerRef}
+        >
           <section className={styles.maintenanceSection} id="maintenance-overview-summary">
             <div className={styles.maintenanceStatGrid}>
               <StatCard
@@ -1161,11 +1229,18 @@ function MaintenanceSensorDetailPage() {
 
 function MaintenanceSensorPanel({ sensor }) {
   const state = getMaintenanceSeverity(sensor);
+  const scrollContainerRef = useRef(null);
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
   const statusLabel = {
     offline: 'Offline',
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
+  };
+  useScrollAnchorTabs(scrollContainerRef, maintenanceSensorAnchorSections, setActiveAnchorTab);
 
   return (
     <div className={`${styles.panel} ${styles.maintenancePanel}`}>
@@ -1188,16 +1263,23 @@ function MaintenanceSensorPanel({ sensor }) {
         </div>
       </div>
       <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
-        <button className={styles.activeAnchorTab} type="button">Overview</button>
         <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
           type="button"
-          onClick={() => document.getElementById('maintenance-history')?.scrollIntoView({ block: 'start', behavior: 'smooth' })}
+          onClick={() => scrollToMaintenanceSection('maintenance-sensor-overview', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'history' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('maintenance-history', 'history')}
         >
           History
         </button>
       </div>
       <div className={styles.maintenanceScrollFrame}>
-        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
+        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`} ref={scrollContainerRef}>
           <MaintenanceDeviceDetail sensor={sensor} />
         </div>
       </div>
@@ -1236,7 +1318,7 @@ function MaintenanceDeviceDetail({ sensor }) {
   ];
 
   return (
-    <section className={styles.maintenanceDetailCard}>
+    <section className={styles.maintenanceDetailCard} id="maintenance-sensor-overview">
       <Alert
         className={styles.maintenanceAlert}
         title={sensor.maintenanceReason}
@@ -2295,14 +2377,16 @@ function MobileSheet({
 
 function MobileMaintenanceRankingSheet() {
   const visibleSensors = getVisibleMaintenanceSensors(false);
+  const scrollContainerRef = useRef(null);
   const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
   const scrollToMaintenanceSection = (sectionId, activeTab) => {
     setActiveAnchorTab(activeTab);
-    document.getElementById(sectionId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
   };
+  useScrollAnchorTabs(scrollContainerRef, mobileMaintenanceOverviewAnchorSections, setActiveAnchorTab);
 
   return (
-    <div className={styles.sheetContent}>
+    <div className={styles.sheetContent} ref={scrollContainerRef}>
       <div className={styles.mobileSheetHeader}>
         <div className={styles.mobileSheetHeaderTop}>
           <div>
