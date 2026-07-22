@@ -409,6 +409,99 @@ function scrollContainerToSection(container, sectionId) {
   container.scrollTo({ top, behavior: 'smooth' });
 }
 
+function formatShortServiceDate(dateValue) {
+  if (!dateValue) return '14/06/26';
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return dateValue;
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  }).format(parsedDate);
+}
+
+function getLureShelfLife(sensor) {
+  const lureStatus = sensor.lureStatus || 'Current';
+  const normalizedStatus = lureStatus.toLowerCase();
+
+  if (normalizedStatus.includes('tomorrow')) {
+    return { value: '1 day', tone: 'warning' };
+  }
+
+  const dueMatch = normalizedStatus.match(/due in (\d+) days?/);
+  if (dueMatch) {
+    const days = Number.parseInt(dueMatch[1], 10);
+    return {
+      value: `${days} days`,
+      tone: days <= 0 ? 'error' : days <= 7 ? 'warning' : 'positive',
+    };
+  }
+
+  const changedMatch = normalizedStatus.match(/changed (\d+) days? ago/);
+  if (changedMatch) {
+    const daysSinceChange = Number.parseInt(changedMatch[1], 10);
+    const daysRemaining = Math.max(0, 30 - daysSinceChange);
+    return {
+      value: `${daysRemaining} days`,
+      tone: daysRemaining <= 0 ? 'error' : daysRemaining <= 7 ? 'warning' : 'positive',
+    };
+  }
+
+  return {
+    value: normalizedStatus.includes('current') ? '30 days' : lureStatus,
+    tone: normalizedStatus.includes('overdue') ? 'error' : 'positive',
+  };
+}
+
+function getLastSyncTone(lastSync = '') {
+  const normalizedSync = lastSync.toLowerCase();
+  if (normalizedSync.includes('day')) return 'error';
+  if (normalizedSync.includes('hours')) {
+    const hours = Number.parseInt(normalizedSync, 10);
+    if (hours >= 24) return 'error';
+    if (hours >= 6) return 'warning';
+  }
+  return 'positive';
+}
+
+function getConnectivityMeta(sensor) {
+  if (sensor.signal === 'Offline') return { value: 'Offline', tone: 'error' };
+  if (sensor.signal === 'Poor') return { value: 'Poor LTE', tone: 'warning' };
+  if (sensor.signal === 'Intermittent') return { value: 'Intermittent', tone: 'warning' };
+  return { value: 'Online', tone: 'positive' };
+}
+
+function getDeviceHealthMeta(sensor) {
+  const faultStatus = sensor.faultStatus || '';
+  const hasFault = sensor.status === 'Needs Maintenance'
+    || sensor.status === 'Inactive'
+    || (faultStatus && !faultStatus.toLowerCase().includes('no device fault'));
+
+  return {
+    value: hasFault ? 'Fault' : 'Healthy',
+    tone: hasFault ? 'error' : 'positive',
+  };
+}
+
+function getSensorHealthIndicators(sensor, { forceHealthy = false } = {}) {
+  const batteryTone = sensor.battery <= 10 ? 'error' : sensor.battery < 30 ? 'warning' : 'positive';
+  const connectivity = getConnectivityMeta(sensor);
+  const deviceHealth = getDeviceHealthMeta(sensor);
+  const lureShelfLife = getLureShelfLife(sensor);
+  const lastService = formatShortServiceDate(sensor.lastService);
+  const overrideTone = forceHealthy ? 'positive' : undefined;
+
+  return [
+    { label: 'Battery', value: `${sensor.battery}%`, tone: overrideTone || batteryTone },
+    { label: 'Connectivity', value: connectivity.value, tone: overrideTone || connectivity.tone },
+    { label: 'Device Health', value: deviceHealth.value, tone: overrideTone || deviceHealth.tone },
+    { label: 'Last Sync', value: sensor.lastSync.replace(' ago', ''), tone: overrideTone || getLastSyncTone(sensor.lastSync) },
+    { label: 'Lure Status', value: lureShelfLife.value, tone: overrideTone || lureShelfLife.tone },
+    { label: 'Last Service', value: lastService, tone: overrideTone || 'positive' },
+  ];
+}
+
 function useScrollAnchorTabs(containerRef, sections, setActiveTab) {
   useEffect(() => {
     const container = containerRef.current;
@@ -1300,13 +1393,6 @@ function MaintenanceSensorPanel({ sensor }) {
 }
 
 function MaintenanceDeviceDetail({ sensor }) {
-  const batteryTone = sensor.battery < 30 ? 'error' : sensor.battery < 45 ? 'warning' : 'positive';
-  const syncTone = sensor.lastSync.includes('day') || (sensor.lastSync.includes('hours') && Number.parseInt(sensor.lastSync, 10) >= 24) ? 'error' : 'positive';
-  const lastSyncValue = sensor.lastSync.replace(' ago', '');
-  const connectivityValue = sensor.signal === 'Offline' ? 'Offline' : 'Intermittent';
-  const connectivityTone = sensor.signal === 'Offline' || sensor.signal === 'Poor' ? 'error' : 'warning';
-  const deviceHealthValue = sensor.faultStatus.includes('No') ? 'Healthy' : 'Fault';
-  const deviceHealthTone = sensor.faultStatus.includes('No') ? 'positive' : 'error';
   const historyItems = [
     {
       date: 'Jul 21, 2026',
@@ -1325,13 +1411,7 @@ function MaintenanceDeviceDetail({ sensor }) {
         variant={sensor.maintenanceState === 'offline' ? 'error' : 'warning'}
         type="inline"
       />
-      <SensorMetaGrid items={[
-        { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
-        { label: 'Connectivity', value: connectivityValue, tone: connectivityTone },
-        { label: 'Device Health', value: deviceHealthValue, tone: deviceHealthTone },
-        { label: 'Last Sync', value: lastSyncValue, tone: syncTone },
-      ]} />
-      <SensorHealthServiceDetails sensor={sensor} />
+      <SensorMetaGrid items={getSensorHealthIndicators(sensor)} />
       <TrendChart
         type="line"
         title="Connectivity quality"
@@ -1362,31 +1442,6 @@ function MaintenanceDeviceDetail({ sensor }) {
     </section>
   );
 }
-
-function SensorHealthServiceDetails({ sensor }) {
-  const lureStatus = sensor.lureStatus || 'Current';
-  const lastService = sensor.lastService || 'Jul 10, 2026';
-
-  return (
-    <div className={styles.maintenanceTimeline}>
-      <div>
-        <Typography variant="caption" color="secondary">Lure status</Typography>
-        <Typography variant="body-sm" weight="semibold">{lureStatus}</Typography>
-      </div>
-      <div>
-        <Typography variant="caption" color="secondary">Last service</Typography>
-        <Typography variant="body-sm" weight="semibold">{lastService}</Typography>
-      </div>
-    </div>
-  );
-}
-
-SensorHealthServiceDetails.propTypes = {
-  sensor: PropTypes.shape({
-    lureStatus: PropTypes.string,
-    lastService: PropTypes.string,
-  }).isRequired,
-};
 
 function MaintenanceControlsPanel({
   showHealthySensors = false,
@@ -1805,14 +1860,6 @@ function HealthIssueAlert({ sensor }) {
 }
 
 function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
-  const batteryTone = sensor.battery <= 10 ? 'error' : sensor.battery <= 25 ? 'warning' : 'positive';
-  const connectivityValue = sensor.signal === 'Offline' ? 'Offline' : sensor.signal;
-  const connectivityTone = sensor.signal === 'Offline' ? 'error' : ['Poor', 'Intermittent'].includes(sensor.signal) ? 'warning' : 'positive';
-  const deviceHealthValue = sensor.status === 'Needs Maintenance' || sensor.status === 'Inactive' ? 'Fault' : 'Healthy';
-  const deviceHealthTone = deviceHealthValue === 'Fault' ? 'error' : 'positive';
-  const lureValue = sensor.lureStatus || 'Current';
-  const healthyTone = healthMode ? undefined : 'positive';
-
   return (
     <section className={styles.childList} id="sensor-health-section">
       <div className={styles.sectionHeader}>
@@ -1821,13 +1868,7 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
           {healthMode ? 'Battery and device status for field maintenance.' : 'Operational status for this sensor.'}
         </Typography>
       </div>
-      <SensorMetaGrid items={[
-        { label: 'Battery', value: `${sensor.battery}%`, tone: healthyTone || batteryTone },
-        { label: 'Connectivity', value: connectivityValue, tone: healthyTone || connectivityTone },
-        { label: 'Device Health', value: deviceHealthValue, tone: healthyTone || deviceHealthTone },
-        { label: 'Last Sync', value: sensor.lastSync.replace(' ago', ''), tone: healthyTone || 'positive' },
-      ]} />
-      <SensorHealthServiceDetails sensor={{ ...sensor, lureStatus: lureValue }} />
+      <SensorMetaGrid items={getSensorHealthIndicators(sensor, { forceHealthy: !healthMode })} />
     </section>
   );
 }
@@ -1846,6 +1887,7 @@ SensorMaintenance.propTypes = {
     signal: PropTypes.string.isRequired,
     lastSync: PropTypes.string.isRequired,
     lureStatus: PropTypes.string,
+    lastService: PropTypes.string,
   }),
   healthMode: PropTypes.bool,
 };
