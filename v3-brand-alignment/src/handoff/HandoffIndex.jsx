@@ -1358,7 +1358,7 @@ function MaintenanceDeviceDetail({ sensor }) {
             <Typography variant="caption" color="secondary">{event.detail}</Typography>
           </div>
         ))}
-        <Button variant="secondary" fullWidth>Load more history</Button>
+        <Button variant="secondary" fullWidth>Load all history</Button>
       </div>
     </section>
   );
