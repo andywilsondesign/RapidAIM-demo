@@ -747,8 +747,15 @@
 }
 
 .maintenanceAlert.maintenanceAlert {
-  border: 1px solid rgba(193, 18, 31, 0.2);
   box-shadow: none;
+}
+
+.maintenanceAlertWarning.maintenanceAlertWarning {
+  border: 1px solid rgba(138, 90, 0, 0.28);
+}
+
+.maintenanceAlertCritical.maintenanceAlertCritical {
+  border: 1px solid rgba(193, 18, 31, 0.28);
 }
 
 .maintenanceAlert > span:first-child {
@@ -986,7 +993,7 @@
 }
 
 .maintenanceLegendOfflineMarker {
-  --marker-fill: var(--maintenance-critical);
+  --marker-fill: var(--color-status-red);
 }
 
 .maintenanceLegendWarningMarker {

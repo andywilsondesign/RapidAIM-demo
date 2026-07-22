@@ -64,7 +64,7 @@
 
 .alert--warning {
   background-color: var(--color-status-amber-bg);
-  color: #E65100;
+  color: var(--color-status-amber);
   border-left: 4px solid var(--color-status-amber);
 }
 

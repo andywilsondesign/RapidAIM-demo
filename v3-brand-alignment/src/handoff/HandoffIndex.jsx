@@ -1405,7 +1405,7 @@ function MaintenanceDeviceDetail({ sensor }) {
   return (
     <section className={styles.maintenanceDetailCard} id="maintenance-sensor-overview">
       <Alert
-        className={styles.maintenanceAlert}
+        className={`${styles.maintenanceAlert} ${sensor.maintenanceState === 'offline' ? styles.maintenanceAlertCritical : styles.maintenanceAlertWarning}`}
         title={sensor.maintenanceReason}
         message={sensor.maintenanceDetails}
         variant={sensor.maintenanceState === 'offline' ? 'error' : 'warning'}
@@ -1461,6 +1461,9 @@ function MaintenanceControlsPanel({
           <div className={styles.maintenanceControlBody}>
             <section className={styles.maintenanceControlSection}>
               <PanelSectionTitle>Filters</PanelSectionTitle>
+              <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+              <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+              <label><input type="checkbox" defaultChecked /> Lure due soon</label>
               <label>
                 <input
                   checked={showHealthySensors}
@@ -1469,9 +1472,6 @@ function MaintenanceControlsPanel({
                 />
                 Show healthy sensors
               </label>
-              <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
-              <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
-              <label><input type="checkbox" defaultChecked /> Lure due soon</label>
             </section>
             <section className={styles.maintenanceControlSection}>
               <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
@@ -2524,6 +2524,9 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
       </div>
       <section className={styles.maintenanceControlSection}>
         <PanelSectionTitle>Filters</PanelSectionTitle>
+        <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+        <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+        <label><input type="checkbox" defaultChecked /> Lure due soon</label>
         <label>
           <input
             checked={showHealthySensors}
@@ -2532,9 +2535,6 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
           />
           Show healthy sensors
         </label>
-        <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
-        <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
-        <label><input type="checkbox" defaultChecked /> Lure due soon</label>
       </section>
       <section className={styles.maintenanceControlSection}>
         <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>

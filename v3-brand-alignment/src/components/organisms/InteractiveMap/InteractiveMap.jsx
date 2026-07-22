@@ -163,7 +163,7 @@ const createHealthMarkerSvgMarkup = (sensor, selected = false, variant = 'number
 const MAINTENANCE_MARKER_STYLES = {
   offline: {
     severity: 'offline',
-    fill: '#08081A',
+    fill: 'var(--color-status-red)',
     iconStroke: '#FFFFFF',
   },
   warning: {
