@@ -2406,7 +2406,7 @@ function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = sele
   const controlCopy = {
     pest: { title: 'Pest Focus', meta: 'Current thresholds and pest selection' },
     map: { title: 'Map Controls', meta: 'Layers, legend, and map display' },
-    maintenance: { title: 'Maintenance', meta: 'Filters and maintenance legend' },
+    maintenance: { title: 'Maintenance' },
   };
   const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
 
@@ -2572,7 +2572,6 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
         <div className={styles.mobileSheetHeaderTop}>
           <div>
             <Typography variant="h4">Maintenance</Typography>
-            <Typography variant="caption" color="secondary">Filters and maintenance legend</Typography>
           </div>
         </div>
       </div>
