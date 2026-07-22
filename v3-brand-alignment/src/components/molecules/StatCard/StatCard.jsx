@@ -21,7 +21,9 @@ export const StatCard = ({
   return (
     <div className={`${styles.card} ${styles[`card--${tone}`]} ${className}`}>
       {infoTitle && infoDescription && (
-        <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
+        <span className={styles.infoSlot}>
+          <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
+        </span>
       )}
       <Typography variant="body-sm" color="secondary" className={styles.label}>
         {label}

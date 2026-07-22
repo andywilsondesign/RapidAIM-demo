@@ -36,11 +36,16 @@
   letter-spacing: 0.5px;
 }
 
-.infoDisclosure {
+.infoSlot {
   position: absolute;
   top: var(--spacing-3);
   right: var(--spacing-3);
   z-index: 1;
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .infoDisclosure button {
