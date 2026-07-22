@@ -809,15 +809,25 @@
 
 .maintenanceModalHeader {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--spacing-4);
-  padding: var(--spacing-5);
+  padding: var(--spacing-4);
   background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
 }
 
-.maintenanceModalHeader h3,
+.maintenanceModalHeader h4,
 .maintenanceModalHeader p {
+  color: var(--color-panel-header-text);
+}
+
+.maintenanceModalHeader button {
+  color: var(--color-panel-header-text);
+}
+
+.maintenanceModalHeader button:hover {
+  background: rgba(255, 255, 255, 0.14);
   color: var(--color-panel-header-text);
 }
 
@@ -829,7 +839,7 @@
 
 .maintenanceModalTitle span {
   color: var(--color-panel-header-text);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
 }
 
 .maintenanceModalBody {

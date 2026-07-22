@@ -48,6 +48,8 @@ const healthIssueSensor = {
   signal: 'Good',
   status: 'Online',
   lastSync: '18 min ago',
+  lureStatus: 'Current',
+  lastService: 'Jul 10, 2026',
 };
 const healthExperimentSensors = sensors.map((sensor) => {
   if (sensor.id === healthIssueSensor.id) {
@@ -1207,7 +1209,7 @@ function MaintenanceSensorPanel({ sensor }) {
           </Button>
           <Button variant="secondary" fullWidth>
             <span className="material-symbols-rounded">assignment_add</span>
-            Add field task
+            Assign Task
           </Button>
         </div>
       </div>
@@ -1245,9 +1247,9 @@ function MaintenanceDeviceDetail({ sensor }) {
         { label: 'Battery', value: `${sensor.battery}%`, tone: batteryTone },
         { label: 'Connectivity', value: connectivityValue, tone: connectivityTone },
         { label: 'Device Health', value: deviceHealthValue, tone: deviceHealthTone },
-        { label: 'Lure', value: sensor.lureStatus, tone: sensor.lureStatus.toLowerCase().includes('due') ? 'warning' : 'positive' },
         { label: 'Last Sync', value: lastSyncValue, tone: syncTone },
       ]} />
+      <SensorHealthServiceDetails sensor={sensor} />
       <TrendChart
         type="line"
         title="Connectivity quality"
@@ -1261,20 +1263,6 @@ function MaintenanceDeviceDetail({ sensor }) {
           color: '#151560',
         }]}
       />
-      <div className={styles.maintenanceTimeline}>
-        <div>
-          <Typography variant="caption" color="secondary">Lure status</Typography>
-          <Typography variant="body-sm" weight="semibold">{sensor.lureStatus}</Typography>
-        </div>
-        <div>
-          <Typography variant="caption" color="secondary">Last service</Typography>
-          <Typography variant="body-sm" weight="semibold">{sensor.lastService}</Typography>
-        </div>
-        <div>
-          <Typography variant="caption" color="secondary">Suggested next action</Typography>
-          <Typography variant="body-sm" weight="semibold">{sensor.nextAction}</Typography>
-        </div>
-      </div>
       <div className={styles.maintenanceHistory} id="maintenance-history">
         <div className={`${styles.sectionHeader} ${styles.maintenanceSectionHeader}`}>
           <PanelSectionTitle>Recent history</PanelSectionTitle>
@@ -1292,6 +1280,31 @@ function MaintenanceDeviceDetail({ sensor }) {
     </section>
   );
 }
+
+function SensorHealthServiceDetails({ sensor }) {
+  const lureStatus = sensor.lureStatus || 'Current';
+  const lastService = sensor.lastService || 'Jul 10, 2026';
+
+  return (
+    <div className={styles.maintenanceTimeline}>
+      <div>
+        <Typography variant="caption" color="secondary">Lure status</Typography>
+        <Typography variant="body-sm" weight="semibold">{lureStatus}</Typography>
+      </div>
+      <div>
+        <Typography variant="caption" color="secondary">Last service</Typography>
+        <Typography variant="body-sm" weight="semibold">{lastService}</Typography>
+      </div>
+    </div>
+  );
+}
+
+SensorHealthServiceDetails.propTypes = {
+  sensor: PropTypes.shape({
+    lureStatus: PropTypes.string,
+    lastService: PropTypes.string,
+  }).isRequired,
+};
 
 function MaintenanceControlsPanel({
   showHealthySensors = false,
@@ -1716,7 +1729,6 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
   const deviceHealthValue = sensor.status === 'Needs Maintenance' || sensor.status === 'Inactive' ? 'Fault' : 'Healthy';
   const deviceHealthTone = deviceHealthValue === 'Fault' ? 'error' : 'positive';
   const lureValue = sensor.lureStatus || 'Current';
-  const lureTone = lureValue.toLowerCase().includes('due') ? 'warning' : 'positive';
   const healthyTone = healthMode ? undefined : 'positive';
 
   return (
@@ -1731,9 +1743,9 @@ function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
         { label: 'Battery', value: `${sensor.battery}%`, tone: healthyTone || batteryTone },
         { label: 'Connectivity', value: connectivityValue, tone: healthyTone || connectivityTone },
         { label: 'Device Health', value: deviceHealthValue, tone: healthyTone || deviceHealthTone },
-        { label: 'Lure', value: lureValue, tone: healthyTone || lureTone },
         { label: 'Last Sync', value: sensor.lastSync.replace(' ago', ''), tone: healthyTone || 'positive' },
       ]} />
+      <SensorHealthServiceDetails sensor={{ ...sensor, lureStatus: lureValue }} />
     </section>
   );
 }
@@ -1771,7 +1783,7 @@ function ActionRow({ mode = 'default' }) {
   return (
     <div className={styles.actionRow}>
       <Button variant="primary" fullWidth>
-        <span className="material-symbols-rounded">person_search</span>
+        <span className="material-symbols-rounded">assignment_add</span>
         Assign Scouting
       </Button>
       <Button variant="secondary" fullWidth>
@@ -1981,7 +1993,7 @@ function MaintenanceNoteModalPage() {
         <div className={styles.maintenanceModalHeader}>
           <div className={styles.maintenanceModalTitle}>
             <span className="material-symbols-rounded" aria-hidden="true">edit_note</span>
-            <Typography variant="h3">Add maintenance note</Typography>
+            <Typography variant="h4">Add maintenance note</Typography>
           </div>
           <Button variant="ghost" size="sm" aria-label="Close maintenance note modal">
             <span className="material-symbols-rounded">close</span>
