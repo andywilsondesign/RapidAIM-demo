@@ -37,6 +37,7 @@ export const TrendChart = ({
   title = 'Chart',
   threshold = 25,
   colorScale,
+  statusColor,
   infoTitle,
   infoDescription,
   className = '',
@@ -62,7 +63,7 @@ export const TrendChart = ({
       return '#D32F2F';
     };
     const getLineColor = (val, fallback) => (
-      colorScale === 'rsrp' ? getRsrpColor(val) : fallback
+      statusColor || (colorScale === 'rsrp' ? getRsrpColor(val) : fallback)
     );
     const getRsrpGradient = (context, fallback) => {
       const { chart } = context;
@@ -94,17 +95,20 @@ export const TrendChart = ({
           labels,
           datasets: visibleSeries.map((item, index) => {
             const fallbackColor = item.color || (index === 0 ? '#2563EB' : '#C2410C');
+            const resolvedColor = statusColor || fallbackColor;
 
             return {
               label: item.label,
               data: item.data,
-              borderColor: colorScale === 'rsrp'
+              borderColor: statusColor
+                ? statusColor
+                : colorScale === 'rsrp'
                 ? (context) => getRsrpGradient(context, fallbackColor)
-                : fallbackColor,
-              backgroundColor: fallbackColor,
+                : resolvedColor,
+              backgroundColor: resolvedColor,
               borderWidth: index === 0 ? 3 : 2,
               borderDash: item.dashed ? [6, 4] : [],
-              pointBackgroundColor: item.data.map((val) => getLineColor(val, fallbackColor)),
+              pointBackgroundColor: item.data.map((val) => getLineColor(val, resolvedColor)),
               pointBorderColor: '#FFFFFF',
               pointBorderWidth: 1,
               pointRadius: 3,
@@ -133,7 +137,7 @@ export const TrendChart = ({
     }
 
     return { labels, datasets: [] };
-  }, [colorScale, data, labels, series, type, threshold, visibleSeries]);
+  }, [colorScale, data, labels, series, statusColor, type, threshold, visibleSeries]);
 
   const hasMultipleSeries = type === 'line' && Boolean(series?.length);
   const chartValues = series?.length ? series.flatMap((item) => item.data) : data;
@@ -231,6 +235,7 @@ TrendChart.propTypes = {
   title: PropTypes.string,
   threshold: PropTypes.number,
   colorScale: PropTypes.oneOf(['rsrp']),
+  statusColor: PropTypes.string,
   infoTitle: PropTypes.string,
   infoDescription: PropTypes.string,
   className: PropTypes.string,

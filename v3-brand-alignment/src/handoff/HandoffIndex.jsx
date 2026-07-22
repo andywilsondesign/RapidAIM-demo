@@ -486,6 +486,14 @@ function getConnectivityMeta(sensor) {
   return { value: 'Online', tone: 'positive' };
 }
 
+function getRsrpStatusColor(signalHistory = []) {
+  const latestSignal = signalHistory.at(-1);
+  if (latestSignal == null) return '#666666';
+  if (latestSignal >= -95) return '#37CC88';
+  if (latestSignal >= -105) return '#F9B709';
+  return '#E11932';
+}
+
 function getDeviceHealthMeta(sensor) {
   const faultStatus = sensor.faultStatus || '';
   const hasFault = sensor.status === 'Needs Maintenance'
@@ -1480,6 +1488,7 @@ function MaintenanceDeviceDetail({ sensor }) {
         type="line"
         title="Connectivity quality"
         colorScale="rsrp"
+        statusColor={getRsrpStatusColor(sensor.signalHistory)}
         infoTitle="Connectivity quality"
         infoDescription="RSRP measures LTE signal strength in dBm. Values closer to 0 are stronger: about -65 to -95 dBm is healthy, -96 to -105 dBm is a warning range, and below -106 dBm is poor or unstable."
         labels={signalHistoryLabels}
