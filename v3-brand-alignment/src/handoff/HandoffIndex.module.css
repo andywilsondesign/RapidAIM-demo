@@ -669,18 +669,6 @@
   outline: none;
 }
 
-.maintenanceRankingItem--critical {
-  border-left: 4px solid var(--maintenance-critical);
-}
-
-.maintenanceRankingItem--warning {
-  border-left: 4px solid var(--maintenance-warning);
-}
-
-.maintenanceRankingItem--healthy {
-  border-left: 4px solid rgba(8, 8, 26, 0.16);
-}
-
 .maintenanceDetailCard,
 .maintenanceNoteMock,
 .maintenanceTimeline,
@@ -710,6 +698,11 @@
 
 .maintenanceHistory {
   gap: var(--spacing-5);
+  padding-top: var(--spacing-5);
+}
+
+.maintenanceSectionHeader {
+  padding-top: var(--spacing-1);
 }
 
 .maintenanceAlert.maintenanceAlert {
@@ -835,6 +828,10 @@
   color: var(--color-panel-header-text);
 }
 
+.maintenanceControlHeader h4 {
+  justify-self: center;
+}
+
 .maintenanceSwitch {
   display: inline-flex;
   cursor: pointer;
@@ -912,6 +909,10 @@
   --marker-fill: var(--maintenance-critical);
 }
 
+.maintenanceLegendOfflineMarker {
+  --marker-fill: var(--maintenance-critical);
+}
+
 .maintenanceLegendWarningMarker {
   --marker-fill: var(--maintenance-warning);
 }
@@ -922,6 +923,28 @@
 
 .maintenanceLegendHealthyMarker svg path:last-child {
   stroke: var(--maintenance-critical);
+}
+
+.inlineToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.inlineToggle input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--color-brand-primary);
 }
 
 .maintenanceBoundaryLegend {

@@ -26,7 +26,7 @@ const getSensorHealthState = (sensor) => {
     return 'offline';
   }
 
-  if (sensor.maintenanceState === 'critical' || sensor.maintenanceState === 'warning') {
+  if (sensor.maintenanceState === 'offline' || sensor.maintenanceState === 'warning') {
     return 'warning';
   }
 
@@ -161,8 +161,8 @@ const createHealthMarkerSvgMarkup = (sensor, selected = false, variant = 'number
 };
 
 const MAINTENANCE_MARKER_STYLES = {
-  critical: {
-    severity: 'high',
+  offline: {
+    severity: 'offline',
     fill: '#08081A',
     iconStroke: '#FFFFFF',
   },
@@ -175,11 +175,6 @@ const MAINTENANCE_MARKER_STYLES = {
     severity: 'low',
     fill: 'rgba(255, 255, 255, 0.92)',
     iconStroke: '#08081A',
-  },
-  offline: {
-    severity: 'offline',
-    fill: '#08081A',
-    iconStroke: '#FFFFFF',
   },
 };
 
@@ -501,7 +496,7 @@ InteractiveMap.propTypes = {
     name: PropTypes.string,
     count: PropTypes.number,
     severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
-    maintenanceState: PropTypes.oneOf(['critical', 'warning', 'healthy']),
+    maintenanceState: PropTypes.oneOf(['offline', 'warning', 'healthy']),
     maintenanceReason: PropTypes.string,
   })),
   selectedSensorId: PropTypes.string,

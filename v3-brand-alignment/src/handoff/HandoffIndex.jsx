@@ -76,7 +76,7 @@ const maintenanceSensors = [
     status: 'Inactive',
     lastSync: '32 hours ago',
     severity: 'offline',
-    maintenanceState: 'critical',
+    maintenanceState: 'offline',
     maintenanceReason: 'Offline over 24h',
     connectivity: 'Offline for 32h',
     faultStatus: 'Needs field check',
@@ -98,7 +98,7 @@ const maintenanceSensors = [
     status: 'Online',
     lastSync: '2 hours ago',
     severity: 'medium',
-    maintenanceState: 'critical',
+    maintenanceState: 'warning',
     maintenanceReason: 'Battery below 30%',
     connectivity: 'Poor LTE signal',
     faultStatus: 'No device fault',
@@ -178,7 +178,7 @@ const maintenanceSensors = [
 ];
 const selectedMaintenanceSensor = maintenanceSensors[0];
 const maintenanceRank = {
-  critical: 3,
+  offline: 3,
   warning: 2,
   healthy: 1,
 };
@@ -187,7 +187,6 @@ const rankedMaintenanceSensors = [...maintenanceSensors].sort((a, b) => (
   || a.name.localeCompare(b.name)
 ));
 const maintenanceAttentionSensors = rankedMaintenanceSensors.filter((sensor) => sensor.maintenanceState !== 'healthy');
-const maintenanceHealthySensors = rankedMaintenanceSensors.filter((sensor) => sensor.maintenanceState === 'healthy');
 const maintenanceStats = {
   active: maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length,
   offline: maintenanceSensors.filter((sensor) => sensor.status === 'Inactive' || sensor.signal === 'Offline').length,
@@ -737,7 +736,7 @@ function PestPressureRankingPage() {
 }
 
 function getMaintenanceSeverity(sensor) {
-  if (sensor.maintenanceState === 'critical') return 'critical';
+  if (sensor.maintenanceState === 'offline') return 'offline';
   if (sensor.maintenanceState === 'warning') return 'warning';
   return 'healthy';
 }
@@ -770,7 +769,7 @@ function MaintenanceModePage() {
         <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
           <span className="material-symbols-rounded" aria-hidden="true">construction</span>
           <Typography variant="caption">Maintenance mode is on</Typography>
-          <Button variant="ghost" size="sm">Return to PestView</Button>
+          <Button variant="ghost" size="sm">Return to Pest View</Button>
         </div>
       )}
     />
@@ -779,16 +778,19 @@ function MaintenanceModePage() {
 
 const maintenanceTopNavProps = {
   modeLabel: 'Maintenance',
+  defaultProfileMenuOpen: true,
   profileMenuItems: [
-    { label: 'PestView', icon: 'pest_control' },
-    { label: 'Maintenance Mode', icon: 'construction', active: true },
+    { label: 'My account', icon: 'manage_accounts' },
+    { label: 'Maintenance mode', icon: 'construction', active: true },
+    { label: 'Pest View', icon: 'pest_control' },
     { label: 'Account settings', icon: 'manage_accounts' },
+    { label: 'Sign out', icon: 'logout' },
   ],
 };
 
 function MaintenancePanel({ activeSensor, onSensorSelect }) {
-  const [activeTab, setActiveTab] = useState('attention');
-  const visibleSensors = activeTab === 'healthy' ? maintenanceHealthySensors : maintenanceAttentionSensors;
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
+  const visibleSensors = showHealthySensors ? rankedMaintenanceSensors : maintenanceAttentionSensors;
 
   return (
     <div className={`${styles.panel} ${styles.maintenancePanel}`}>
@@ -821,22 +823,6 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
           </div>
         </div>
       </div>
-      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
-        <button
-          className={activeTab === 'attention' ? styles.activeAnchorTab : ''}
-          type="button"
-          onClick={() => setActiveTab('attention')}
-        >
-          Needs attention ({maintenanceAttentionSensors.length})
-        </button>
-        <button
-          className={activeTab === 'healthy' ? styles.activeAnchorTab : ''}
-          type="button"
-          onClick={() => setActiveTab('healthy')}
-        >
-          Healthy ({maintenanceHealthySensors.length})
-        </button>
-      </div>
       <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`}>
         <section>
           <div className={styles.sectionHeader}>
@@ -852,8 +838,18 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
         </section>
         <section className={styles.childList}>
           <div className={styles.sectionHeader}>
-            <Typography variant="h5">{activeTab === 'healthy' ? 'Healthy sensors' : 'Sensors needing attention'}</Typography>
-            <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+            <div>
+              <Typography variant="h5">Sensors</Typography>
+              <Typography variant="caption" color="secondary">Prioritised by maintenance urgency for the current scope</Typography>
+            </div>
+            <label className={styles.inlineToggle}>
+              <input
+                checked={showHealthySensors}
+                onChange={(event) => setShowHealthySensors(event.target.checked)}
+                type="checkbox"
+              />
+              Show healthy sensors
+            </label>
           </div>
           {visibleSensors.map((sensor, index) => (
             <MaintenanceListItem
@@ -873,18 +869,23 @@ function MaintenancePanel({ activeSensor, onSensorSelect }) {
 function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
   const state = getMaintenanceSeverity(sensor);
   const stateLabel = {
-    critical: 'Critical',
+    offline: 'Offline',
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
-  const riskLevel = state === 'critical' ? 'high' : state === 'warning' ? 'medium' : 'low';
+  const riskLevel = state === 'offline' ? 'offline' : state === 'warning' ? 'medium' : 'low';
+  const subtitleParts = [
+    `Battery ${sensor.battery}%`,
+    `Connectivity ${sensor.connectivity}`,
+    `Lure ${sensor.lureStatus}`,
+  ].join(' · ');
 
   return (
     <RankingListItem
-      className={`${styles.maintenanceRankingItem} ${styles[`maintenanceRankingItem--${state}`]} ${active ? styles.activeMaintenanceListItem : ''}`}
+      className={`${styles.maintenanceRankingItem} ${active ? styles.activeMaintenanceListItem : ''}`}
       rank={rank}
       title={sensor.name}
-      subtitle={`Battery ${sensor.battery}% / Connectivity: ${sensor.connectivity} / Lure: ${sensor.lureStatus}`}
+      subtitle={subtitleParts}
       riskLevel={riskLevel}
       riskLabelOverride={stateLabel}
       statusLabel={sensor.blockName}
@@ -925,7 +926,7 @@ function MaintenanceSensorDetailPage() {
         <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
           <span className="material-symbols-rounded" aria-hidden="true">construction</span>
           <Typography variant="caption">Maintenance mode is on</Typography>
-          <Button variant="ghost" size="sm">Return to PestView</Button>
+          <Button variant="ghost" size="sm">Return to Pest View</Button>
         </div>
       )}
     />
@@ -935,7 +936,7 @@ function MaintenanceSensorDetailPage() {
 function MaintenanceSensorPanel({ sensor }) {
   const state = getMaintenanceSeverity(sensor);
   const statusLabel = {
-    critical: 'Critical',
+    offline: 'Offline',
     warning: 'Warning',
     healthy: 'Healthy',
   }[state];
@@ -953,7 +954,7 @@ function MaintenanceSensorPanel({ sensor }) {
             </div>
             <Badge
               className={styles.maintenanceSensorBadge}
-              variant={state === 'critical' ? 'high' : state === 'warning' ? 'medium' : 'low'}
+              variant={state === 'offline' ? 'offline' : state === 'warning' ? 'medium' : 'low'}
             >
               {statusLabel}
             </Badge>
@@ -1008,14 +1009,11 @@ function MaintenanceDeviceDetail({ sensor }) {
 
   return (
     <section className={styles.maintenanceDetailCard}>
-      <div className={styles.sectionHeader}>
-        <Typography variant="h5">Device overview</Typography>
-      </div>
       <Alert
         className={styles.maintenanceAlert}
         title={sensor.maintenanceReason}
         message={sensor.maintenanceDetails}
-        variant={sensor.maintenanceState === 'critical' ? 'error' : 'warning'}
+        variant={sensor.maintenanceState === 'offline' ? 'error' : 'warning'}
         type="inline"
       />
       <SensorMetaGrid items={[
@@ -1050,8 +1048,8 @@ function MaintenanceDeviceDetail({ sensor }) {
         </div>
       </div>
       <div className={styles.maintenanceHistory} id="maintenance-history">
-        <div className={styles.sectionHeader}>
-          <Typography variant="h5">Recent history</Typography>
+        <div className={`${styles.sectionHeader} ${styles.maintenanceSectionHeader}`}>
+          <Typography variant="h4">Recent history</Typography>
           <Typography variant="caption" color="secondary">Newest field and device events</Typography>
         </div>
         {historyItems.map((event) => (
@@ -1074,10 +1072,7 @@ function MaintenanceControlsPanel() {
     <aside className={`${styles.rightRail} ${styles.maintenanceControlsPanel}`}>
       <button className={styles.maintenanceControlHeader} type="button" onClick={() => setIsOpen((current) => !current)}>
         <span className="material-symbols-rounded" aria-hidden="true">construction</span>
-        <div>
-          <Typography variant="h4">Maintenance</Typography>
-          <Typography variant="caption">Fleet analytics view</Typography>
-        </div>
+        <Typography variant="h4">Maintenance</Typography>
         <span className="material-symbols-rounded" aria-hidden="true">{isOpen ? 'expand_less' : 'expand_more'}</span>
       </button>
       {isOpen && (
@@ -1092,19 +1087,15 @@ function MaintenanceControlsPanel() {
           <section className={styles.maintenanceControlSection}>
             <Typography variant="h6">Maintenance Legend</Typography>
             <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
-              <Typography variant="body-sm">Critical (device issue)</Typography>
-            </div>
-            <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
-              <Typography variant="body-sm">Warning (may affect read quality)</Typography>
+              <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
               <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
               <Typography variant="body-sm">Healthy (no action required)</Typography>
             </div>
             <div className={styles.maintenanceLegendItem}>
-              <RiskMarker severity="offline" className={styles.maintenanceLegendCriticalMarker} label="Offline maintenance marker" />
+              <RiskMarker severity="offline" className={styles.maintenanceLegendOfflineMarker} label="Offline maintenance marker" />
               <Typography variant="body-sm">Offline (no battery or device issue)</Typography>
             </div>
           </section>

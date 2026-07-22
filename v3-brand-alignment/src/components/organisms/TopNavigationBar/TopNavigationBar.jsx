@@ -8,6 +8,7 @@ import logo from '../../../assets/rapidaim_logo.svg';
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
   modeLabel,
+  defaultProfileMenuOpen = false,
   profileMenuItems = [],
   onSearch,
   onMenuClick,
@@ -16,7 +17,7 @@ export const TopNavigationBar = ({
   className = '',
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(defaultProfileMenuOpen);
 
   return (
     <header className={`${styles.header} ${isSearchOpen ? styles.searchActive : ''} ${className}`}>
@@ -97,6 +98,7 @@ export const TopNavigationBar = ({
 TopNavigationBar.propTypes = {
   organizationName: PropTypes.string,
   modeLabel: PropTypes.string,
+  defaultProfileMenuOpen: PropTypes.bool,
   profileMenuItems: PropTypes.arrayOf(PropTypes.shape({
     active: PropTypes.bool,
     icon: PropTypes.string,
