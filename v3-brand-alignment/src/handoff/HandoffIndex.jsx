@@ -1010,11 +1010,8 @@ function MaintenancePanel({
           aria-label={`Sensors (${onlineSensorCount}/${totalSensorCount})`}
           onClick={() => scrollToMaintenanceSection('maintenance-sensors-list', 'sensors')}
         >
-          <span className={styles.anchorTabWithCount} aria-hidden="true">
-            <span className={styles.anchorTabLabel}>Sensors</span>
-            <span className={styles.anchorTabParen}>(</span>
-            <span className={styles.anchorTabCount}>{onlineSensorCount}/{totalSensorCount}</span>
-            <span className={styles.anchorTabParen}>)</span>
+          <span className={styles.anchorTabLabel} aria-hidden="true">
+            Sensors ({onlineSensorCount}/{totalSensorCount})
           </span>
         </button>
       </div>

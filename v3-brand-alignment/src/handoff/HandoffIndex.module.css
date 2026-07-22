@@ -1233,35 +1233,6 @@
   white-space: nowrap;
 }
 
-.anchorTabWithCount {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-1);
-}
-
-.anchorTabParen {
-  color: currentColor;
-}
-
-.anchorTabCount {
-  display: inline-flex;
-  min-width: 2.5rem;
-  height: 1.25rem;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--spacing-2);
-  border-radius: 999px;
-  background: var(--color-bg-muted);
-  color: var(--color-brand-primary);
-  font-family: var(--font-family-metric);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-}
-
 .panelBody {
   position: relative;
   display: flex;
