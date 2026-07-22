@@ -896,6 +896,8 @@ const desktopToMobileType = {
   'consolidated-ranch': 'ranch',
   'consolidated-block': 'block',
   'consolidated-sensor': 'sensor',
+  'experimental-maintenance-mode': 'maintenance-ranking',
+  'experimental-maintenance-sensor': 'maintenance-sensor',
 };
 
 function useResponsiveMobileView() {
