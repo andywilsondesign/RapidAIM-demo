@@ -306,6 +306,7 @@ export const InteractiveMap = ({
   activeBlockLabel = '',
   mapStyle = 'satellite', // 'satellite' or 'stylized'
   sensorDisplayMode = 'pest',
+  showSelectedSensorTooltip = false,
   onBlockSelect,
   onSensorSelect,
   className = '',
@@ -457,7 +458,7 @@ export const InteractiveMap = ({
               direction="top"
               offset={[0, -14]}
               opacity={1}
-              permanent={sensor.id === selectedSensorId}
+              permanent={showSelectedSensorTooltip && sensor.id === selectedSensorId}
             >
               <strong>{sensor.name}</strong><br />
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
@@ -509,6 +510,7 @@ InteractiveMap.propTypes = {
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
   sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance']),
+  showSelectedSensorTooltip: PropTypes.bool,
   onBlockSelect: PropTypes.func,
   onSensorSelect: PropTypes.func,
   className: PropTypes.string,

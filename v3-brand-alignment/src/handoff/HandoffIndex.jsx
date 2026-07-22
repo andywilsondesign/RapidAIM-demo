@@ -2213,6 +2213,7 @@ function MobileDeviceFrame({ type = 'ranking' }) {
           sensors={mapSensors}
           selectedSensorId={selectedMobileSensorId}
           sensorDisplayMode={sensorDisplayMode}
+          showSelectedSensorTooltip
           blockSeverity={selectedBlock.riskLevel}
           mapStyle="satellite"
           onBlockSelect={isMaintenanceMobile ? undefined : handleBlockSelect}
