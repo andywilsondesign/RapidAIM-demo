@@ -31,15 +31,16 @@
 }
 
 .label {
-  padding-right: 1.75rem;
+  padding-right: 2.25rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .infoDisclosure {
   position: absolute;
-  top: var(--spacing-4);
-  right: var(--spacing-4);
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  z-index: 1;
 }
 
 .infoDisclosure button {
