@@ -650,7 +650,7 @@
 }
 
 .maintenancePanelBody {
-  gap: var(--spacing-4);
+  gap: var(--spacing-5);
   padding-bottom: calc(var(--layout-panel-action-tray-height) + var(--spacing-6));
 }
 
@@ -687,7 +687,7 @@
 .maintenanceHistory {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--spacing-5);
 }
 
 .maintenanceDetailCard {
@@ -698,7 +698,7 @@
 }
 
 .maintenanceTimeline {
-  gap: var(--spacing-3);
+  gap: var(--spacing-5);
 }
 
 .maintenanceTimeline > div {
@@ -709,7 +709,16 @@
 }
 
 .maintenanceHistory {
-  gap: var(--spacing-3);
+  gap: var(--spacing-5);
+}
+
+.maintenanceAlert.maintenanceAlert {
+  border: 1px solid rgba(193, 18, 31, 0.2);
+  box-shadow: none;
+}
+
+.maintenanceAlert > span:first-child {
+  display: none;
 }
 
 .maintenanceHistoryItem {
@@ -1001,6 +1010,20 @@
   color: var(--color-panel-header-text);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.panelTitleRow.maintenanceSensorTitleRow {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.maintenanceSensorTitleRow .panelTitleCluster {
+  justify-content: flex-start;
+}
+
+.maintenanceSensorBadge {
+  width: max-content;
+  max-width: max-content;
+  justify-self: end;
 }
 
 .panelSubtitle {

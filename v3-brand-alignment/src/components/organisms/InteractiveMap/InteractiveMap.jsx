@@ -250,6 +250,30 @@ const escapeHtml = (value) => String(value)
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#039;');
 
+const getSensorConnectivityLabel = (sensor) => {
+  if (sensor.signal === 'Offline') {
+    return 'Offline';
+  }
+
+  if (sensor.signal === 'Poor' || sensor.signal === 'Intermittent') {
+    return 'Intermittent';
+  }
+
+  return sensor.signal || 'Unknown';
+};
+
+const getSensorDeviceHealthLabel = (sensor) => {
+  if (sensor.faultStatus) {
+    return sensor.faultStatus.includes('No') ? 'Healthy' : 'Fault';
+  }
+
+  if (sensor.status === 'Inactive' || sensor.signal === 'Offline') {
+    return 'Fault';
+  }
+
+  return 'Healthy';
+};
+
 const createBlockLabelIcon = (label) => L.divIcon({
   className: styles.blockLabelMarker,
   html: `<span>${escapeHtml(label)}</span>`,
@@ -425,7 +449,7 @@ export const InteractiveMap = ({
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
-              ? `${sensor.name}: battery ${sensor.battery}%, connectivity ${sensor.signal}, lure ${sensor.lureStatus || 'not recorded'}, last sync ${sensor.lastSync}`
+              ? `${sensor.name}: battery ${sensor.battery}%, connectivity ${getSensorConnectivityLabel(sensor)}, device health ${getSensorDeviceHealthLabel(sensor)}, lure ${sensor.lureStatus || 'not recorded'}, last sync ${sensor.lastSync}`
               : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
@@ -438,7 +462,8 @@ export const InteractiveMap = ({
               {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
                 <>
                   Battery: {sensor.battery}%<br />
-                  Connectivity: {sensor.signal}<br />
+                  Connectivity: {getSensorConnectivityLabel(sensor)}<br />
+                  Device health: {getSensorDeviceHealthLabel(sensor)}<br />
                   Lure: {sensor.lureStatus || 'Not recorded'}<br />
                   Last sync: {sensor.lastSync}
                 </>
