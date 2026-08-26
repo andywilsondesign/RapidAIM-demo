@@ -1,0 +1,102 @@
+.modal {
+  display: flex;
+  width: min(34rem, calc(100vw - var(--spacing-8)));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.compact {
+  width: min(22rem, calc(100vw - var(--spacing-6)));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.header h4,
+.header p {
+  color: var(--color-panel-header-text);
+}
+
+.header button {
+  color: var(--color-panel-header-text);
+}
+
+.header button:hover,
+.header button:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-panel-header-text);
+}
+
+.title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.title span {
+  color: var(--color-panel-header-text);
+  font-size: var(--font-size-lg);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+}
+
+.compact .body {
+  padding: var(--spacing-4);
+}
+
+.context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+}
+
+.textareaLabel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.textareaLabel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-text-primary);
+  font: inherit;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-5);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-data-surface);
+}
+
+.compact .footer {
+  padding: var(--spacing-4);
+}

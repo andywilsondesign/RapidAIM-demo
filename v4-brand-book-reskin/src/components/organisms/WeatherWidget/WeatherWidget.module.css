@@ -1,0 +1,37 @@
+.widget {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: max-content;
+  min-height: 2.25rem;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-sm);
+}
+
+.compact {
+  min-height: 2.75rem;
+  padding: var(--spacing-2) var(--spacing-3);
+}
+
+.icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--color-brand-primary);
+  font-size: 18px;
+}
+
+.dot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-xs);
+  background: var(--color-border-subtle);
+}

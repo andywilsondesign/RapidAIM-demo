@@ -1,0 +1,2727 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Badge } from '../components/atoms/Badge/Badge';
+import { Button } from '../components/atoms/Button/Button';
+import { RiskMarker } from '../components/atoms/RiskMarker/RiskMarker';
+import { Select } from '../components/atoms/Select/Select';
+import { Typography } from '../components/atoms/Typography/Typography';
+import { FormField } from '../components/molecules/FormField/FormField';
+import { RankingListItem } from '../components/molecules/RankingListItem/RankingListItem';
+import { StatCard } from '../components/molecules/StatCard/StatCard';
+import { DetectionGrid } from '../components/molecules/DetectionGrid/DetectionGrid';
+import { SensorMetaGrid } from '../components/molecules/SensorMetaGrid/SensorMetaGrid';
+import { Alert } from '../components/molecules/Alert/Alert';
+import { InfoDisclosure } from '../components/molecules/InfoDisclosure/InfoDisclosure';
+import { ScopeNavigation as ScopeNavigationControl } from '../components/molecules/ScopeNavigation/ScopeNavigation';
+import { TaskListItem } from '../components/molecules/TaskListItem/TaskListItem';
+import { TopNavigationBar } from '../components/organisms/TopNavigationBar/TopNavigationBar';
+import { ControlCenter } from '../components/organisms/ControlCenter/ControlCenter';
+import { DetailPanel } from '../components/organisms/DetailPanel/DetailPanel';
+import { InteractiveMap } from '../components/organisms/InteractiveMap/InteractiveMap';
+import { MobileBottomSheet } from '../components/organisms/MobileBottomSheet/MobileBottomSheet';
+import { TrendChart } from '../components/organisms/TrendChart/TrendChart';
+import { WeatherWidget } from '../components/organisms/WeatherWidget/WeatherWidget';
+import { TaskDropdown } from '../components/organisms/TaskDropdown/TaskDropdown';
+import { ScoutingAssignmentModal } from '../components/organisms/ScoutingAssignmentModal/ScoutingAssignmentModal';
+import { ReportModal } from '../components/organisms/ReportModal/ReportModal';
+import { MaintenanceNoteModal } from '../components/organisms/MaintenanceNoteModal/MaintenanceNoteModal';
+import { AccountSettings } from '../components/pages/AccountSettings/AccountSettings';
+import {
+  blocks,
+  chartSeries,
+  detectionGrid,
+  ranches,
+  report,
+  sensorDetectionGrid,
+  sensors,
+  tasks,
+  weather,
+} from '../fixtures/rapidAimFixtures';
+import styles from './HandoffIndex.module.css';
+
+const selectedBlock = blocks[0];
+const selectedRanch = { ...ranches[0], blocks: 12, pestName: 'Female Navel Orangeworm' };
+const selectedSensor = { ...sensors[0], pestName: selectedBlock.pestName };
+const maintenanceWeather = {
+  ...weather,
+  location: 'Brisbane, AU',
+};
+const healthIssueSensor = {
+  ...selectedSensor,
+  pestName: selectedBlock.pestName,
+  battery: 9,
+  signal: 'Good',
+  status: 'Online',
+  lastSync: '18 min ago',
+  lureStatus: 'Current',
+  lastService: 'Jul 10, 2026',
+};
+const healthExperimentSensors = sensors.map((sensor) => {
+  if (sensor.id === healthIssueSensor.id) {
+    return { ...sensor, battery: 9, status: 'Online', signal: 'Good', lastSync: '18 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-c') {
+    return { ...sensor, battery: 25, status: 'Online', signal: 'Good', severity: 'low', lastSync: '8 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-d') {
+    return { ...sensor, battery: 68, status: 'Online', signal: 'Excellent', severity: 'low', lastSync: '6 min ago' };
+  }
+
+  if (sensor.id === 'sensor-sierra-4-e') {
+    return { ...sensor, battery: 7, status: 'Online', signal: 'Good', severity: 'medium', lastSync: '24 min ago' };
+  }
+
+  return sensor;
+});
+const maintenanceSensors = [
+  {
+    ...sensors[3],
+    battery: 0,
+    signal: 'Offline',
+    status: 'Inactive',
+    lastSync: '32 hours ago',
+    severity: 'offline',
+    maintenanceState: 'offline',
+    maintenanceReason: 'Offline over 24h',
+    connectivity: 'Offline for 32h',
+    faultStatus: 'Needs field check',
+    maintenanceDetails: 'Device has not uploaded data for 32 hours. Check power, placement, and local service before relying on recent readings.',
+    lureStatus: 'Due in 3 days',
+    lastService: 'Jun 14, 2026',
+    nextAction: 'Replace or relocate device',
+    signalHistory: [-98, -104, -111, -118, -121, -123, -124],
+    eventHistory: [
+      { date: 'Jul 20, 2026', title: 'Device disconnected', detail: 'No upload received after 07:12.' },
+      { date: 'Jun 14, 2026', title: 'Lure replaced', detail: 'Field visit logged by operations.' },
+      { date: 'Jun 14, 2026', title: 'Battery replaced', detail: 'Battery pack replaced during scheduled service.' },
+    ],
+  },
+  {
+    ...sensors[4],
+    battery: 18,
+    signal: 'Poor',
+    status: 'Online',
+    lastSync: '2 hours ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Battery below 30%',
+    connectivity: 'Poor LTE signal',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Battery is at 18%. Signal is poor, but the sensor is still connected.',
+    lureStatus: 'Changed 9 days ago',
+    lastService: 'Jun 28, 2026',
+    nextAction: 'Replace battery',
+    signalHistory: [-86, -89, -94, -99, -106, -109, -112],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Battery warning raised', detail: 'Battery dropped below the 30% maintenance threshold.' },
+      { date: 'Jun 28, 2026', title: 'Device inspected', detail: 'Signal quality marked as poor near edge of block.' },
+    ],
+  },
+  {
+    ...sensors[2],
+    battery: 31,
+    signal: 'Intermittent',
+    status: 'Online',
+    lastSync: '7 hours ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Intermittent signal',
+    connectivity: 'Intermittent uploads',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Device is online but upload cadence is inconsistent. Data may arrive late if connectivity drops again.',
+    lureStatus: 'Due in 8 days',
+    lastService: 'Jul 2, 2026',
+    nextAction: 'Check placement / LTE service',
+    signalHistory: [-91, -96, -109, -95, -114, -93, -107],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Signal warning raised', detail: 'Upload cadence changed from regular to intermittent.' },
+      { date: 'Jul 2, 2026', title: 'Device moved', detail: 'Device moved 12m north to improve coverage.' },
+    ],
+  },
+  {
+    ...sensors[1],
+    battery: 43,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '54 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Device is healthy, but lure replacement should be logged during the next visit.',
+    lureStatus: 'Due tomorrow',
+    lastService: 'Jul 1, 2026',
+    nextAction: 'Replace lure',
+    signalHistory: [-78, -80, -82, -81, -84, -83, -82],
+    eventHistory: [
+      { date: 'Jul 20, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due tomorrow.' },
+      { date: 'Jul 1, 2026', title: 'Lure replaced', detail: 'Replacement logged during scheduled visit.' },
+    ],
+  },
+  {
+    ...sensors[0],
+    battery: 82,
+    signal: 'Excellent',
+    status: 'Online',
+    lastSync: '12 min ago',
+    severity: 'low',
+    maintenanceState: 'healthy',
+    maintenanceReason: 'No action required',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Device is connected and above the operational battery threshold.',
+    lureStatus: 'Changed 5 days ago',
+    lastService: 'Jul 10, 2026',
+    nextAction: 'Monitor',
+    signalHistory: [-72, -74, -73, -75, -71, -70, -72],
+    eventHistory: [
+      { date: 'Jul 10, 2026', title: 'Battery replaced', detail: 'Battery pack replaced during scheduled service.' },
+      { date: 'Jul 10, 2026', title: 'Lure replaced', detail: 'Lure refreshed during the same field visit.' },
+    ],
+  },
+  {
+    ...sensors[0],
+    id: 'sensor-sierra-5-a',
+    name: 'Sensor S5-A',
+    blockName: 'Block 5',
+    lat: 36.649,
+    lng: -119.797,
+    battery: 24,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '36 min ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Battery below 30%',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Battery is below the maintenance threshold. Sensor is still connected.',
+    lureStatus: 'Changed 4 days ago',
+    lastService: 'Jul 8, 2026',
+    nextAction: 'Replace battery',
+    signalHistory: [-82, -83, -86, -88, -87, -89, -90],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Battery warning raised', detail: 'Battery dropped below 30%.' },
+      { date: 'Jul 8, 2026', title: 'Device inspected', detail: 'No device fault found.' },
+    ],
+  },
+  {
+    ...sensors[1],
+    id: 'sensor-sierra-5-b',
+    name: 'Sensor S5-B',
+    blockName: 'Block 5',
+    lat: 36.643,
+    lng: -119.797,
+    battery: 58,
+    signal: 'Poor',
+    status: 'Online',
+    lastSync: '1 hour ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Poor LTE signal',
+    connectivity: 'Poor LTE signal',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'RSRP has stayed in the poor range during recent uploads.',
+    lureStatus: 'Changed 11 days ago',
+    lastService: 'Jul 4, 2026',
+    nextAction: 'Check placement / LTE service',
+    signalHistory: [-108, -109, -111, -113, -110, -112, -114],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Connectivity warning raised', detail: 'RSRP moved into the poor range.' },
+    ],
+  },
+  {
+    ...sensors[2],
+    id: 'sensor-sierra-6-a',
+    name: 'Sensor S6-A',
+    blockName: 'Block 6',
+    lat: 36.641,
+    lng: -119.801,
+    battery: 71,
+    signal: 'Excellent',
+    status: 'Online',
+    lastSync: '20 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Lure replacement is due within one week.',
+    lureStatus: 'Due in 5 days',
+    lastService: 'Jul 3, 2026',
+    nextAction: 'Replace lure',
+    signalHistory: [-70, -72, -71, -74, -73, -72, -71],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due within one week.' },
+    ],
+  },
+  {
+    ...sensors[3],
+    id: 'sensor-sierra-6-b',
+    name: 'Sensor S6-B',
+    blockName: 'Block 6',
+    lat: 36.641,
+    lng: -119.796,
+    battery: 0,
+    signal: 'Offline',
+    status: 'Inactive',
+    lastSync: '26 hours ago',
+    severity: 'offline',
+    maintenanceState: 'offline',
+    maintenanceReason: 'Offline',
+    connectivity: 'Offline for 26h',
+    faultStatus: 'Needs field check',
+    maintenanceDetails: 'Device has not uploaded data for 26 hours.',
+    lureStatus: 'Changed 8 days ago',
+    lastService: 'Jun 30, 2026',
+    nextAction: 'Check power and device state',
+    signalHistory: [-94, -101, -116, -121, -123, -124, -124],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Device disconnected', detail: 'No upload received for more than 24 hours.' },
+    ],
+  },
+  {
+    ...sensors[0],
+    id: 'sensor-sierra-8-a',
+    name: 'Sensor S8-A',
+    blockName: 'Block 8',
+    lat: 36.637,
+    lng: -119.802,
+    battery: 27,
+    signal: 'Intermittent',
+    status: 'Online',
+    lastSync: '3 hours ago',
+    severity: 'medium',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Battery and signal warning',
+    connectivity: 'Intermittent uploads',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Battery is below 30% and upload cadence has become intermittent.',
+    lureStatus: 'Changed 6 days ago',
+    lastService: 'Jul 6, 2026',
+    nextAction: 'Replace battery and check signal',
+    signalHistory: [-92, -94, -101, -108, -106, -112, -109],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Maintenance warning raised', detail: 'Battery and connectivity both crossed warning thresholds.' },
+    ],
+  },
+  {
+    ...sensors[1],
+    id: 'sensor-sierra-8-b',
+    name: 'Sensor S8-B',
+    blockName: 'Block 8',
+    lat: 36.637,
+    lng: -119.796,
+    battery: 66,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '18 min ago',
+    severity: 'low',
+    maintenanceState: 'warning',
+    maintenanceReason: 'Lure due soon',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Lure replacement is due within one week.',
+    lureStatus: 'Due in 6 days',
+    lastService: 'Jul 4, 2026',
+    nextAction: 'Replace lure',
+    signalHistory: [-80, -81, -79, -82, -83, -81, -80],
+    eventHistory: [
+      { date: 'Jul 21, 2026', title: 'Lure reminder raised', detail: 'Lure replacement is due within one week.' },
+    ],
+  },
+  {
+    ...sensors[4],
+    id: 'sensor-sierra-7-a',
+    name: 'Sensor S7-A',
+    blockName: 'Block 7',
+    lat: 36.639,
+    lng: -119.799,
+    battery: 88,
+    signal: 'Good',
+    status: 'Online',
+    lastSync: '8 min ago',
+    severity: 'low',
+    maintenanceState: 'healthy',
+    maintenanceReason: 'No action required',
+    connectivity: 'Online',
+    faultStatus: 'No device fault',
+    maintenanceDetails: 'Device is online and above the maintenance battery threshold.',
+    lureStatus: 'Changed 2 days ago',
+    lastService: 'Jul 11, 2026',
+    nextAction: 'Monitor',
+    signalHistory: [-82, -81, -83, -80, -79, -81, -82],
+    eventHistory: [
+      { date: 'Jul 11, 2026', title: 'Device inspected', detail: 'Routine service completed.' },
+    ],
+  },
+];
+const selectedMaintenanceSensor = maintenanceSensors[0];
+const maintenanceRank = {
+  offline: 3,
+  warning: 2,
+  healthy: 1,
+};
+const rankedMaintenanceSensors = [...maintenanceSensors].sort((a, b) => (
+  maintenanceRank[b.maintenanceState] - maintenanceRank[a.maintenanceState]
+  || a.name.localeCompare(b.name)
+));
+const maintenanceAttentionSensors = rankedMaintenanceSensors.filter((sensor) => sensor.maintenanceState !== 'healthy');
+const maintenanceStats = {
+  active: maintenanceSensors.filter((sensor) => sensor.status !== 'Inactive').length,
+  offline: maintenanceSensors.filter((sensor) => sensor.status === 'Inactive' || sensor.signal === 'Offline').length,
+  lowBattery: maintenanceSensors.filter((sensor) => sensor.battery > 0 && sensor.battery < 30).length,
+  signalIssues: maintenanceSensors.filter((sensor) => ['Poor', 'Intermittent', 'Offline'].includes(sensor.signal)).length,
+  lureDue: maintenanceSensors.filter((sensor) => {
+    const lureStatus = sensor.lureStatus?.toLowerCase() || '';
+    if (lureStatus.includes('tomorrow')) return true;
+    const daysMatch = lureStatus.match(/due in (\d+) days?/);
+    return daysMatch ? Number.parseInt(daysMatch[1], 10) <= 7 : false;
+  }).length,
+};
+const maintenanceSensorTabCount = {
+  active: 12,
+  total: 14,
+};
+const signalHistoryLabels = ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Today'];
+const maintenanceOverviewAnchorSections = [
+  { id: 'maintenance-overview-summary', tab: 'overview' },
+  { id: 'maintenance-sensors-list', tab: 'sensors' },
+];
+const mobileMaintenanceOverviewAnchorSections = [
+  { id: 'mobile-maintenance-overview-summary', tab: 'overview' },
+  { id: 'mobile-maintenance-sensors-list', tab: 'sensors' },
+];
+const maintenanceSensorAnchorSections = [
+  { id: 'maintenance-sensor-overview', tab: 'overview' },
+  { id: 'maintenance-history', tab: 'history' },
+];
+
+function getSectionScrollTop(container, sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!container || !section) return null;
+  const containerRect = container.getBoundingClientRect();
+  const sectionRect = section.getBoundingClientRect();
+  return sectionRect.top - containerRect.top + container.scrollTop;
+}
+
+function scrollContainerToSection(container, sectionId) {
+  const top = getSectionScrollTop(container, sectionId);
+  if (top == null) return;
+  container.scrollTo({ top, behavior: 'smooth' });
+}
+
+function formatShortServiceDate(dateValue) {
+  if (!dateValue) return '14/06/26';
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return dateValue;
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+  }).format(parsedDate);
+}
+
+function getDaysSince(dateValue) {
+  if (!dateValue) return null;
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) return null;
+
+  const today = new Date('2026-07-22T12:00:00');
+  return Math.max(0, Math.round((today - parsedDate) / (1000 * 60 * 60 * 24)));
+}
+
+function getLureShelfLife(sensor) {
+  const lureStatus = sensor.lureStatus || 'Current';
+  const normalizedStatus = lureStatus.toLowerCase();
+
+  if (normalizedStatus.includes('tomorrow')) {
+    return { value: '1 day left', tone: 'warning' };
+  }
+
+  const dueMatch = normalizedStatus.match(/due in (\d+) days?/);
+  if (dueMatch) {
+    const days = Number.parseInt(dueMatch[1], 10);
+    return {
+      value: `${days} days left`,
+      tone: days <= 0 ? 'error' : days <= 7 ? 'warning' : 'positive',
+    };
+  }
+
+  const changedMatch = normalizedStatus.match(/changed (\d+) days? ago/);
+  if (changedMatch) {
+    const daysSinceChange = Number.parseInt(changedMatch[1], 10);
+    const daysRemaining = Math.max(0, 30 - daysSinceChange);
+    return {
+      value: `${daysRemaining} days left`,
+      tone: daysRemaining <= 0 ? 'error' : daysRemaining <= 7 ? 'warning' : 'positive',
+    };
+  }
+
+  return {
+    value: normalizedStatus.includes('current') ? '30 days left' : lureStatus,
+    tone: normalizedStatus.includes('overdue') ? 'error' : 'positive',
+  };
+}
+
+function getLastSyncTone(lastSync = '') {
+  const normalizedSync = lastSync.toLowerCase();
+  if (normalizedSync.includes('day')) return 'error';
+  if (normalizedSync.includes('hours')) {
+    const hours = Number.parseInt(normalizedSync, 10);
+    if (hours >= 24) return 'error';
+    if (hours >= 6) return 'warning';
+  }
+  return 'positive';
+}
+
+function getConnectivityMeta(sensor) {
+  if (sensor.signal === 'Offline') return { value: 'Offline', tone: 'error' };
+  if (sensor.signal === 'Poor') return { value: 'Poor LTE', tone: 'warning' };
+  if (sensor.signal === 'Intermittent') return { value: 'Intermittent', tone: 'warning' };
+  return { value: 'Online', tone: 'positive' };
+}
+
+function getRsrpStatusColor(signalHistory = []) {
+  const latestSignal = signalHistory.at(-1);
+  if (latestSignal == null) return '#666666';
+  if (latestSignal >= -95) return '#0F7A4F';
+  if (latestSignal >= -105) return '#EAAA46';
+  return '#E11932';
+}
+
+function getDeviceHealthMeta(sensor) {
+  const faultStatus = sensor.faultStatus || '';
+  const hasFault = sensor.status === 'Needs Maintenance'
+    || sensor.status === 'Inactive'
+    || (faultStatus && !faultStatus.toLowerCase().includes('no device fault'));
+
+  return {
+    value: hasFault ? 'Fault' : 'Healthy',
+    tone: hasFault ? 'error' : 'positive',
+  };
+}
+
+function getSensorHealthIndicators(sensor, { forceHealthy = false } = {}) {
+  const batteryTone = sensor.battery <= 10 ? 'error' : sensor.battery < 30 ? 'warning' : 'positive';
+  const connectivity = getConnectivityMeta(sensor);
+  const deviceHealth = getDeviceHealthMeta(sensor);
+  const lureShelfLife = getLureShelfLife(sensor);
+  const daysSinceLastService = getDaysSince(sensor.lastService);
+  const lastServiceValue = daysSinceLastService == null ? formatShortServiceDate(sensor.lastService) : `${daysSinceLastService} days ago`;
+  const lastServiceTone = daysSinceLastService == null
+    ? 'positive'
+    : daysSinceLastService > 90
+      ? 'error'
+      : daysSinceLastService > 30
+        ? 'warning'
+        : 'positive';
+  const overrideTone = forceHealthy ? 'positive' : undefined;
+
+  return [
+    {
+      label: 'Battery',
+      value: `${sensor.battery}%`,
+      tone: overrideTone || batteryTone,
+      infoTitle: 'Battery',
+      infoDescription: 'Battery level remaining on the device. Healthy is 30% or above, warning is below 30%, and critical/offline is 10% or below.',
+    },
+    {
+      label: 'Connectivity',
+      value: connectivity.value,
+      tone: overrideTone || connectivity.tone,
+      infoTitle: 'Connectivity',
+      infoDescription: 'Current LTE upload state for this sensor. Poor or intermittent connectivity is a warning, while offline means the device is not currently uploading data. Historical connectivity is shown in the chart below.',
+    },
+    {
+      label: 'Device Health',
+      value: deviceHealth.value,
+      tone: overrideTone || deviceHealth.tone,
+      infoTitle: 'Device health',
+      infoDescription: 'Whether the device is responding normally. Faults cover reported hardware errors, unusual reporting behaviour, or a device that needs a field check.',
+    },
+    {
+      label: 'Last Sync',
+      value: sensor.lastSync.replace(' ago', ''),
+      tone: overrideTone || getLastSyncTone(sensor.lastSync),
+      infoTitle: 'Last sync',
+      infoDescription: 'How recently the sensor uploaded data. Recent syncs are healthy, under 24 hours without upload is a warning, and 24 hours or more is treated as critical.',
+    },
+    {
+      label: 'Lure Status',
+      value: lureShelfLife.value,
+      tone: overrideTone || lureShelfLife.tone,
+      infoTitle: 'Lure status',
+      infoDescription: 'Estimated lure shelf life remaining. Healthy means more than seven days left, warning means replacement is due within seven days, and critical means the lure is overdue.',
+    },
+    {
+      label: 'Last Service',
+      value: lastServiceValue,
+      tone: overrideTone || lastServiceTone,
+      infoTitle: 'Last service',
+      infoDescription: 'Time since the last logged service visit. Healthy is within 30 days, warning is over 30 days, and critical is over 90 days without a service record.',
+    },
+  ];
+}
+
+function useScrollAnchorTabs(containerRef, sections, setActiveTab) {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const updateActiveTab = () => {
+      const activationOffset = Math.min(80, container.clientHeight * 0.25);
+      const containerRect = container.getBoundingClientRect();
+      const maxScrollTop = container.scrollHeight - container.clientHeight;
+      const activeSection = sections.reduce((currentSection, section, index) => {
+        const element = document.getElementById(section.id);
+        const top = getSectionScrollTop(container, section.id);
+        if (top == null || !element) return currentSection;
+
+        const isLastSection = index === sections.length - 1;
+        const sectionTop = element.getBoundingClientRect().top - containerRect.top;
+        const isLastSectionVisible = isLastSection
+          && sectionTop < container.clientHeight - activationOffset
+          && container.scrollTop >= maxScrollTop * 0.5;
+
+        return container.scrollTop >= top - activationOffset || isLastSectionVisible ? section : currentSection;
+      }, sections[0]);
+
+      if (activeSection) setActiveTab(activeSection.tab);
+    };
+
+    updateActiveTab();
+    container.addEventListener('scroll', updateActiveTab, { passive: true });
+    window.addEventListener('resize', updateActiveTab);
+
+    return () => {
+      container.removeEventListener('scroll', updateActiveTab);
+      window.removeEventListener('resize', updateActiveTab);
+    };
+  }, [containerRef, sections, setActiveTab]);
+}
+const selectedOrganization = {
+  name: 'RapidAIM Growers Co.',
+  riskLevel: 'high',
+  pestName: 'Female Navel Orangeworm',
+  ranches: ranches.filter((ranch) => ranch.organization === 'RapidAIM Growers Co.').length,
+  blocks: 21,
+  currentCount: 182,
+  activeSensors: 69,
+  totalSensors: 76,
+  trend: 18,
+};
+
+const pestPressureCards = [
+  { label: 'Female Navel Orangeworm', valueKey: 'female-now', value: 124, trend: 18, benchmark: 'Farm average: 45', tone: 'high' },
+  { label: 'Male Navel Orangeworm', valueKey: 'male-now', value: 72, trend: 9, benchmark: 'Farm average: 32', tone: 'high' },
+  { label: 'Codling Moth', valueKey: 'codling-moth', value: 31, trend: -6, benchmark: 'Farm average: 28', tone: 'low' },
+  { label: 'Mites', valueKey: 'mites', value: 48, trend: 12, benchmark: 'Farm average: 35', tone: 'medium' },
+];
+
+const pestChartSeries = [
+  {
+    label: 'Female Navel Orangeworm',
+    valueKey: 'female-now',
+    color: '#C1121F',
+    dayTrend: [12, 18, 21, 24, 29, 35, 44, 52, 65, 72, 84, 96, 112, 124],
+    rolling3Day: [17, 19, 21, 25, 29, 36, 44, 54, 63, 74, 84, 97, 111, 124],
+    rolling7Day: [14, 16, 18, 21, 25, 30, 36, 43, 52, 62, 72, 83, 94, 106],
+    hourlyDistribution: [14, 18, 21, 12, 5, 4, 6, 8, 12, 19, 28, 31],
+  },
+  {
+    label: 'Male Navel Orangeworm',
+    valueKey: 'male-now',
+    color: '#0F7A4F',
+    dayTrend: [8, 10, 13, 18, 21, 24, 31, 34, 40, 48, 56, 62, 66, 72],
+    rolling3Day: [9, 11, 14, 17, 21, 25, 30, 35, 41, 48, 55, 61, 67, 72],
+    rolling7Day: [7, 9, 11, 14, 17, 21, 25, 29, 34, 40, 47, 54, 60, 66],
+    hourlyDistribution: [8, 11, 16, 14, 7, 5, 4, 6, 10, 15, 21, 24],
+  },
+  {
+    label: 'Codling Moth',
+    valueKey: 'codling-moth',
+    color: '#F59E0B',
+    dayTrend: [36, 34, 33, 31, 30, 28, 27, 29, 28, 30, 29, 31, 30, 31],
+    rolling3Day: [35, 34, 33, 32, 30, 28, 27, 28, 28, 29, 29, 30, 30, 31],
+    rolling7Day: [38, 37, 36, 35, 34, 32, 31, 30, 29, 29, 29, 30, 30, 30],
+    hourlyDistribution: [5, 7, 10, 12, 9, 6, 5, 4, 7, 11, 16, 18],
+  },
+  {
+    label: 'Mites',
+    valueKey: 'mites',
+    color: '#7C3AED',
+    dayTrend: [18, 20, 22, 24, 23, 25, 28, 31, 34, 38, 41, 43, 46, 48],
+    rolling3Day: [19, 20, 22, 23, 24, 25, 28, 31, 34, 38, 41, 43, 46, 48],
+    rolling7Day: [16, 17, 18, 20, 21, 23, 25, 27, 30, 33, 36, 39, 42, 45],
+    hourlyDistribution: [4, 6, 9, 13, 17, 20, 22, 18, 14, 10, 7, 5],
+  },
+];
+
+const getVisiblePestSeries = (pestFocus = 'all', metric) => (
+  pestChartSeries
+    .filter((pest) => pestFocus === 'all' || pest.valueKey === pestFocus)
+    .map((pest) => ({
+      label: pest.label,
+      data: pest[metric],
+      color: pest.color,
+    }))
+);
+
+const scopeOrganizations = [
+  { label: 'RapidAIM Growers Co.', riskLevel: 'high' },
+  { label: 'Apex Agriculture', riskLevel: 'low' },
+];
+
+const scopeRanches = [
+  { label: 'Sierra Orchards', riskLevel: 'high' },
+  { label: 'Sunshine Valley Ranch', riskLevel: 'medium' },
+];
+
+const scopeBlocks = [
+  { label: 'Block 1 West', riskLevel: 'low' },
+  { label: 'Block 2', riskLevel: 'medium' },
+  { label: 'Block 3', riskLevel: 'medium' },
+  { label: 'Block 4', riskLevel: 'high' },
+  { label: 'Block 5', riskLevel: 'medium' },
+];
+
+const selectedRanchBlocks = [
+  selectedBlock,
+  { ...blocks[1], id: 'block-sierra-2', ranchId: selectedRanch.id, ranchName: selectedRanch.name },
+  { ...blocks[2], id: 'block-sierra-1-west', ranchId: selectedRanch.id, ranchName: selectedRanch.name, name: 'Block 1 West' },
+  { ...blocks[1], id: 'block-sierra-3', name: 'Block 3', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 47, activeSensors: 8, totalSensors: 9 },
+  { ...blocks[2], id: 'block-sierra-5', name: 'Block 5', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 34, activeSensors: 10, totalSensors: 10, riskLevel: 'medium' },
+  { ...blocks[2], id: 'block-sierra-6', name: 'Block 6', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 29, activeSensors: 7, totalSensors: 8, riskLevel: 'medium' },
+  { ...blocks[2], id: 'block-sierra-7', name: 'Block 7', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 21, activeSensors: 6, totalSensors: 6 },
+  { ...blocks[2], id: 'block-sierra-8', name: 'Block 8', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 18, activeSensors: 5, totalSensors: 5 },
+  { ...blocks[2], id: 'block-sierra-9', name: 'Block 9', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 14, activeSensors: 6, totalSensors: 7 },
+  { ...blocks[2], id: 'block-sierra-10', name: 'Block 10', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 12, activeSensors: 4, totalSensors: 5 },
+  { ...blocks[2], id: 'block-sierra-11', name: 'Block 11', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 9, activeSensors: 4, totalSensors: 4 },
+  { ...blocks[2], id: 'block-sierra-12', name: 'Block 12', ranchId: selectedRanch.id, ranchName: selectedRanch.name, currentCount: 7, activeSensors: 3, totalSensors: 4 },
+].sort((a, b) => b.currentCount - a.currentCount);
+
+const ranchDetectionRows = detectionGrid.map((row) => ({
+  ...row,
+  status: row.block === selectedBlock.name
+    ? 'high'
+    : row.days.some((count) => count >= 25)
+      ? 'medium'
+      : 'low',
+}));
+
+const rankingBlocks = [
+  { ...selectedBlock, pestName: 'Female Navel Orangeworm', taskStatus: 'Pending scouting', threshold: 25 },
+  { ...selectedRanchBlocks[1], pestName: 'Female Navel Orangeworm', taskStatus: 'Unassigned', threshold: 25, currentCount: 96, riskLevel: 'high' },
+  { ...selectedRanchBlocks[3], pestName: 'Male Navel Orangeworm', taskStatus: 'In progress', threshold: 32, currentCount: 68, riskLevel: 'high' },
+  { ...selectedRanchBlocks[4], pestName: 'Mites', taskStatus: 'Unassigned', threshold: 40, currentCount: 48, riskLevel: 'medium' },
+  { ...selectedRanchBlocks[5], pestName: 'Codling Moth', taskStatus: 'Unassigned', threshold: 18, currentCount: 37, riskLevel: 'medium' },
+  { ...selectedRanchBlocks[6], pestName: 'Female Navel Orangeworm', taskStatus: 'Scheduled', threshold: 25, currentCount: 31, riskLevel: 'medium' },
+  { ...selectedRanchBlocks[7], pestName: 'Male Navel Orangeworm', taskStatus: 'Unassigned', threshold: 32, currentCount: 22, riskLevel: 'low' },
+  { ...selectedRanchBlocks[8], pestName: 'Codling Moth', taskStatus: 'Unassigned', threshold: 18, currentCount: 17, riskLevel: 'low' },
+].sort((a, b) => {
+  const riskRank = { high: 3, medium: 2, low: 1 };
+  return riskRank[b.riskLevel] - riskRank[a.riskLevel] || b.currentCount - a.currentCount;
+});
+
+const offsetPolygon = (polygon, latOffset, lngOffset) => (
+  polygon.map(([lat, lng]) => [lat + latOffset, lng + lngOffset])
+);
+
+const scalePolygon = (polygon, scale) => {
+  const centerLat = polygon.reduce((sum, [lat]) => sum + lat, 0) / polygon.length;
+  const centerLng = polygon.reduce((sum, [, lng]) => sum + lng, 0) / polygon.length;
+
+  return polygon.map(([lat, lng]) => [
+    centerLat + ((lat - centerLat) * scale),
+    centerLng + ((lng - centerLng) * scale),
+  ]);
+};
+
+const rankingBlockBasePolygon = scalePolygon(selectedBlock.polygon, 0.32);
+
+const buildBlockMapPolygons = (blockList) => blockList.reduce((acc, block, index) => {
+  const row = Math.floor(index / 2);
+  const column = index % 2;
+  acc[block.id] = offsetPolygon(rankingBlockBasePolygon, row * -0.0029, column * 0.0048);
+  return acc;
+}, {});
+
+const buildBlockOverlays = (blockList, selectedBlockId, previewBlockId) => {
+  const blockMapPolygons = buildBlockMapPolygons(blockList);
+
+  return blockList.map((block) => {
+    let state = 'default';
+
+    if (block.id === selectedBlockId) {
+      state = 'selected';
+    }
+
+    if (block.id === previewBlockId && block.id !== selectedBlockId) {
+      state = 'hover';
+    }
+
+    return {
+      id: block.id,
+      label: block.name,
+      positions: blockMapPolygons[block.id],
+      severity: block.riskLevel,
+      state,
+    };
+  });
+};
+
+const buildRankingBlockOverlays = (selectedBlockId, previewBlockId) => (
+  buildBlockOverlays(rankingBlocks.slice(0, 8), selectedBlockId, previewBlockId)
+);
+
+const buildRanchBlockOverlays = (selectedBlockId, previewBlockId) => (
+  buildBlockOverlays(selectedRanchBlocks.slice(0, 10), selectedBlockId, previewBlockId)
+);
+
+const buildMaintenanceBlockOverlays = () => {
+  const maintenanceBlocks = selectedRanchBlocks.slice(0, 8);
+  const blockMapPolygons = buildBlockMapPolygons(maintenanceBlocks);
+
+  return maintenanceBlocks.map((block) => ({
+    id: block.id,
+    label: block.name,
+    positions: blockMapPolygons[block.id],
+    severity: 'low',
+    state: 'default',
+    visualStyle: 'boundary',
+  }));
+};
+
+const rankedRanches = ranches
+  .filter((ranch) => ranch.organization === selectedOrganization.name)
+  .sort((a, b) => b.currentCount - a.currentCount);
+
+const rankedSensors = [
+  ...sensors,
+  { ...sensors[0], id: 'sensor-sierra-4-f', name: 'Sensor S4-F', pestName: 'Female Navel Orangeworm', count: 41, battery: 74, severity: 'high', status: 'Online', lastSync: '14 min ago' },
+  { ...sensors[0], id: 'sensor-sierra-4-g', name: 'Sensor S4-G', pestName: 'Male Navel Orangeworm', count: 33, battery: 71, severity: 'high', status: 'Online', lastSync: '16 min ago' },
+  { ...sensors[1], id: 'sensor-sierra-4-h', name: 'Sensor S4-H', pestName: 'Mites', count: 24, battery: 68, severity: 'medium', status: 'Online', lastSync: '22 min ago' },
+  { ...sensors[1], id: 'sensor-sierra-4-i', name: 'Sensor S4-I', pestName: 'Codling Moth', count: 19, battery: 59, severity: 'medium', status: 'Online', lastSync: '28 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-j', name: 'Sensor S4-J', pestName: 'Female Navel Orangeworm', count: 11, battery: 46, severity: 'low', status: 'Online', lastSync: '41 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-k', name: 'Sensor S4-K', pestName: 'Male Navel Orangeworm', count: 6, battery: 37, severity: 'low', status: 'Online', lastSync: '55 min ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-l', name: 'Sensor S4-L', pestName: 'Codling Moth', count: 5, battery: 34, severity: 'low', status: 'Online', lastSync: '1 hour ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-m', name: 'Sensor S4-M', pestName: 'Mites', count: 3, battery: 22, severity: 'low', status: 'Online', lastSync: '1 hour ago' },
+  { ...sensors[2], id: 'sensor-sierra-4-n', name: 'Sensor S4-N', pestName: 'Codling Moth', count: 2, battery: 19, severity: 'low', status: 'Online', lastSync: '2 hours ago' },
+].sort((a, b) => {
+  const severityRank = { high: 4, medium: 3, offline: 2, low: 1 };
+  return severityRank[b.severity] - severityRank[a.severity] || b.count - a.count;
+});
+
+const taskStreams = [
+  {
+    title: 'Scouting Assignments',
+    summary: '5 active assignments',
+    stats: [
+      { label: 'Requested', value: 2 },
+      { label: 'In Progress', value: 2 },
+      { label: 'Completed', value: 1 },
+    ],
+    items: [
+      { title: 'Northeast block inspection', subtitle: 'Sierra Orchards / Block 4', riskLevel: 'high' },
+      { title: 'Trap density confirmation', subtitle: 'Sunshine Valley / Block 2', riskLevel: 'medium' },
+    ],
+  },
+  {
+    title: 'Spraying Work Orders',
+    summary: '6 work orders tracked',
+    stats: [
+      { label: 'Requested', value: 1 },
+      { label: 'Scheduled', value: 2 },
+      { label: 'Approved', value: 3 },
+    ],
+    items: [
+      { title: 'Edge-row treatment review', subtitle: 'Requested approval', riskLevel: 'medium' },
+      { title: 'Night application window', subtitle: 'Scheduled for review', riskLevel: 'low' },
+    ],
+  },
+];
+
+const pageGroups = [
+  {
+    title: 'Desktop',
+    pages: [
+      { id: 'consolidated-pest-pressure-ranking', label: 'Pest Pressure Ranking', component: <PestPressureRankingPage /> },
+      { id: 'consolidated-organization', label: 'Organization Detail', component: <DesktopDetailPage type="organization" scopeExperiment /> },
+      { id: 'consolidated-ranch', label: 'Ranch Detail', component: <DesktopDetailPage type="ranch" scopeExperiment /> },
+      { id: 'consolidated-block', label: 'Block Detail', component: <DesktopDetailPage type="block" scopeExperiment /> },
+      { id: 'consolidated-sensor', label: 'Sensor Detail', component: <DesktopDetailPage type="sensor" scopeExperiment /> },
+    ],
+  },
+  {
+    title: 'Maintenance',
+    pages: [
+      { id: 'experimental-maintenance-mode', label: 'Maintenance Ranking', component: <MaintenanceModePage /> },
+      { id: 'experimental-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MaintenanceSensorDetailPage /> },
+      { id: 'maintenance-note-modal', label: 'Maintenance Note Modal', component: <MaintenanceNoteModalPage /> },
+    ],
+  },
+  {
+    title: 'Overlays',
+    pages: [
+      { id: 'tasks', label: 'Tasks Dropdown', component: <TasksPage /> },
+      { id: 'tasks-mobile', label: 'Tasks Dropdown Mobile', component: <MobileTasksPage /> },
+      { id: 'scouting', label: 'Scouting Modal', component: <ScoutingPage /> },
+      { id: 'scouting-mobile', label: 'Scouting Modal Mobile', component: <MobileScoutingPage /> },
+      { id: 'report', label: 'AI Report Modal', component: <ReportPage /> },
+      { id: 'maintenance-note-modal-mobile', label: 'Maintenance Note Modal Mobile', component: <MobileMaintenanceNoteModalPage /> },
+    ],
+  },
+  {
+    title: 'Mobile',
+    pages: [
+      { id: 'mobile-pest-pressure-ranking', label: 'Pest Pressure Ranking', component: <MobileMapPage type="ranking" /> },
+      { id: 'mobile-organization', label: 'Organization Detail', component: <MobileMapPage type="organization" /> },
+      { id: 'mobile-ranch', label: 'Ranch Detail', component: <MobileMapPage type="ranch" /> },
+      { id: 'mobile-block', label: 'Block Detail', component: <MobileMapPage type="block" /> },
+      { id: 'mobile-sensor', label: 'Sensor Detail', component: <MobileMapPage type="sensor" /> },
+      { id: 'mobile-maintenance-ranking', label: 'Maintenance Ranking', component: <MobileMapPage type="maintenance-ranking" /> },
+      { id: 'mobile-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MobileMapPage type="maintenance-sensor" /> },
+    ],
+  },
+  {
+    title: 'Enterprise',
+    pages: [
+      { id: 'account', label: 'Account Settings', component: <AccountPage /> },
+    ],
+  },
+];
+
+const flatPages = pageGroups.flatMap((group) => group.pages);
+const pageIds = new Set(flatPages.map((page) => page.id));
+const desktopToMobileType = {
+  'consolidated-pest-pressure-ranking': 'ranking',
+  'consolidated-organization': 'organization',
+  'consolidated-ranch': 'ranch',
+  'consolidated-block': 'block',
+  'consolidated-sensor': 'sensor',
+  'experimental-maintenance-mode': 'maintenance-ranking',
+  'experimental-maintenance-sensor': 'maintenance-sensor',
+};
+
+function useResponsiveMobileView() {
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 900px)').matches : false
+  ));
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 900px)');
+    const handleChange = (event) => setIsMobile(event.matches);
+    setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isMobile;
+}
+
+function getInitialPageId(fallbackPageId) {
+  if (typeof window === 'undefined') return fallbackPageId;
+  const requestedPageId = new URLSearchParams(window.location.search).get('page');
+  return pageIds.has(requestedPageId) ? requestedPageId : fallbackPageId;
+}
+
+function getPageHref(pageId) {
+  return `?page=${encodeURIComponent(pageId)}`;
+}
+
+export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = true }) => {
+  const [activePageId, setActivePageId] = useState(() => getInitialPageId(initialPageId));
+  const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
+  const isResponsiveMobile = useResponsiveMobileView();
+  const activePage = useMemo(
+    () => flatPages.find((page) => page.id === activePageId) || flatPages[0],
+    [activePageId]
+  );
+  const responsiveMobileType = isResponsiveMobile ? desktopToMobileType[activePageId] : null;
+  const shouldShowNavigator = showNavigator && !isResponsiveMobile;
+  const renderedPage = responsiveMobileType
+    ? <ResponsiveMobilePage type={responsiveMobileType} />
+    : activePage.component;
+
+  const selectPage = useCallback((pageId) => {
+    setActivePageId(pageId);
+    if (typeof window !== 'undefined' && pageIds.has(pageId)) {
+      window.history.replaceState(null, '', getPageHref(pageId));
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleNavigateHome = () => selectPage('consolidated-pest-pressure-ranking');
+    document.addEventListener('rapidaim:navigate-home', handleNavigateHome);
+    return () => document.removeEventListener('rapidaim:navigate-home', handleNavigateHome);
+  }, [selectPage]);
+
+  return (
+    <div className={`${styles.shell} ${!shouldShowNavigator || !isNavigatorOpen ? styles.shellCollapsed : ''}`}>
+      {shouldShowNavigator && isNavigatorOpen ? (
+      <aside className={styles.sidebar} aria-label="Handoff page navigator">
+        <div className={styles.brand}>
+          <span className="material-symbols-rounded">view_sidebar</span>
+          <div>
+            <Typography variant="h4">Handoff Navigator</Typography>
+            <Typography variant="caption">Not part of the prototype UI</Typography>
+          </div>
+        </div>
+        <button
+          className={styles.collapseButton}
+          onClick={() => setIsNavigatorOpen(false)}
+          type="button"
+        >
+          <span className="material-symbols-rounded">left_panel_close</span>
+          Hide navigator
+        </button>
+        <div className={styles.navGroups}>
+          {pageGroups.map((group) => (
+            <div className={styles.navGroup} key={group.title}>
+              <Typography variant="h6">{group.title}</Typography>
+              {group.pages.map((page) => (
+                <button
+                  className={`${styles.navItem} ${page.id === activePageId ? styles.activeNavItem : ''}`}
+                  key={page.id}
+                  onClick={() => selectPage(page.id)}
+                  type="button"
+                >
+                  {page.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </aside>
+      ) : shouldShowNavigator ? (
+        <button
+          className={styles.expandButton}
+          onClick={() => setIsNavigatorOpen(true)}
+          type="button"
+          aria-label="Show handoff navigator"
+        >
+          <span className="material-symbols-rounded">view_sidebar</span>
+          <span>Views</span>
+        </button>
+      ) : null}
+      <main className={styles.stage}>
+        <div className={styles.viewport}>{renderedPage}</div>
+      </main>
+    </div>
+  );
+};
+
+HandoffIndex.propTypes = {
+  initialPageId: PropTypes.string,
+  showNavigator: PropTypes.bool,
+};
+
+function DesktopShell({
+  children,
+  detailPanel,
+  parentContext,
+  scopeExperiment = false,
+  scopeLevel = 'block',
+  contentHeightPanel = false,
+  blockOverlays,
+  activeBlockLabel = selectedBlock.name,
+  mapSensors = sensors,
+  selectedSensorIdOverride,
+  sensorDisplayMode = 'pest',
+  controlCenterProps = {},
+  rightRailContent,
+  mapNotice,
+  mapClassName = '',
+  shellClassName = '',
+  onSensorSelect,
+  topNavigationProps = {},
+  weatherData = weather,
+}) {
+  const [pestFocus, setPestFocus] = useState('all');
+  const [previewBlockId, setPreviewBlockId] = useState('');
+  const resolvedDetailPanel = scopeExperiment && React.isValidElement(detailPanel)
+    ? React.cloneElement(detailPanel, { pestFocus, onBlockPreviewChange: setPreviewBlockId })
+    : detailPanel;
+  const selectedMapBlockId = scopeExperiment && scopeLevel === 'block' ? selectedBlock.id : '';
+  const resolvedBlockOverlays = scopeExperiment
+    ? blockOverlays || (scopeLevel === 'ranch'
+      ? buildRanchBlockOverlays('', previewBlockId)
+      : buildRankingBlockOverlays(selectedMapBlockId, previewBlockId))
+    : blockOverlays;
+  const selectedSensorId = selectedSensorIdOverride ?? (scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '');
+
+  return (
+    <div className={`${styles.desktopShell} ${shellClassName}`}>
+      <TopNavigationBar {...topNavigationProps} />
+      <div className={styles.desktopMain}>
+        <ScopeNavigation level={scopeExperiment ? scopeLevel : 'block'} />
+        <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''} ${contentHeightPanel ? styles.leftRailContentHeight : ''}`}>{resolvedDetailPanel}</aside>
+        <section className={styles.mapStage}>
+          <InteractiveMap
+            center={[36.647, -119.8]}
+            zoom={15}
+            blockPolygon={selectedBlock.polygon}
+            blockOverlays={resolvedBlockOverlays}
+            activeBlockLabel={activeBlockLabel}
+            sensors={mapSensors}
+            selectedSensorId={selectedSensorId}
+            sensorDisplayMode={sensorDisplayMode}
+            blockSeverity={selectedBlock.riskLevel}
+            mapStyle="satellite"
+            className={mapClassName}
+            onSensorSelect={onSensorSelect}
+          />
+          <WeatherWidget weather={weatherData} className={styles.weather} />
+          {mapNotice}
+        </section>
+        {rightRailContent || (
+          <ControlCenter
+            {...controlCenterProps}
+            className={`${styles.rightRail} ${scopeExperiment ? styles.rightRailStack : ''} ${controlCenterProps.className || ''}`}
+            mode={scopeExperiment ? 'scopeExperiment' : 'default'}
+            pestFocus={pestFocus}
+            onPestFocusChange={setPestFocus}
+          />
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+DesktopShell.propTypes = {};
+
+function PestPressureRankingPage() {
+  const [selectedBlockId, setSelectedBlockId] = useState('');
+  const [previewBlockId, setPreviewBlockId] = useState('');
+  const activeBlockId = previewBlockId || selectedBlockId;
+  const activeBlock = rankingBlocks.find((block) => block.id === activeBlockId) || rankingBlocks[0];
+
+  return (
+    <DesktopShell
+      detailPanel={(
+        <PestPressureRankingPanel
+          activeBlockId={activeBlockId}
+          onPreviewBlockChange={setPreviewBlockId}
+          onSelectedBlockChange={setSelectedBlockId}
+        />
+      )}
+      scopeExperiment
+      scopeLevel="ranking"
+      contentHeightPanel
+      blockOverlays={buildRankingBlockOverlays(selectedBlockId, previewBlockId)}
+      activeBlockLabel={activeBlock.name}
+    />
+  );
+}
+
+function getMaintenanceSeverity(sensor) {
+  if (sensor.maintenanceState === 'offline') return 'offline';
+  if (sensor.maintenanceState === 'warning') return 'warning';
+  return 'healthy';
+}
+
+const getVisibleMaintenanceSensors = (showHealthySensors) => (
+  showHealthySensors ? rankedMaintenanceSensors : maintenanceAttentionSensors
+);
+
+function MaintenanceModePage() {
+  const [selectedSensorId, setSelectedSensorId] = useState(selectedMaintenanceSensor.id);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
+  const activeSensor = maintenanceSensors.find((sensor) => sensor.id === selectedSensorId) || selectedMaintenanceSensor;
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
+
+  return (
+    <DesktopShell
+      detailPanel={(
+        <MaintenancePanel
+          activeSensor={activeSensor}
+          onSensorSelect={setSelectedSensorId}
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      )}
+      scopeExperiment
+      scopeLevel="sensor"
+      mapSensors={visibleMaintenanceSensors}
+      selectedSensorIdOverride={activeSensor.id}
+      sensorDisplayMode="maintenance"
+      blockOverlays={buildMaintenanceBlockOverlays()}
+      activeBlockLabel=""
+      mapClassName={styles.maintenanceMap}
+      shellClassName={styles.maintenanceShell}
+      topNavigationProps={maintenanceTopNavProps}
+      weatherData={maintenanceWeather}
+      onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
+      rightRailContent={(
+        <MaintenanceControlsPanel
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      )}
+      mapNotice={(
+        <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
+          <span className="material-symbols-rounded" aria-hidden="true">construction</span>
+          <Typography variant="caption">Maintenance mode is on</Typography>
+          <Button variant="ghost" size="sm">Return to Pest View</Button>
+        </div>
+      )}
+    />
+  );
+}
+
+const maintenanceTopNavProps = {
+  modeLabel: 'maintenance',
+  modeOptions: [
+    { label: 'Pest View', value: 'pest' },
+    { label: 'Maintenance', value: 'maintenance' },
+    { label: 'Admin', value: 'admin' },
+  ],
+};
+
+function MaintenancePanel({
+  activeSensor,
+  onSensorSelect,
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
+  const visibleSensors = getVisibleMaintenanceSensors(showHealthySensors);
+  const scrollContainerRef = useRef(null);
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
+  };
+  useScrollAnchorTabs(scrollContainerRef, maintenanceOverviewAnchorSections, setActiveAnchorTab);
+
+  return (
+    <div className={`${styles.panel} ${styles.maintenancePanel}`}>
+      <div className={styles.panelHeader}>
+        <div className={styles.panelTitleGroup}>
+          <div className={styles.panelTitleRow}>
+            <div className={styles.panelTitleCluster}>
+              <Typography variant="h3">Maintenance Overview</Typography>
+            </div>
+            <InfoDisclosure
+              title="Maintenance mode"
+              description="Sensors are ranked by device-health priority, using offline duration, battery, signal, and maintenance cadence rather than pest pressure."
+            />
+          </div>
+          <div className={styles.rankingFilters}>
+            <FormField label="Organisation">
+              <Select options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'RapidAIM Growers Co.', value: 'rapid' },
+                { label: 'Agrii UK', value: 'agrii' },
+              ]} />
+            </FormField>
+            <FormField label="Ranch">
+              <Select options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'Sierra Orchards', value: 'sierra' },
+                { label: 'Fresno North Ranch', value: 'fresno-north' },
+              ]} />
+            </FormField>
+          </div>
+        </div>
+      </div>
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('maintenance-overview-summary', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'sensors' ? styles.activeAnchorTab : ''}
+          type="button"
+          aria-label={`Sensors (${maintenanceSensorTabCount.active}/${maintenanceSensorTabCount.total})`}
+          onClick={() => scrollToMaintenanceSection('maintenance-sensors-list', 'sensors')}
+        >
+          <span className={styles.anchorTabLabel} aria-hidden="true">
+            Sensors ({maintenanceSensorTabCount.active}/{maintenanceSensorTabCount.total})
+          </span>
+        </button>
+      </div>
+      <div className={styles.maintenanceScrollFrame}>
+        <div
+          className={`${styles.panelBody} ${styles.maintenancePanelBody} ${styles.maintenanceOverviewPanelBody}`}
+          ref={scrollContainerRef}
+        >
+          <section className={styles.maintenanceSection} id="maintenance-overview-summary">
+            <div className={styles.maintenanceStatGrid}>
+              <StatCard
+                label="Offline sensors"
+                value={maintenanceStats.offline}
+                tone="high"
+                infoTitle="Offline sensors"
+                infoDescription="Sensors that are offline because battery is unavailable, the device has stopped uploading, or a field check is needed."
+              />
+              <StatCard
+                label="Low battery"
+                value={maintenanceStats.lowBattery}
+                tone="medium"
+                infoTitle="Low battery"
+                infoDescription="Sensors with battery levels below 30%. Battery discharge can decline quickly once it crosses this threshold."
+              />
+              <StatCard
+                label="Connectivity issues"
+                value={maintenanceStats.signalIssues}
+                tone="medium"
+                infoTitle="Connectivity issues"
+                infoDescription="Sensors reporting poor, offline, or intermittent LTE connectivity based on recent upload cadence and RSRP signal readings."
+              />
+              <StatCard
+                label="Lure due soon"
+                value={maintenanceStats.lureDue}
+                tone="medium"
+                infoTitle="Lure due soon"
+                infoDescription="Sensors where lure replacement is due within the next seven days."
+              />
+            </div>
+          </section>
+          <section className={styles.childList} id="maintenance-sensors-list">
+            <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+              <div>
+                <PanelSectionTitle>Sensors</PanelSectionTitle>
+              </div>
+              <label className={styles.inlineToggle}>
+                <input
+                  checked={showHealthySensors}
+                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+                  type="checkbox"
+                />
+                Show healthy sensors
+              </label>
+            </div>
+            {visibleSensors.map((sensor, index) => (
+              <MaintenanceListItem
+                active={sensor.id === activeSensor.id}
+                key={sensor.id}
+                rank={index + 1}
+                sensor={sensor}
+                onSelect={() => onSensorSelect(sensor.id)}
+              />
+            ))}
+            <Button variant="secondary" fullWidth>Load all sensors</Button>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MaintenanceListItem({ active = false, rank, sensor, onSelect }) {
+  const state = getMaintenanceSeverity(sensor);
+  const stateLabel = {
+    offline: 'Critical',
+    warning: 'Warning',
+    healthy: 'Healthy',
+  }[state];
+  const riskLevel = state === 'offline' ? 'high' : state === 'warning' ? 'medium' : 'low';
+  const subtitle = [
+    `Battery ${sensor.battery}%`,
+    `Connectivity ${sensor.connectivity}`,
+    `Lure ${sensor.lureStatus}`,
+  ].join(' | ');
+
+  return (
+    <RankingListItem
+      className={`${styles.maintenanceRankingItem} ${active ? styles.activeMaintenanceListItem : ''}`}
+      rank={rank}
+      title={sensor.name}
+      subtitle={subtitle}
+      riskLevel={riskLevel}
+      riskLabelOverride={stateLabel}
+      onClick={onSelect}
+      onFocus={onSelect}
+      onMouseEnter={onSelect}
+    />
+  );
+}
+
+function MaintenanceSensorDetailPage() {
+  const [selectedSensorId, setSelectedSensorId] = useState(selectedMaintenanceSensor.id);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
+  const activeSensor = maintenanceSensors.find((sensor) => sensor.id === selectedSensorId) || selectedMaintenanceSensor;
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
+
+  return (
+    <DesktopShell
+      detailPanel={<MaintenanceSensorPanel sensor={activeSensor} />}
+      scopeExperiment
+      scopeLevel="sensor"
+      parentContext={{
+        items: [
+          { label: selectedOrganization.name },
+          { label: selectedRanch.name },
+          { label: activeSensor.blockName },
+        ],
+      }}
+      mapSensors={visibleMaintenanceSensors}
+      selectedSensorIdOverride={activeSensor.id}
+      sensorDisplayMode="maintenance"
+      blockOverlays={buildMaintenanceBlockOverlays()}
+      activeBlockLabel=""
+      mapClassName={styles.maintenanceMap}
+      shellClassName={styles.maintenanceShell}
+      topNavigationProps={maintenanceTopNavProps}
+      weatherData={maintenanceWeather}
+      onSensorSelect={(sensor) => setSelectedSensorId(sensor.id)}
+      rightRailContent={(
+        <MaintenanceControlsPanel
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      )}
+      mapNotice={(
+        <div className={`${styles.sensorHealthToast} ${styles.maintenanceToast}`}>
+          <span className="material-symbols-rounded" aria-hidden="true">construction</span>
+          <Typography variant="caption">Maintenance mode is on</Typography>
+          <Button variant="ghost" size="sm">Return to Pest View</Button>
+        </div>
+      )}
+    />
+  );
+}
+
+function MaintenanceSensorPanel({ sensor }) {
+  const state = getMaintenanceSeverity(sensor);
+  const scrollContainerRef = useRef(null);
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
+  const statusLabel = {
+    offline: 'Critical',
+    warning: 'Warning',
+    healthy: 'Healthy',
+  }[state];
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
+  };
+  useScrollAnchorTabs(scrollContainerRef, maintenanceSensorAnchorSections, setActiveAnchorTab);
+
+  return (
+    <div className={`${styles.panel} ${styles.maintenancePanel}`}>
+      <div className={styles.panelHeader}>
+        <div className={styles.panelTitleGroup}>
+          <div className={`${styles.panelTitleRow} ${styles.maintenanceSensorTitleRow}`}>
+            <button className={styles.backButton} type="button" aria-label="Back to maintenance ranking">
+              <span className="material-symbols-rounded">arrow_back</span>
+            </button>
+            <div className={styles.panelTitleCluster}>
+              <Typography variant="h3">{sensor.name}</Typography>
+            </div>
+            <Badge
+              className={styles.maintenanceSensorBadge}
+              variant={state === 'offline' ? 'high' : state === 'warning' ? 'medium' : 'low'}
+            >
+              {statusLabel}
+            </Badge>
+          </div>
+        </div>
+      </div>
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('maintenance-sensor-overview', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'history' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('maintenance-history', 'history')}
+        >
+          History
+        </button>
+      </div>
+      <div className={styles.maintenanceScrollFrame}>
+        <div className={`${styles.panelBody} ${styles.maintenancePanelBody}`} ref={scrollContainerRef}>
+          <MaintenanceDeviceDetail sensor={sensor} />
+        </div>
+      </div>
+      <div className={`${styles.panelBottomFade} ${styles.panelBottomFadeCompact}`} />
+      <div className={styles.bottomActionTray}>
+        <div className={styles.actionRow}>
+          <Button variant="primary" fullWidth>
+            <span className="material-symbols-rounded">edit_note</span>
+            Add note
+          </Button>
+          <Button variant="secondary" fullWidth>
+            <span className="material-symbols-rounded">assignment_add</span>
+            Assign Task
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MaintenanceDeviceDetail({ sensor }) {
+  const historyItems = [
+    {
+      date: 'Jul 21, 2026',
+      title: 'Field note added',
+      detail: 'Checked access route. Device is reachable from the north service track.',
+    },
+    ...sensor.eventHistory,
+  ];
+
+  return (
+    <section className={styles.maintenanceDetailCard} id="maintenance-sensor-overview">
+      <Alert
+        className={`${styles.maintenanceAlert} ${sensor.maintenanceState === 'offline' ? styles.maintenanceAlertCritical : styles.maintenanceAlertWarning}`}
+        title={sensor.maintenanceReason}
+        message={sensor.maintenanceDetails}
+        variant={sensor.maintenanceState === 'offline' ? 'error' : 'warning'}
+        type="inline"
+      />
+      <SensorMetaGrid items={getSensorHealthIndicators(sensor)} />
+      <TrendChart
+        type="line"
+        title="Connectivity quality"
+        colorScale="rsrp"
+        statusColor={getRsrpStatusColor(sensor.signalHistory)}
+        infoTitle="Connectivity quality"
+        infoDescription="RSRP measures LTE signal strength in dBm. Values closer to 0 are stronger: about -65 to -95 dBm is healthy, -96 to -105 dBm is a warning range, and below -106 dBm is poor or unstable."
+        labels={signalHistoryLabels}
+        series={[{
+          label: 'RSRP (dBm)',
+          data: sensor.signalHistory,
+          color: '#EAAA46',
+        }]}
+      />
+      <div className={styles.maintenanceHistory} id="maintenance-history">
+        <div className={`${styles.sectionHeader} ${styles.maintenanceSectionHeader}`}>
+          <PanelSectionTitle>Recent history</PanelSectionTitle>
+          <Typography variant="caption" color="secondary">Newest field and device events</Typography>
+        </div>
+        {historyItems.map((event) => (
+          <div className={styles.maintenanceHistoryItem} key={`${event.date}-${event.title}`}>
+            <Typography variant="caption" color="secondary">{event.date}</Typography>
+            <Typography variant="body-sm" weight="bold">{event.title}</Typography>
+            <Typography variant="caption" color="secondary">{event.detail}</Typography>
+          </div>
+        ))}
+        <Button variant="secondary" fullWidth>Load all history</Button>
+      </div>
+    </section>
+  );
+}
+
+function MaintenanceControlsPanel({
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <aside className={`${styles.rightRail} ${styles.maintenanceControlsPanel}`}>
+      <button className={styles.maintenanceControlHeader} type="button" onClick={() => setIsOpen((current) => !current)}>
+        <span className="material-symbols-rounded" aria-hidden="true">construction</span>
+        <Typography variant="h4">Maintenance Controls</Typography>
+        <span className="material-symbols-rounded" aria-hidden="true">{isOpen ? 'expand_less' : 'expand_more'}</span>
+      </button>
+      {isOpen && (
+        <div className={styles.maintenanceControlScrollFrame}>
+          <div className={styles.maintenanceControlBody}>
+            <section className={styles.maintenanceControlSection}>
+              <PanelSectionTitle>Filters</PanelSectionTitle>
+              <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+              <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+              <label><input type="checkbox" defaultChecked /> Lure due soon</label>
+              <label>
+                <input
+                  checked={showHealthySensors}
+                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+                  type="checkbox"
+                />
+                Show healthy sensors
+              </label>
+            </section>
+            <section className={styles.maintenanceControlSection}>
+              <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
+                <Typography variant="body-sm">Critical (battery or device issue resulting in offline sensor)</Typography>
+              </div>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
+                <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
+              </div>
+              <div className={styles.maintenanceLegendItem}>
+                <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
+                <Typography variant="body-sm">Healthy (no action required)</Typography>
+              </div>
+            </section>
+          </div>
+        </div>
+      )}
+    </aside>
+  );
+}
+
+function DesktopDetailPage({ type, scopeExperiment = false }) {
+  const [sensorMarkerMode, setSensorMarkerMode] = useState('health');
+  const panel = {
+    organization: <OrganizationDetailPanel scopeExperiment={scopeExperiment} />,
+    block: <BlockDetailPanel scopeExperiment={scopeExperiment} />,
+    ranch: <RanchDetailPanel scopeExperiment={scopeExperiment} />,
+    sensor: <SensorDetailPanel scopeExperiment={scopeExperiment} />,
+    'sensor-health': <SensorDetailPanel scopeExperiment={scopeExperiment} healthMode />,
+  }[type];
+  const parentContext = {
+    organization: null,
+    block: { items: [{ label: selectedRanch.organization }, { label: selectedBlock.ranchName }] },
+    ranch: { items: [{ label: selectedRanch.organization }] },
+    sensor: { items: [{ label: selectedRanch.organization }, { label: selectedSensor.ranchName }, { label: selectedSensor.blockName }] },
+    'sensor-health': { items: [{ label: selectedRanch.organization }, { label: healthIssueSensor.ranchName }, { label: healthIssueSensor.blockName }] },
+  }[type];
+
+  if (type === 'sensor-health') {
+    return (
+      <DesktopShell
+        detailPanel={panel}
+        parentContext={parentContext}
+        scopeExperiment={scopeExperiment}
+        scopeLevel="sensor"
+        mapSensors={healthExperimentSensors}
+        selectedSensorIdOverride={healthIssueSensor.id}
+        sensorDisplayMode={sensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest'}
+        controlCenterProps={{
+          showSensorHealthControls: true,
+          sensorMarkerMode,
+          onSensorMarkerModeChange: setSensorMarkerMode,
+          defaultPestFocusOpen: false,
+          defaultMapControlsOpen: true,
+        }}
+        mapNotice={(
+          <div className={styles.sensorHealthToast}>
+            <span className="material-symbols-rounded" aria-hidden="true">{sensorMarkerMode === 'health' ? 'battery_alert' : 'pest_control'}</span>
+            <Typography variant="caption">{sensorMarkerMode === 'health' ? 'Sensor health view is on' : 'Pest risk view is on'}</Typography>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSensorMarkerMode(sensorMarkerMode === 'health' ? 'pest' : 'health')}
+            >
+              {sensorMarkerMode === 'health' ? 'Show pest risk' : 'Show sensor health'}
+            </Button>
+          </div>
+        )}
+      />
+    );
+  }
+
+  return <DesktopShell detailPanel={panel} parentContext={parentContext} scopeExperiment={scopeExperiment} scopeLevel={type} />;
+}
+
+function ScopeNavigation({ level = 'block' }) {
+  const blockLabel = level === 'organization' || level === 'ranch' || level === 'ranking' ? 'All blocks' : selectedBlock.name;
+  const ranchLabel = level === 'organization' || level === 'ranking' ? 'All ranches' : selectedRanch.name;
+  const sensorLabel = level === 'sensor' ? selectedSensor.name : 'All sensors';
+  const activeIndexByLevel = {
+    organization: 0,
+    ranch: 1,
+    block: 2,
+    sensor: 3,
+  };
+  const locationSegments = [
+    { label: selectedOrganization.name, options: scopeOrganizations },
+    { label: ranchLabel, options: [{ label: 'All ranches', riskLevel: 'low' }, ...scopeRanches] },
+    { label: blockLabel, options: [{ label: 'All blocks', riskLevel: 'low' }, ...scopeBlocks] },
+    {
+      label: sensorLabel,
+      options: [{ label: 'All sensors', riskLevel: 'low' }, ...rankedSensors.slice(0, 5).map((sensor) => ({
+        label: sensor.name,
+        riskLevel: sensor.severity,
+      }))],
+    },
+  ];
+
+  return (
+    <ScopeNavigationControl
+      className={styles.scopeNav}
+      ariaLabel="Experimental pest and location scope navigation"
+      showHome
+      activeHome={level === 'ranking'}
+      activeIndex={activeIndexByLevel[level] ?? -1}
+      onHomeClick={() => document.dispatchEvent(new CustomEvent('rapidaim:navigate-home'))}
+      segments={locationSegments}
+    />
+  );
+}
+
+function PestPressureRankingPanel({ activeBlockId, onPreviewBlockChange, onSelectedBlockChange }) {
+  const [activeTaskTab, setActiveTaskTab] = useState('unassigned');
+  const assignedCount = rankingBlocks.filter((block) => block.taskStatus !== 'Unassigned').length;
+  const unassignedCount = rankingBlocks.length - assignedCount;
+  const visibleBlocks = rankingBlocks.filter((block) => (
+    activeTaskTab === 'assigned' ? block.taskStatus !== 'Unassigned' : block.taskStatus === 'Unassigned'
+  ));
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div className={styles.panelTitleGroup}>
+          <div className={styles.panelTitleRow}>
+            <div className={styles.panelTitleCluster}>
+              <Typography variant="h3">Pest Pressure Ranking</Typography>
+            </div>
+            <InfoDisclosure
+              title="Pest pressure ranking"
+              description="Blocks are ranked by active pest pressure under the current pest and threshold lens."
+            />
+          </div>
+          <div className={styles.rankingFilters}>
+            <FormField label="Organisation">
+              <Select options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'RapidAIM Growers Co.', value: 'rapid' },
+                { label: 'Apex Agriculture', value: 'apex' },
+              ]} />
+            </FormField>
+            <FormField label="Ranch">
+              <Select options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'Sierra Orchards', value: 'sierra' },
+                { label: 'Sunshine Valley Ranch', value: 'sunshine' },
+              ]} />
+            </FormField>
+          </div>
+        </div>
+      </div>
+      <div className={styles.anchorTabs} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeTaskTab === 'unassigned' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => {
+            setActiveTaskTab('unassigned');
+            onPreviewBlockChange('');
+            onSelectedBlockChange('');
+          }}
+        >
+          Unassigned ({unassignedCount})
+        </button>
+        <button
+          className={activeTaskTab === 'assigned' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => {
+            setActiveTaskTab('assigned');
+            onPreviewBlockChange('');
+            onSelectedBlockChange('');
+          }}
+        >
+          Assigned ({assignedCount})
+        </button>
+      </div>
+      <div className={`${styles.panelBody} ${styles.rankingPanelBody}`}>
+        <section className={styles.childList}>
+          {visibleBlocks.map((block, index) => (
+            <RankingListItem
+              className={block.id === activeBlockId ? styles.activeRankingListItem : ''}
+              key={block.id}
+              rank={index + 1}
+              title={block.name}
+              subtitle={`${block.ranchName} • ${block.pestName} • ${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
+              riskLevel={block.riskLevel}
+              statusLabel={activeTaskTab === 'assigned' ? `Task: ${block.taskStatus}` : undefined}
+              onBlur={() => onPreviewBlockChange('')}
+              onClick={() => onSelectedBlockChange(block.id)}
+              onFocus={() => onPreviewBlockChange(block.id)}
+              onMouseEnter={() => onPreviewBlockChange(block.id)}
+              onMouseLeave={() => onPreviewBlockChange('')}
+            />
+          ))}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function PestPressureGrid({ pestFocus = 'all' }) {
+  const visiblePests = pestPressureCards.filter((pest) => (
+    pestFocus === 'all' || pest.valueKey === pestFocus
+  ));
+
+  return (
+    <div className={styles.pestPressureGrid}>
+      {visiblePests.map((pest) => (
+        <StatCard
+          key={pest.label}
+          label={pest.label}
+          value={pest.value}
+          trend={pest.trend}
+          benchmark={pest.benchmark}
+          tone={pest.tone}
+        />
+      ))}
+    </div>
+  );
+}
+
+function PanelSectionTitle({ children }) {
+  return (
+    <Typography variant="h6" className="ra-section-title">{children}</Typography>
+  );
+}
+
+PanelSectionTitle.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+function PestWeekComparison({ children }) {
+  return (
+    <section className={styles.pestComparison}>
+      <PanelSectionTitle>Pest Overview (vs last week)</PanelSectionTitle>
+      {children}
+    </section>
+  );
+}
+
+function OrganizationDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
+  return (
+    <DetailPanel
+      title={selectedOrganization.name}
+      badge={selectedOrganization.riskLevel}
+      backLabel="Pest Pressure Ranking"
+      backAriaLabel="Back to pest pressure ranking"
+      actions={<BottomActionTray mode="reportOnly" />}
+      sections={[
+        { label: `Ranches (${selectedOrganization.ranches})`, content: <RanchLinks /> },
+        { label: 'Tasks (11)', content: <OrganizationTasks /> },
+      ]}
+    >
+      <PestWeekComparison>
+        {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
+          label={selectedOrganization.pestName}
+          value={selectedOrganization.currentCount}
+          trend={selectedOrganization.trend}
+          benchmark="Farm average: 45"
+        />}
+      </PestWeekComparison>
+      {scopeExperiment ? (
+        <div className={styles.statsGridFull}>
+          <StatCard label="Active Sensors" value={`${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors}`} />
+        </div>
+      ) : (
+        <div className={styles.statsGrid}>
+          <StatCard label="Ranches" value={selectedOrganization.ranches} />
+          <StatCard label="Active Sensors" value={`${selectedOrganization.activeSensors}/${selectedOrganization.totalSensors}`} tone="positive" />
+        </div>
+      )}
+      <TrendChart title="30-Day Multi-Site Pest Pressure" type="line" labels={chartSeries.organizationLabels} data={chartSeries.organizationTrend} threshold={25} />
+      <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
+    </DetailPanel>
+  );
+}
+
+function BlockDetailPanel({ scopeExperiment = false, pestFocus = 'all' }) {
+  return (
+    <DetailPanel
+      title={selectedBlock.name}
+      badge={selectedBlock.riskLevel}
+      backLabel={selectedBlock.ranchName}
+      backAriaLabel={`Back to ${selectedBlock.ranchName}`}
+      actions={<BottomActionTray mode="default" />}
+      sections={[
+        { label: `Sensors (${selectedBlock.activeSensors}/${selectedBlock.totalSensors})`, content: <SensorLinks /> },
+      ]}
+    >
+      <PestWeekComparison>
+        {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
+          label={selectedBlock.pestName}
+          value={selectedBlock.currentCount}
+          trend={selectedBlock.trend}
+          benchmark={selectedBlock.benchmark}
+        />}
+      </PestWeekComparison>
+      <DetectionGrid
+        rows={sensorDetectionGrid}
+        title="Last 7 Day Detections"
+        firstColumnLabel="Name"
+        showStatus
+        timezone="America/Los_Angeles"
+        description="Sensor data from the last seven days shown in America/Los_Angeles time."
+      />
+      <ChartStack scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
+    </DetailPanel>
+  );
+}
+
+function RanchDetailPanel({ scopeExperiment = false, pestFocus = 'all', onBlockPreviewChange }) {
+  return (
+    <DetailPanel
+      title={selectedRanch.name}
+      badge={selectedRanch.riskLevel}
+      backLabel={selectedRanch.organization}
+      backAriaLabel={`Back to ${selectedRanch.organization}`}
+      actions={<BottomActionTray mode="default" />}
+      sections={[
+        { label: `Blocks (${selectedRanch.blocks})`, content: <BlockLinks onBlockPreviewChange={onBlockPreviewChange} /> },
+      ]}
+    >
+      <PestWeekComparison>
+        {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
+          label={selectedRanch.pestName}
+          value={selectedRanch.currentCount}
+          trend={selectedRanch.trend}
+          benchmark="Farm average: 45"
+        />}
+      </PestWeekComparison>
+      <StatCard label="Active Sensors" value={`${selectedRanch.activeSensors}/${selectedRanch.totalSensors}`} />
+      <DetectionGrid
+        rows={ranchDetectionRows}
+        showStatus
+        timezone="America/Los_Angeles"
+        description="Block-level detection data from the last seven days shown in America/Los_Angeles time."
+      />
+      <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
+    </DetailPanel>
+  );
+}
+
+function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all', healthMode = false }) {
+  const displaySensor = healthMode ? healthIssueSensor : selectedSensor;
+
+  return (
+    <DetailPanel
+      title={displaySensor.name}
+      badge={displaySensor.severity}
+      backLabel={displaySensor.blockName}
+      backAriaLabel={`Back to ${displaySensor.blockName}`}
+      actions={<BottomActionTray mode="default" />}
+      sections={[
+        { label: 'Sensor Health', badge: healthMode ? '1' : undefined, badgeTone: healthMode ? 'critical' : undefined, content: <SensorMaintenance sensor={displaySensor} healthMode={healthMode} /> },
+      ]}
+    >
+      {healthMode && <HealthIssueAlert sensor={displaySensor} />}
+      <PestWeekComparison>
+        {scopeExperiment ? <PestPressureGrid pestFocus={pestFocus} /> : <StatCard
+          label={displaySensor.pestName}
+          value={displaySensor.count}
+          trend={18}
+          benchmark="Farm average: 45"
+        />}
+      </PestWeekComparison>
+      <ChartStack compact scopeExperiment={scopeExperiment} pestFocus={pestFocus} />
+    </DetailPanel>
+  );
+}
+
+function HealthIssueAlert({ sensor }) {
+  const isCritical = sensor.battery <= 10 || sensor.status === 'Offline';
+  const issueLabel = isCritical ? 'Critical battery level' : 'Low battery detected';
+  const alertToneClass = isCritical ? styles.healthAlertCritical : styles.healthAlertWarning;
+
+  return (
+    <div className={`${styles.healthAlert} ${alertToneClass}`}>
+      <div className={styles.healthAlertContent}>
+        <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
+        <Typography variant="caption">
+          Battery is at {sensor.battery}%, but this sensor is still gathering pest data. <a href="#sensor-health-section">View sensor health</a>.
+        </Typography>
+      </div>
+    </div>
+  );
+}
+
+function SensorMaintenance({ sensor = selectedSensor, healthMode = false }) {
+  return (
+    <section className={styles.childList} id="sensor-health-section">
+      <div className={styles.sectionHeader}>
+        <PanelSectionTitle>Sensor Health</PanelSectionTitle>
+        <Typography variant="caption" color="secondary">
+          {healthMode ? 'Battery and device status for field maintenance.' : 'Operational status for this sensor.'}
+        </Typography>
+      </div>
+      <SensorMetaGrid items={getSensorHealthIndicators(sensor, { forceHealthy: !healthMode })} />
+    </section>
+  );
+}
+
+HealthIssueAlert.propTypes = {
+  sensor: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    battery: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+SensorMaintenance.propTypes = {
+  sensor: PropTypes.shape({
+    status: PropTypes.string.isRequired,
+    battery: PropTypes.number.isRequired,
+    signal: PropTypes.string.isRequired,
+    lastSync: PropTypes.string.isRequired,
+    lureStatus: PropTypes.string,
+    lastService: PropTypes.string,
+  }),
+  healthMode: PropTypes.bool,
+};
+
+function ActionRow({ mode = 'default' }) {
+  if (mode === 'reportOnly') {
+    return (
+      <div className={styles.actionRow}>
+        <Button variant="primary" fullWidth>
+          <span className="material-symbols-rounded">auto_awesome</span>
+          AI Report
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.actionRow}>
+      <Button variant="primary" fullWidth>
+        <span className="material-symbols-rounded">assignment_add</span>
+        Assign Scouting
+      </Button>
+      <Button variant="secondary" fullWidth>
+        <span className="material-symbols-rounded">auto_awesome</span>
+        AI Report
+      </Button>
+    </div>
+  );
+}
+
+function BottomActionTray({ mode = 'default' }) {
+  return (
+    <div className={`${styles.bottomActionTray} ${mode === 'reportOnly' ? styles.bottomActionTrayCompact : ''}`}>
+      <ActionRow mode={mode} />
+    </div>
+  );
+}
+
+function ChartStack({ compact = false, scopeExperiment = false, pestFocus = 'all' }) {
+  if (scopeExperiment) {
+    const dayTrendSeries = getVisiblePestSeries(pestFocus, 'dayTrend');
+    const rolling3DaySeries = getVisiblePestSeries(pestFocus, 'rolling3Day');
+    const rolling7DaySeries = getVisiblePestSeries(pestFocus, 'rolling7Day');
+    const hourlySeries = getVisiblePestSeries(pestFocus, 'hourlyDistribution');
+
+    return (
+      <div className={styles.chartStack}>
+        <TrendChart title="Day Trend" type="line" labels={chartSeries.dayLabels} series={dayTrendSeries} threshold={25} />
+        <TrendChart title="3-Day Average" type="line" labels={chartSeries.dayLabels} series={rolling3DaySeries} threshold={25} />
+        <TrendChart title="7-Day Rolling Average" type="line" labels={chartSeries.dayLabels} series={rolling7DaySeries} threshold={25} />
+        {!compact && (
+          <TrendChart title="Hourly Distribution" type="line" labels={chartSeries.hourlyLabels} series={hourlySeries} threshold={25} />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.chartStack}>
+      <TrendChart title="Day Trend" type="bar" labels={chartSeries.dayLabels} data={chartSeries.blockTrend} threshold={25} />
+      <TrendChart
+        title="3-Day Avg & 7-Day Rolling"
+        type="line"
+        labels={chartSeries.dayLabels}
+        series={[
+          { label: '3-Day Avg', data: chartSeries.rolling3Day, color: '#2563EB' },
+          { label: '7-Day Rolling', data: chartSeries.rolling7Day, color: '#C2410C', dashed: true },
+        ]}
+        threshold={25}
+      />
+      {!compact && (
+        <TrendChart title="Hourly Distribution" type="bar" labels={chartSeries.hourlyLabels} data={chartSeries.hourlyDistribution} threshold={25} />
+      )}
+    </div>
+  );
+}
+
+function RanchLinks() {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <PanelSectionTitle>Ranches</PanelSectionTitle>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
+      </div>
+      {rankedRanches.map((ranch, index) => (
+        <RankingListItem
+          key={ranch.id}
+          rank={index + 1}
+          title={ranch.name}
+          subtitle={`${ranch.currentCount} detections • ${ranch.blocks} blocks • ${ranch.activeSensors}/${ranch.totalSensors} sensors active`}
+          riskLevel={ranch.riskLevel}
+        />
+      ))}
+    </section>
+  );
+}
+
+function BlockLinks({ onBlockPreviewChange }) {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <PanelSectionTitle>Blocks</PanelSectionTitle>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
+      </div>
+      {selectedRanchBlocks.slice(0, 10).map((block, index) => (
+        <RankingListItem
+          key={block.id}
+          rank={index + 1}
+          title={block.name}
+          subtitle={`${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
+          riskLevel={block.riskLevel}
+          onBlur={() => onBlockPreviewChange?.('')}
+          onFocus={() => onBlockPreviewChange?.(block.id)}
+          onMouseEnter={() => onBlockPreviewChange?.(block.id)}
+          onMouseLeave={() => onBlockPreviewChange?.('')}
+        />
+      ))}
+      <Button variant="secondary" fullWidth>View all blocks</Button>
+    </section>
+  );
+}
+
+function SensorLinks() {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <PanelSectionTitle>Sensors</PanelSectionTitle>
+        <Typography variant="caption" color="secondary">Ranked highest risk to lowest</Typography>
+      </div>
+      {rankedSensors.slice(0, 10).map((sensor, index) => (
+        <RankingListItem
+          key={sensor.id}
+          rank={index + 1}
+          title={sensor.name}
+          subtitle={`${sensor.pestName || selectedBlock.pestName} • ${sensor.count} detections • ${sensor.status} • ${sensor.battery}% battery`}
+          riskLevel={sensor.severity}
+          disabled={sensor.severity === 'offline'}
+        />
+      ))}
+      <Button variant="secondary" fullWidth>View all sensors</Button>
+    </section>
+  );
+}
+
+function OrganizationTasks() {
+  return (
+    <section className={styles.childList}>
+      <div className={styles.sectionHeader}>
+        <PanelSectionTitle>Tasks</PanelSectionTitle>
+        <Typography variant="caption" color="secondary">High-level operational snapshot</Typography>
+      </div>
+      {taskStreams.map((stream) => (
+        <div className={styles.taskStream} key={stream.title}>
+          <div className={styles.sectionHeader}>
+            <Typography variant="body" weight="semibold">{stream.title}</Typography>
+            <Typography variant="caption" color="secondary">{stream.summary}</Typography>
+          </div>
+          <div className={styles.taskStats}>
+            {stream.stats.map((stat) => (
+              <div className={styles.taskStat} key={`${stream.title}-${stat.label}`}>
+                <Typography variant="caption" color="secondary">{stat.label}</Typography>
+                <Typography variant="h5">{stat.value}</Typography>
+              </div>
+            ))}
+          </div>
+          {stream.items.map((item) => {
+            const task = {
+              entityName: item.subtitle,
+              type: stream.title === 'Scouting Assignments' ? 'Scouting' : 'Work Order',
+              assignee: 'Unassigned',
+              priority: item.riskLevel === 'high' ? 'Urgent' : item.riskLevel === 'medium' ? 'Medium' : 'Low',
+              status: 'Requested',
+              notes: item.title,
+            };
+
+            return (
+              <TaskListItem
+                key={`${stream.title}-${item.title}`}
+                task={task}
+              />
+            );
+          })}
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function TasksPage() {
+  return (
+    <SplitPreview
+      left={<TaskDropdown tasks={[]} />}
+      right={<TaskDropdown tasks={tasks} />}
+      leftLabel="Empty state"
+      rightLabel="Populated state"
+    />
+  );
+}
+
+function ScoutingPage() {
+  return (
+    <CenteredPreview>
+      <ScoutingAssignmentModal
+        entityName={`${selectedBlock.ranchName} / ${selectedBlock.name}`}
+        riskLevel={selectedBlock.riskLevel}
+        pestName={selectedBlock.pestName}
+      />
+    </CenteredPreview>
+  );
+}
+
+function MobileScoutingPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <ScoutingAssignmentModal compact entityName={selectedBlock.name} riskLevel={selectedBlock.riskLevel} pestName="Female NOW" />
+    </CenteredPreview>
+  );
+}
+
+function ReportPage() {
+  return (
+    <SplitPreview
+      left={<ReportModal report={report} loading />}
+      right={<ReportModal report={report} />}
+      leftLabel="Loading"
+      rightLabel="Complete"
+    />
+  );
+}
+
+function MobileTasksPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <TaskDropdown tasks={tasks} />
+    </CenteredPreview>
+  );
+}
+
+function MaintenanceNoteModalPage() {
+  return (
+    <CenteredPreview>
+      <MaintenanceNoteModal />
+    </CenteredPreview>
+  );
+}
+
+function MobileMaintenanceNoteModalPage() {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <MaintenanceNoteModal compact />
+    </CenteredPreview>
+  );
+}
+
+function MobileMapPage({ type = 'ranking' }) {
+  return (
+    <CenteredPreview className={styles.mobilePreview}>
+      <MobileDeviceFrame type={type} />
+    </CenteredPreview>
+  );
+}
+
+function ResponsiveMobilePage({ type = 'ranking' }) {
+  return (
+    <div className={styles.responsiveMobileFrame}>
+      <MobileDeviceFrame type={type} />
+    </div>
+  );
+}
+
+function MobileDeviceFrame({ type = 'ranking' }) {
+  const isHealthMobile = type === 'sensor-health';
+  const isMaintenanceMobile = type === 'maintenance-ranking' || type === 'maintenance-sensor';
+  const [sheetKind, setSheetKind] = useState(isHealthMobile ? 'map' : 'content');
+  const [sheetState, setSheetState] = useState(isHealthMobile ? 'full' : 'docked');
+  const [selectedMobileType, setSelectedMobileType] = useState(type);
+  const [showHealthySensors, setShowHealthySensors] = useState(false);
+  const [mobileSensorMarkerMode, setMobileSensorMarkerMode] = useState(isHealthMobile ? 'health' : 'pest');
+  const [selectedMobileBlockId, setSelectedMobileBlockId] = useState(type === 'block' ? selectedBlock.id : '');
+  const [selectedMobileSensorId, setSelectedMobileSensorId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : isMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+  const [visibleMobileSensorTooltipId, setVisibleMobileSensorTooltipId] = useState(type === 'sensor' ? selectedSensor.id : isHealthMobile ? healthIssueSensor.id : isMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+  const [sheetSelectionKey, setSheetSelectionKey] = useState(0);
+  const resolvedSheetKind = sheetKind;
+  const sensorDisplayMode = isMaintenanceMobile ? 'maintenance' : mobileSensorMarkerMode === 'health' ? 'healthBatteryBare' : 'pest';
+  const visibleMaintenanceSensors = getVisibleMaintenanceSensors(showHealthySensors);
+  const mapSensors = isMaintenanceMobile ? visibleMaintenanceSensors : isHealthMobile ? healthExperimentSensors : sensors;
+  const isControlSheet = resolvedSheetKind === 'pest' || resolvedSheetKind === 'map' || resolvedSheetKind === 'maintenance';
+  const selectedMobileBlock = [...rankingBlocks, ...selectedRanchBlocks].find((block) => block.id === selectedMobileBlockId) || selectedBlock;
+  const selectedMobileSensor = mapSensors.find((sensor) => sensor.id === selectedMobileSensorId) || (isMaintenanceMobile ? selectedMaintenanceSensor : isHealthMobile ? healthIssueSensor : selectedSensor);
+  const sheetLabel = {
+    content: selectedMobileType === 'ranking'
+      ? 'Pest pressure ranking'
+      : selectedMobileType === 'maintenance-ranking'
+        ? 'Maintenance overview'
+        : selectedMobileType === 'maintenance-sensor'
+          ? 'Maintenance sensor detail'
+          : `${isHealthMobile || selectedMobileType === 'sensor-health' ? 'sensor health' : selectedMobileType} detail`,
+    pest: 'Pest focus',
+    map: 'Map controls',
+    maintenance: 'Maintenance controls',
+  }[resolvedSheetKind];
+
+  useEffect(() => {
+    const nextIsMaintenanceMobile = type === 'maintenance-ranking' || type === 'maintenance-sensor';
+    setSelectedMobileType(type);
+    setSelectedMobileBlockId(type === 'block' ? selectedBlock.id : '');
+    setSelectedMobileSensorId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : nextIsMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+    setVisibleMobileSensorTooltipId(type === 'sensor' ? selectedSensor.id : type === 'sensor-health' ? healthIssueSensor.id : nextIsMaintenanceMobile ? selectedMaintenanceSensor.id : '');
+    setMobileSensorMarkerMode(type === 'sensor-health' ? 'health' : 'pest');
+    setSheetKind(type === 'sensor-health' ? 'map' : 'content');
+    setSheetState(type === 'sensor-health' ? 'full' : 'docked');
+    setSheetSelectionKey((current) => current + 1);
+  }, [type]);
+
+  const openSheet = (nextKind) => {
+    setSheetKind(nextKind);
+    setSheetState(nextKind === 'content' ? 'docked' : 'full');
+  };
+  const toggleSheet = () => {
+    if (isControlSheet) {
+      setSheetKind('content');
+      setSheetState('docked');
+      return;
+    }
+
+    setSheetState((current) => current === 'full' ? 'docked' : 'full');
+  };
+  const showSelectedContentSheet = () => {
+    setSheetKind('content');
+    setSheetState('docked');
+    setSheetSelectionKey((current) => current + 1);
+  };
+  const handleBlockSelect = (block) => {
+    setSelectedMobileBlockId(block.id);
+    setSelectedMobileSensorId('');
+    setVisibleMobileSensorTooltipId('');
+    setSelectedMobileType('block');
+    showSelectedContentSheet();
+  };
+  const handleSensorSelect = (sensor) => {
+    setSelectedMobileSensorId(sensor.id);
+    setVisibleMobileSensorTooltipId(sensor.id);
+    setSelectedMobileBlockId('');
+    setSelectedMobileType(isMaintenanceMobile ? 'maintenance-sensor' : isHealthMobile ? 'sensor-health' : 'sensor');
+    showSelectedContentSheet();
+  };
+
+  return (
+    <div className={styles.mobileDevice}>
+      <TopNavigationBar
+        className={styles.mobileTopNavigation}
+        compactActions={isMaintenanceMobile}
+        modeLabel={isMaintenanceMobile ? maintenanceTopNavProps.modeLabel : undefined}
+        modeOptions={isMaintenanceMobile ? maintenanceTopNavProps.modeOptions : []}
+        showModeOnMobile={isMaintenanceMobile}
+      />
+      <div className={styles.mobileMap}>
+        <InteractiveMap
+          center={[36.647, -119.8]}
+          zoom={15}
+          blockPolygon={selectedBlock.polygon}
+          blockOverlays={isMaintenanceMobile ? buildMaintenanceBlockOverlays() : buildRankingBlockOverlays(selectedMobileBlockId, '')}
+          activeBlockLabel={selectedMobileType === 'block' ? selectedMobileBlock.name : ''}
+          sensors={mapSensors}
+          selectedSensorId={selectedMobileSensorId}
+          visibleSensorTooltipId={visibleMobileSensorTooltipId}
+          sensorDisplayMode={sensorDisplayMode}
+          showSelectedSensorTooltip
+          blockSeverity={selectedBlock.riskLevel}
+          mapStyle="satellite"
+          onBlockSelect={isMaintenanceMobile ? undefined : handleBlockSelect}
+          onSensorSelect={handleSensorSelect}
+          onSensorTooltipChange={setVisibleMobileSensorTooltipId}
+        />
+        <div className={styles.mobileScopeDock}>
+              <ScopeNavigation level={type === 'ranking' || type === 'maintenance-ranking' ? 'ranking' : isHealthMobile || selectedMobileType === 'maintenance-sensor' ? 'sensor' : type} />
+        </div>
+        <WeatherWidget weather={isMaintenanceMobile ? maintenanceWeather : weather} compact className={styles.mobileWeather} />
+        <div className={styles.fabs}>
+          {isMaintenanceMobile ? (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open maintenance controls"
+              onClick={() => openSheet('maintenance')}
+            >
+              <span className="material-symbols-rounded">construction</span>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open pest focus"
+              onClick={() => openSheet('pest')}
+            >
+              <span className="material-symbols-rounded">pest_control</span>
+            </Button>
+          )}
+          {!isMaintenanceMobile && (
+            <Button
+              variant="secondary"
+              className={styles.fab}
+              aria-label="Open map controls"
+              onClick={() => openSheet('map')}
+            >
+              <span className="material-symbols-rounded">layers</span>
+            </Button>
+          )}
+          {!isMaintenanceMobile && (
+            <Button variant="secondary" className={styles.fab} aria-label="Locate"><span className="material-symbols-rounded">my_location</span></Button>
+          )}
+        </div>
+      </div>
+      <MobileBottomSheet
+        key={`${resolvedSheetKind}-${sheetState}-${sheetSelectionKey}`}
+        state={sheetState}
+        label={sheetLabel}
+        onToggle={toggleSheet}
+        dismissMode={isControlSheet}
+        dockedSummary={<MobileDockSummary type={selectedMobileType} sheetKind={resolvedSheetKind} selectedBlock={selectedMobileBlock} selectedSensor={selectedMobileSensor} />}
+      >
+        <MobileSheet
+          type={selectedMobileType}
+          sheetKind={resolvedSheetKind}
+          selectedSensor={selectedMobileSensor}
+          healthMode={isHealthMobile || selectedMobileType === 'sensor-health'}
+          sensorMarkerMode={mobileSensorMarkerMode}
+          onSensorMarkerModeChange={setMobileSensorMarkerMode}
+          showHealthySensors={showHealthySensors}
+          onShowHealthySensorsChange={setShowHealthySensors}
+        />
+      </MobileBottomSheet>
+    </div>
+  );
+}
+
+const getMaintenanceBadgeVariant = (sensor) => {
+  const state = getMaintenanceSeverity(sensor);
+  if (state === 'offline') return 'high';
+  if (state === 'warning') return 'medium';
+  return 'low';
+};
+
+function MobileDockSummary({ type, sheetKind, selectedBlock: currentBlock = selectedBlock, selectedSensor: currentSensor = selectedSensor }) {
+  const contentCopy = {
+    ranking: { title: 'Pest Pressure Ranking' },
+    'maintenance-ranking': { title: 'Maintenance Overview' },
+    'maintenance-sensor': {
+      title: currentSensor.name,
+      badge: getMaintenanceBadgeVariant(currentSensor),
+      badgeLabel: {
+        offline: 'Critical',
+        warning: 'Warning',
+        healthy: 'Healthy',
+      }[getMaintenanceSeverity(currentSensor)],
+    },
+    organization: { title: selectedOrganization.name, badge: selectedOrganization.riskLevel },
+    ranch: { title: selectedRanch.name, badge: selectedRanch.riskLevel },
+    block: { title: currentBlock.name, badge: currentBlock.riskLevel },
+    sensor: { title: currentSensor.name, badge: currentSensor.severity },
+    'sensor-health': { title: currentSensor.name, badge: currentSensor.severity },
+  };
+  const controlCopy = {
+    pest: { title: 'Pest Focus' },
+    map: { title: 'Map Controls' },
+    maintenance: { title: 'Maintenance Controls' },
+  };
+  const resolved = sheetKind === 'content' ? contentCopy[type] || contentCopy.ranking : controlCopy[sheetKind];
+
+  return (
+    <div className={styles.mobileDockSummary}>
+      <div>
+        <Typography variant="h4">{resolved.title}</Typography>
+      </div>
+      {resolved.badge && <Badge variant={resolved.badge}>{resolved.badgeLabel || `${resolved.badge} risk`}</Badge>}
+    </div>
+  );
+}
+
+function MobileSheet({
+  type,
+  sheetKind,
+  selectedSensor: selectedSheetSensor = selectedSensor,
+  healthMode = false,
+  sensorMarkerMode = 'pest',
+  onSensorMarkerModeChange,
+  showHealthySensors = false,
+  onShowHealthySensorsChange,
+}) {
+  if (sheetKind === 'maintenance') {
+    return (
+      <MobileMaintenanceControlsSheet
+        showHealthySensors={showHealthySensors}
+        onShowHealthySensorsChange={onShowHealthySensorsChange}
+      />
+    );
+  }
+
+  if (sheetKind === 'pest') {
+    return <MobileControlsSheet scopePanel="pest" healthMode={healthMode} sensorMarkerMode={sensorMarkerMode} onSensorMarkerModeChange={onSensorMarkerModeChange} />;
+  }
+
+  if (sheetKind === 'map') {
+    return <MobileControlsSheet scopePanel="map" healthMode={healthMode} sensorMarkerMode={sensorMarkerMode} onSensorMarkerModeChange={onSensorMarkerModeChange} />;
+  }
+
+  if (type === 'ranking') {
+    return <MobileRankingSheet />;
+  }
+
+  if (type === 'maintenance-ranking') {
+    return <MobileMaintenanceRankingSheet />;
+  }
+
+  if (type === 'maintenance-sensor') {
+    return <MobileMaintenanceSensorSheet sensor={selectedSheetSensor} />;
+  }
+
+  const panelMap = {
+    organization: <OrganizationDetailPanel scopeExperiment />,
+    ranch: <RanchDetailPanel scopeExperiment />,
+    block: <BlockDetailPanel scopeExperiment />,
+    sensor: <SensorDetailPanel scopeExperiment />,
+    'sensor-health': <SensorDetailPanel scopeExperiment healthMode />,
+  };
+
+  return <div className={styles.mobileDetailPanel}>{panelMap[type]}</div>;
+}
+
+function MobileMaintenanceRankingSheet() {
+  const visibleSensors = getVisibleMaintenanceSensors(false);
+  const scrollContainerRef = useRef(null);
+  const [activeAnchorTab, setActiveAnchorTab] = useState('overview');
+  const scrollToMaintenanceSection = (sectionId, activeTab) => {
+    setActiveAnchorTab(activeTab);
+    scrollContainerToSection(scrollContainerRef.current, sectionId);
+  };
+  useScrollAnchorTabs(scrollContainerRef, mobileMaintenanceOverviewAnchorSections, setActiveAnchorTab);
+
+  return (
+    <div className={`${styles.sheetContent} ${styles.mobileMaintenanceRankingSheet}`}>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Maintenance Overview</Typography>
+          </div>
+          <InfoDisclosure
+            title="Maintenance mode"
+            description="Sensors are ranked by device-health priority, using offline duration, battery, signal, and lure cadence rather than pest pressure."
+            align="end"
+          />
+        </div>
+        <div className={styles.mobileFilterRow}>
+          <FormField label="Organisation">
+            <Select options={[
+              { label: 'Show all', value: 'all' },
+              { label: 'RapidAIM Growers Co.', value: 'rapid' },
+              { label: 'Agrii UK', value: 'agrii' },
+            ]} />
+          </FormField>
+          <FormField label="Ranch">
+            <Select options={[
+              { label: 'Show all', value: 'all' },
+              { label: 'Sierra Orchards', value: 'sierra' },
+              { label: 'Fresno North Ranch', value: 'fresno-north' },
+            ]} />
+          </FormField>
+        </div>
+      </div>
+      <div className={`${styles.anchorTabs} ${styles.mobileMaintenanceAnchorTabs}`} style={{ '--tab-count': 2 }}>
+        <button
+          className={activeAnchorTab === 'overview' ? styles.activeAnchorTab : ''}
+          type="button"
+          onClick={() => scrollToMaintenanceSection('mobile-maintenance-overview-summary', 'overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={activeAnchorTab === 'sensors' ? styles.activeAnchorTab : ''}
+          type="button"
+          aria-label={`Sensors (${maintenanceSensorTabCount.active}/${maintenanceSensorTabCount.total})`}
+          onClick={() => scrollToMaintenanceSection('mobile-maintenance-sensors-list', 'sensors')}
+        >
+          <span className={styles.anchorTabLabel} aria-hidden="true">
+            Sensors ({maintenanceSensorTabCount.active}/{maintenanceSensorTabCount.total})
+          </span>
+        </button>
+      </div>
+      <div className={styles.mobileMaintenanceRankingScroll} ref={scrollContainerRef}>
+        <section className={styles.maintenanceSection} id="mobile-maintenance-overview-summary">
+          <div className={styles.maintenanceStatGrid}>
+            <StatCard label="Offline sensors" value={maintenanceStats.offline} tone="high" />
+            <StatCard label="Low battery" value={maintenanceStats.lowBattery} tone="medium" />
+            <StatCard label="Connectivity issues" value={maintenanceStats.signalIssues} tone="medium" />
+            <StatCard label="Lure due soon" value={maintenanceStats.lureDue} tone="medium" />
+          </div>
+        </section>
+        <section className={styles.mobileListSection} id="mobile-maintenance-sensors-list">
+          <div className={`${styles.sectionHeader} ${styles.maintenanceListHeader}`}>
+            <div>
+              <PanelSectionTitle>Sensors</PanelSectionTitle>
+            </div>
+          </div>
+          <div className={styles.mobileListSection}>
+            {visibleSensors.map((sensor, index) => (
+              <MaintenanceListItem key={sensor.id} rank={index + 1} sensor={sensor} />
+            ))}
+            <Button variant="secondary" fullWidth>Load all sensors</Button>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function MobileMaintenanceSensorSheet({ sensor = selectedMaintenanceSensor }) {
+  return (
+    <div className={styles.mobileDetailPanel}>
+      <MaintenanceSensorPanel sensor={sensor} />
+    </div>
+  );
+}
+
+function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHealthySensorsChange }) {
+  return (
+    <div className={styles.sheetContent}>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Maintenance Controls</Typography>
+          </div>
+        </div>
+      </div>
+      <section className={styles.maintenanceControlSection}>
+        <PanelSectionTitle>Filters</PanelSectionTitle>
+        <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
+        <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
+        <label><input type="checkbox" defaultChecked /> Lure due soon</label>
+        <label>
+          <input
+            checked={showHealthySensors}
+            onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+            type="checkbox"
+          />
+          Show healthy sensors
+        </label>
+      </section>
+      <section className={styles.maintenanceControlSection}>
+        <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="high" className={styles.maintenanceLegendCriticalMarker} label="Critical maintenance marker" />
+          <Typography variant="body-sm">Critical (battery or device issue resulting in offline sensor)</Typography>
+        </div>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="medium" className={styles.maintenanceLegendWarningMarker} label="Maintenance warning marker" />
+          <Typography variant="body-sm">Warning (battery, signal, lure, or device issue)</Typography>
+        </div>
+        <div className={styles.maintenanceLegendItem}>
+          <RiskMarker severity="low" className={styles.maintenanceLegendHealthyMarker} label="Healthy maintenance marker" />
+          <Typography variant="body-sm">Healthy (no action required)</Typography>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function MobileRankingSheet() {
+  return (
+    <div className={styles.sheetContent}>
+      <div className={styles.mobileSheetHeader}>
+        <div className={styles.mobileSheetHeaderTop}>
+          <div>
+            <Typography variant="h4">Pest Pressure Ranking</Typography>
+          </div>
+          <InfoDisclosure
+            title="Ranking logic"
+            description="Blocks are ranked by active pest pressure under the current pest focus and threshold lens."
+            align="end"
+          />
+        </div>
+        <div className={styles.mobileFilterRow}>
+          <FormField label="Organisation">
+            <Select
+              options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'RapidAIM Growers Co.', value: 'rapid' },
+                { label: 'Apex Agriculture', value: 'apex' },
+              ]}
+            />
+          </FormField>
+          <FormField label="Ranch">
+            <Select
+              options={[
+                { label: 'Show all', value: 'all' },
+                { label: 'Sierra Orchards', value: 'sierra' },
+                { label: 'Sunshine Valley Ranch', value: 'sunshine' },
+              ]}
+            />
+          </FormField>
+        </div>
+      </div>
+      <PestWeekComparison>
+        <PestPressureGrid pestFocus="all" />
+      </PestWeekComparison>
+      <div className={styles.mobileListSection}>
+        {rankingBlocks.slice(0, 6).map((block, index) => (
+          <RankingListItem
+            key={block.id}
+            rank={index + 1}
+            title={block.name}
+            subtitle={`${block.pestName} • ${block.currentCount} detections • ${block.activeSensors}/${block.totalSensors} sensors active`}
+            riskLevel={block.riskLevel}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MobileControlsSheet({ scopePanel = 'pest', healthMode = false, sensorMarkerMode = 'pest', onSensorMarkerModeChange }) {
+  return (
+    <div className={`${styles.sheetContent} ${styles.mobileControlsContent}`}>
+      <div className={styles.mobileControlPanel}>
+        <ControlCenter
+          mode="scopeExperiment"
+          scopePanel={scopePanel}
+          embedded
+          showSensorHealthControls={healthMode}
+          sensorMarkerMode={healthMode ? sensorMarkerMode : 'pest'}
+          onSensorMarkerModeChange={onSensorMarkerModeChange}
+          defaultMapControlsOpen
+          defaultPestFocusOpen
+        />
+      </div>
+    </div>
+  );
+}
+
+function AccountPage() {
+  return (
+    <div className={styles.accountFrame}>
+      <AccountSettings />
+    </div>
+  );
+}
+
+function CenteredPreview({ children, className = '' }) {
+  return <div className={`${styles.centeredPreview} ${className}`}>{children}</div>;
+}
+
+function SplitPreview({ left, right, leftLabel, rightLabel }) {
+  return (
+    <div className={styles.splitPreview}>
+      <div className={styles.previewColumn}>
+        <Typography variant="h5" color="secondary">{leftLabel}</Typography>
+        {left}
+      </div>
+      <div className={styles.previewColumn}>
+        <Typography variant="h5" color="secondary">{rightLabel}</Typography>
+        {right}
+      </div>
+    </div>
+  );
+}

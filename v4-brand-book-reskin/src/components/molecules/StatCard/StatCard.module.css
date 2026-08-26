@@ -1,0 +1,137 @@
+.card {
+  position: relative;
+  background-color: var(--color-bg-data-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  min-width: 150px;
+}
+
+.card--neutral {
+  background-color: var(--color-bg-data-surface);
+}
+
+.card--high {
+  border-color: rgba(211, 47, 47, 0.22);
+  background-color: var(--color-status-red-bg);
+  color: var(--color-brand-ink);
+}
+
+.card--medium {
+  border-color: rgba(251, 140, 0, 0.28);
+  background-color: var(--color-status-amber-bg);
+  color: var(--color-brand-ink);
+}
+
+.card--low,
+.card--positive {
+  border-color: rgba(67, 160, 71, 0.22);
+  background-color: var(--color-status-green-bg);
+  color: var(--color-brand-ink);
+}
+
+.card--high :global(.color--primary),
+.card--high :global(.color--secondary),
+.card--medium :global(.color--primary),
+.card--medium :global(.color--secondary),
+.card--low :global(.color--primary),
+.card--low :global(.color--secondary),
+.card--positive :global(.color--primary),
+.card--positive :global(.color--secondary) {
+  color: var(--color-brand-ink);
+}
+
+.card--high *,
+.card--medium *,
+.card--low *,
+.card--positive * {
+  color: var(--color-brand-ink) !important;
+}
+
+.label {
+  padding-right: 2.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoSlot {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  z-index: 1;
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoDisclosure button {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.valueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-text-primary);
+  color: var(--color-bg-panel);
+  white-space: nowrap;
+}
+
+.trendIcon {
+  font-size: var(--font-size-base);
+}
+
+.trendDirectionPositive {
+  background-color: var(--color-text-primary);
+}
+
+.trendDirectionNegative {
+  background-color: var(--color-text-primary);
+}
+
+.trend--high {
+  background-color: var(--color-status-red);
+}
+
+.trend--medium {
+  background-color: var(--color-status-amber);
+}
+
+.trend--low,
+.trend--positive {
+  background-color: var(--color-status-green);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.metaLine {
+  display: flex;
+  align-items: center;
+}
+
+.metaLine--negative {
+  color: var(--color-status-red);
+}
+
+.metaLine--positive {
+  color: var(--color-status-green);
+}

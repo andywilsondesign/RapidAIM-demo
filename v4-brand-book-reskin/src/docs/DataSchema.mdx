@@ -1,0 +1,95 @@
+# RapidAim UI Data Schema
+
+This document defines the schema representing dynamic data versus static layout text for the RapidAim frontend handoff components.
+
+## Core Entities
+
+### Ranch
+
+Represents an agricultural property managed by an organization.
+
+```ts
+interface Ranch {
+  id: string;
+  name: string;
+  organization: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  currentCount: number;
+  activeSensors: number;
+  totalSensors: number;
+  blocks: number;
+  acreage: number;
+  trend: number;
+  summary: string;
+}
+```
+
+### Block
+
+Represents a field block within a ranch.
+
+```ts
+interface Block {
+  id: string;
+  name: string;
+  ranchId: string;
+  ranchName: string;
+  crop: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  currentCount: number;
+  activeSensors: number;
+  totalSensors: number;
+  pestName: string;
+  trend: number;
+  benchmark: string;
+  polygon: [number, number][];
+}
+```
+
+### Sensor
+
+Represents an individual field sensor or trap.
+
+```ts
+interface Sensor {
+  id: string;
+  name: string;
+  blockId: string;
+  blockName: string;
+  ranchName: string;
+  lat: number;
+  lng: number;
+  severity: 'low' | 'medium' | 'high';
+  count: number;
+  battery: number;
+  signal: string;
+  status: string;
+  lastSync: string;
+}
+```
+
+### Task
+
+Represents a scouting or maintenance assignment.
+
+```ts
+interface Task {
+  id: string;
+  entityName: string;
+  type: 'Pest Scouting' | 'Trap Maintenance' | 'Sensor Repair';
+  assignee: string;
+  priority: 'Low' | 'Medium' | 'Urgent';
+  status: string;
+  notes?: string;
+}
+```
+
+## Handoff Rule
+
+Static labels, layout, and interaction affordances belong in the component system. Variable values should come from deterministic fixtures or production data later.
+
+The current shared fixture source is:
+
+```txt
+src/fixtures/rapidAimFixtures.js
+```

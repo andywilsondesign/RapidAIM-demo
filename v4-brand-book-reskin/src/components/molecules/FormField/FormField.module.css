@@ -1,0 +1,27 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  width: 100%;
+  font-family: var(--font-family-base);
+}
+
+.label {
+  display: block;
+}
+
+.inputWrapper {
+  width: 100%;
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  color: var(--color-status-red);
+  margin-top: var(--spacing-1);
+}
+
+.helpText {
+  margin-top: var(--spacing-1);
+}
