@@ -37,6 +37,31 @@
   color: var(--color-brand-primary);
 }
 
+.sectionHeader,
+.betaCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.betaPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--spacing-4);
+  align-items: center;
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+}
+
+.betaActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-3);
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -74,6 +99,14 @@
   .section {
     gap: var(--spacing-3);
     padding-bottom: var(--spacing-4);
+  }
+
+  .betaPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .betaActions {
+    align-items: stretch;
   }
 
   .actions {

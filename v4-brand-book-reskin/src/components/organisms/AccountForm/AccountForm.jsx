@@ -4,6 +4,7 @@ import { FormField } from '../../molecules/FormField/FormField';
 import { Input } from '../../atoms/Input/Input';
 import { Select } from '../../atoms/Select/Select';
 import { Button } from '../../atoms/Button/Button';
+import { Checkbox } from '../../atoms/Checkbox/Checkbox';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Alert } from '../../molecules/Alert/Alert';
 import styles from './AccountForm.module.css';
@@ -70,6 +71,30 @@ export const AccountForm = ({
               { label: 'None', value: 'none' },
             ]} />
           </FormField>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <Typography variant="h5" className={styles.sectionTitle}>Dashboard Experience</Typography>
+          <Typography variant="body-sm" color="secondary">
+            Choose which dashboard your team sees while the new experience is in beta.
+          </Typography>
+        </div>
+        <div className={styles.betaPanel}>
+          <div className={styles.betaCopy}>
+            <Typography variant="h6">New dashboard beta</Typography>
+            <Typography variant="body-sm" color="secondary">
+              Use the new RapidAIM dashboard for this account. You can return to the previous interface if the beta feels unfamiliar.
+            </Typography>
+            <Typography variant="caption" color="secondary">
+              This changes the dashboard view only. It does not affect sensors, billing, saved data, or team access.
+            </Typography>
+          </div>
+          <div className={styles.betaActions}>
+            <Checkbox label="Use new dashboard" defaultChecked />
+            <Button variant="secondary" type="button">Return to old dashboard</Button>
+          </div>
         </div>
       </div>
 

@@ -1,10 +1,10 @@
-# RapidAIM V4 Brand Book Reskin Implementation Brief
+# RapidAIM V4 UX Sandbox Implementation Brief
 
 ## Purpose
 
-V4 is a separate reskinned copy of the V3 brand-alignment prototype. It exists so the Brand Book 2.0 direction can be reviewed side-by-side with V3 without losing the current approved interface work.
+V4 is a separate UX sandbox copied from the V3 brand-alignment prototype. It exists so map recovery, distributed block awareness, beta-user support, and future UX changes can be reviewed side-by-side with V3 without losing the current approved interface work.
 
-The goal is to test the newer dark-first, technical, field-instrument visual language while keeping the V3 product structure, data states, and accessibility-sensitive component decisions intact.
+The active V4 direction is light-first and intentionally close to V3. A previous dark-first Brand Book 2.0 spike is preserved at the local `v4-dark-style-spike` tag for reference, but it should not be treated as the current build direction until the client confirms the visual style guide.
 
 ## V4 Guardrails
 
@@ -17,8 +17,8 @@ The goal is to test the newer dark-first, technical, field-instrument visual lan
 3. Use Space Mono only for technical readouts.
    Sensor IDs, status tags, coordinates, data labels, chart readouts, and instrument-style metadata can use Space Mono.
 
-4. Reskin V3; do not re-architect it.
-   V4 should remain recognizably equivalent to V3 for comparison. Layout, flows, and accessibility behavior should only change where necessary to support the new style guide.
+4. Use V4 for larger UX changes.
+   V4 should remain recognizably related to V3, but it can hold interaction and recovery-state improvements that would be too disruptive to fold directly into the V3 baseline.
 
 5. Keep V3 available.
    V3 is the current baseline. V4 is exploratory and should be easy to revert or discard.
@@ -38,12 +38,12 @@ V3 is the current brand-aligned handoff system:
 - Useful as the design and component reference.
 - Expected to show representative UI states rather than complete product logic.
 
-V4 is the Brand Book 2.0 reskin:
+V4 is the current UX sandbox:
 
-- Dark-first product chrome.
-- Brand Book 2.0 Ink, Bright Snow, Honey Bronze, Charcoal Blue, and Steel palette.
-- Flatter, sharper UI surfaces.
-- Bronze used as the single live/accent signal.
+- Light-first product chrome based on the V3 design system.
+- Shared UX patterns for situations where the map has nothing useful to display.
+- Distributed block awareness for farms with distant blocks or clusters.
+- Beta-user affordances for first-run support and returning to the old dashboard.
 - Existing badge accessibility and Inter typography retained.
 
 ## Primary Outcome
@@ -218,6 +218,45 @@ Should show:
 - Count card.
 - Assignment/report action buttons.
 - Detection grid if ranch state is shown.
+
+### 10. Map Unavailable States
+
+Should show:
+
+- Global status banner.
+- Frozen/desaturated map visual.
+- Centered concise explanation.
+- Primary action and secondary detail/support action.
+- Details dialog for connection error, setup pending, waiting for data, and subscription paused cases.
+
+Purpose:
+
+- Gives users a consistent pattern when blocks, sensors, or detection data cannot be shown on the map.
+
+### 11. Distributed Block Awareness
+
+Should show:
+
+- Zoom/focus examples for north, south, east, west, and central block clusters.
+- Square cluster treatment for grouped blocks.
+- Directional offscreen indicators that stay within usable map bounds and avoid side panels.
+- Quick footer action to show all blocks.
+
+Purpose:
+
+- Keeps distant managed blocks discoverable when the user is zoomed into one area.
+
+### 12. Beta User Support
+
+Should show:
+
+- First-run welcome modal with client-editable change-summary placeholders.
+- Support community action.
+- Account settings option to keep using the new dashboard or return to the previous interface.
+
+Purpose:
+
+- Helps existing users orient themselves when they first enable the new dashboard.
 - Charts stacked in mobile proportions.
 
 Purpose:

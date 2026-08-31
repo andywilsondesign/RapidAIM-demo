@@ -19,9 +19,9 @@
   height: 100vh;
   overflow: auto;
   padding: var(--spacing-4);
-  border-right: 1px solid var(--color-border-subtle);
-  background: #070809;
-  color: var(--color-brand-snow);
+  border-right: 3px solid #1f2937;
+  background: #111827;
+  color: #f9fafb;
   box-shadow: 12px 0 26px rgba(17, 24, 39, 0.18);
 }
 
@@ -39,7 +39,7 @@
   justify-content: center;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.12);
-  color: var(--color-brand-snow);
+  color: #f9fafb;
 }
 
 .brand p {
@@ -55,7 +55,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.08);
-  color: var(--color-brand-snow);
+  color: #f9fafb;
   cursor: pointer;
   font: inherit;
   font-size: var(--font-size-xs);
@@ -81,8 +81,8 @@
   padding: var(--spacing-3) var(--spacing-4);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   border-left: 0;
-  background: #070809;
-  color: var(--color-brand-snow);
+  background: #111827;
+  color: #f9fafb;
   box-shadow: var(--shadow-lg);
 }
 
@@ -127,8 +127,8 @@
 .activeNavItem,
 .navItem:hover {
   border-color: rgba(255, 255, 255, 0.16);
-  background: var(--color-brand-snow);
-  color: #0B0C0E;
+  background: #f9fafb;
+  color: #111827;
 }
 
 .stage {
@@ -141,6 +141,66 @@
   min-height: 0;
   flex: 1;
   overflow: auto;
+}
+
+.uxStatePage {
+  min-height: 100vh;
+  background: var(--color-bg-base);
+}
+
+.uxStateToolbar {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5) var(--spacing-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: rgba(244, 244, 244, 0.96);
+}
+
+.uxStateToolbar > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.uxStateButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+}
+
+.uxStateButton {
+  min-height: 2.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-panel);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: 0 var(--spacing-3);
+}
+
+.uxStateButton:hover,
+.uxStateButton:focus-visible,
+.activeUxStateButton {
+  border-color: var(--color-border-focus);
+  color: var(--color-brand-primary);
+  outline: none;
+}
+
+.activeUxStateButton {
+  background: var(--color-bg-hover);
+}
+
+.uxMapState {
+  min-height: calc(100vh - 6rem);
 }
 
 .desktopShell {
@@ -159,6 +219,18 @@
   background: var(--color-bg-base);
 }
 
+@media (max-width: 900px) {
+  .uxStateToolbar {
+    position: static;
+    flex-direction: column;
+    padding: var(--spacing-4);
+  }
+
+  .uxStateButtons {
+    justify-content: flex-start;
+  }
+}
+
 .leftRail {
   position: absolute;
   top: var(--spacing-5);
@@ -169,7 +241,7 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--color-border-floating-panel);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xl);
   background: var(--color-bg-panel);
   box-shadow: var(--shadow-lg);
 }
@@ -224,7 +296,7 @@
   height: auto;
   overflow: auto;
   border: 1px solid var(--color-border-floating-panel);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }
 
@@ -232,7 +304,7 @@
   position: absolute;
   overflow: hidden;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xl);
   background: transparent;
   box-shadow: none;
 }
@@ -271,7 +343,7 @@
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xl);
   background: var(--color-bg-panel);
   box-shadow: var(--shadow-sm);
 }
@@ -303,11 +375,12 @@
   max-width: calc(100% - (var(--spacing-4) * 2));
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid rgba(255, 255, 255, 0.74);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-panel);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-md);
   color: var(--color-text-primary);
   transform: translateX(-50%);
+  backdrop-filter: blur(12px) saturate(1.08);
 }
 
 .sensorHealthToast > span {
@@ -371,8 +444,8 @@
 }
 
 .healthLegendDotOffline {
-  background: #070809;
-  color: var(--color-brand-snow);
+  background: #111827;
+  color: #fff;
 }
 
 .healthLegendLevelFull {
@@ -526,8 +599,8 @@
 }
 
 .healthOptionMock.activeHealthToggle {
-  border-color: rgba(234, 170, 70, 0.42);
-  background: rgba(234, 170, 70, 0.08);
+  border-color: rgba(21, 21, 96, 0.42);
+  background: rgba(21, 21, 96, 0.08);
   color: var(--color-brand-primary);
 }
 
@@ -972,7 +1045,7 @@
   width: fit-content;
   max-width: var(--layout-control-panel-width);
   justify-content: flex-start;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1351,8 +1424,8 @@
 }
 
 .activeRankingListItem {
-  border-color: rgba(234, 170, 70, 0.34);
-  background: rgba(234, 170, 70, 0.06);
+  border-color: rgba(21, 21, 96, 0.34);
+  background: rgba(21, 21, 96, 0.06);
 }
 
 .centeredPreview {
@@ -1409,7 +1482,7 @@
   overflow: hidden;
   flex-direction: column;
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
   background: var(--color-bg-base);
   box-shadow: var(--shadow-lg);
 }
@@ -1514,9 +1587,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   overflow: hidden;
   border: 1px solid var(--color-border-floating-panel);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-panel);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
   box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px) saturate(1.1);
 }
 
 .mobileViewToggle button {
@@ -1551,10 +1625,11 @@
   height: 44px;
   padding: 0;
   border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg-panel);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-sm);
   color: var(--color-brand-primary);
+  backdrop-filter: blur(12px) saturate(1.1);
 }
 
 .fab.fab:hover,

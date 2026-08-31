@@ -1,0 +1,119 @@
+.backdrop {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--spacing-4);
+  background:
+    linear-gradient(rgba(244, 244, 244, 0.74), rgba(244, 244, 244, 0.74)),
+    linear-gradient(120deg, rgba(55, 204, 136, 0.14), transparent 36%),
+    var(--color-bg-base);
+}
+
+.modal {
+  display: flex;
+  width: min(34rem, 100%);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
+}
+
+.header > span {
+  font-size: var(--font-size-2xl);
+}
+
+.header button {
+  color: var(--color-panel-header-text);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+  padding: var(--spacing-6);
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.changeList {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.changeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+}
+
+.changeItem > span {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: 0 0 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand-yellow);
+  color: var(--color-brand-ink);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-base);
+}
+
+.closedPreview {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  background: var(--color-bg-base);
+}
+
+@media (max-width: 600px) {
+  .body {
+    padding: var(--spacing-4);
+  }
+
+  .footer {
+    flex-direction: column-reverse;
+  }
+
+  .footer button,
+  .closedPreview button {
+    width: 100%;
+  }
+
+  .closedPreview {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

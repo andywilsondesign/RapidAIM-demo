@@ -94,7 +94,7 @@ export const TrendChart = ({
         return {
           labels,
           datasets: visibleSeries.map((item, index) => {
-            const fallbackColor = item.color || (index === 0 ? '#EAAA46' : '#2D5768');
+            const fallbackColor = item.color || (index === 0 ? '#2563EB' : '#C2410C');
             const resolvedColor = statusColor || fallbackColor;
 
             return {
@@ -158,7 +158,7 @@ export const TrendChart = ({
         display: false,
       },
       tooltip: {
-        backgroundColor: '#070809',
+        backgroundColor: '#1E293B',
         padding: 12,
         titleFont: { size: 14, family: '"Inter", sans-serif' },
         bodyFont: { size: 13, family: '"Inter", sans-serif' },
@@ -170,12 +170,12 @@ export const TrendChart = ({
         beginAtZero: !hasNegativeValues,
         suggestedMin: colorScale === 'rsrp' ? -125 : undefined,
         suggestedMax: colorScale === 'rsrp' ? -65 : undefined,
-        grid: { color: '#343A42', drawBorder: false },
-        ticks: { color: '#A6AAB0', font: { family: '"Inter", sans-serif' } },
+        grid: { color: '#E2E8F0', drawBorder: false },
+        ticks: { color: '#64748B', font: { family: '"Inter", sans-serif' } },
       },
       x: {
         grid: { display: false, drawBorder: false },
-        ticks: { color: '#A6AAB0', font: { family: '"Inter", sans-serif' } },
+        ticks: { color: '#64748B', font: { family: '"Inter", sans-serif' } },
       },
     },
   };

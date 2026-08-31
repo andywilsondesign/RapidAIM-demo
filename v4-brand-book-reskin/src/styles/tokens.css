@@ -1,28 +1,29 @@
 :root {
-    /* Brand Book 2.0 palette */
-    --color-brand-ink: #0B0C0E;
-    --color-brand-snow: #F7F7F7;
-    --color-brand-bronze: #EAAA46;
-    --color-brand-charcoal-blue: #2D5768;
-    --color-brand-steel: #1A2026;
-    --color-brand-graphite: #5D6269;
-    --color-brand-line: #343A42;
+    /* Brand palette from RapidAIM V3 guidelines */
+    --color-brand-navy: #151560;
+    --color-brand-yellow: #F9B709;
+    --color-brand-yellow-soft: #FFD940;
+    --color-brand-green: #37CC88;
+    --color-brand-ink: #08081A;
+    --color-brand-grey: #666666;
+    --color-brand-grey-light: #BFBFBF;
+    --color-brand-off-white: #F4F4F4;
 
-    /* Product surfaces - dark first */
-    --color-bg-base: var(--color-brand-ink);
-    --color-bg-panel: var(--color-brand-steel);
-    --color-bg-card: #101418;
-    --color-bg-hover: #232B32;
-    --color-bg-data-surface: #151A20;
+    /* Color Palette - Solid & AA Accessible */
+    --color-bg-base: var(--color-brand-off-white);
+    --color-bg-panel: #FFFFFF;
+    --color-bg-card: #FFFFFF;
+    --color-bg-hover: #F7F7FB;
+    --color-bg-data-surface: #F8FAFC;
     
-    --color-text-primary: var(--color-brand-snow);
-    --color-text-secondary: #A6AAB0;
+    --color-text-primary: var(--color-brand-ink);
+    --color-text-secondary: var(--color-brand-grey);
     
-    --color-border-subtle: var(--color-brand-line);
-    --color-border-focus: var(--color-brand-bronze);
-    --color-border-floating-panel: rgba(234, 170, 70, 0.38);
+    --color-border-subtle: #E3E3EB;
+    --color-border-focus: var(--color-brand-navy);
+    --color-border-floating-panel: rgba(255, 255, 255, 0.86);
     
-    /* Accessible operational status colors retained from V3 badge work */
+    /* Status Colors - Ensure contrast */
     --color-status-red: #C1121F; 
     --color-status-red-bg: #FDE8E8;
     --color-status-amber: #8A5A00;
@@ -31,33 +32,32 @@
     --color-status-green-bg: #EFF1F3;
 
     /* Map block overlays - tuned for satellite imagery contrast */
-    --color-map-risk-high-fill: rgba(193, 18, 31, 0.42);
-    --color-map-risk-high-stroke: #EAAA46;
-    --color-map-risk-medium-fill: rgba(234, 170, 70, 0.30);
-    --color-map-risk-medium-stroke: #EAAA46;
-    --color-map-risk-low-fill: rgba(45, 87, 104, 0.38);
-    --color-map-risk-low-stroke: #F7F7F7;
+    --color-map-risk-high-fill: #E11932;
+    --color-map-risk-high-stroke: #FF2D55;
+    --color-map-risk-medium-fill: #F9A602;
+    --color-map-risk-medium-stroke: #FFB000;
+    --color-map-risk-low-fill: #19B56B;
+    --color-map-risk-low-stroke: #66F27A;
     
     /* Brand Accent */
-    --color-brand-primary: var(--color-brand-bronze);
-    --color-brand-light: #F0BE68;
-    --color-brand-hover: #F4C97D;
-    --color-brand-accent: var(--color-brand-bronze);
-    --color-panel-header-bg: #070809;
-    --color-panel-header-text: var(--color-brand-snow);
+    --color-brand-primary: var(--color-brand-navy);
+    --color-brand-light: #30308F;
+    --color-brand-hover: #08081A;
+    --color-brand-accent: var(--color-brand-yellow);
+    --color-panel-header-bg: var(--color-brand-ink);
+    --color-panel-header-text: #FFFFFF;
 
     /* Semantic Actions */
-    --color-action-primary-bg: var(--color-brand-bronze);
+    --color-action-primary-bg: var(--color-brand-primary);
     --color-action-primary-hover: var(--color-brand-hover);
-    --color-action-primary-text: var(--color-brand-ink);
-    --color-action-secondary-bg: transparent;
+    --color-action-primary-text: #FFFFFF;
+    --color-action-secondary-bg: var(--color-bg-card);
     --color-action-secondary-hover: var(--color-bg-hover);
     --color-action-secondary-text: var(--color-text-primary);
     
     /* Typography */
-    /* Inter is retained for the digital product; Brand Book Arial is treated as a print/system fallback. */
     --font-family-base: 'Inter', system-ui, sans-serif;
-    --font-family-title: 'Inter', Arial, sans-serif;
+    --font-family-title: var(--font-family-base);
     --font-family-metric: 'Space Mono', monospace;
     --font-family-mono: var(--font-family-metric);
     --font-size-xs: 0.75rem; /* 12px */
@@ -97,16 +97,14 @@
     --size-icon-button: 2rem; /* 32px */
     
     --radius-sm: 4px;
-    --radius-md: 4px;
-    --radius-lg: 6px;
-    --radius-xl: 6px;
-    --radius-xs: 2px;
-    --radius-full: 999px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
     
-    /* Low elevation, flat technical surfaces */
-    --shadow-sm: none;
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.22);
-    --shadow-lg: 0 18px 42px rgba(0, 0, 0, 0.34);
+    /* Shadows - Replacing Glassmorphism */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

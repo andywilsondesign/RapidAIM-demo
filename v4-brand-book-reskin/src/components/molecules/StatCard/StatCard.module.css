@@ -17,38 +17,17 @@
 .card--high {
   border-color: rgba(211, 47, 47, 0.22);
   background-color: var(--color-status-red-bg);
-  color: var(--color-brand-ink);
 }
 
 .card--medium {
   border-color: rgba(251, 140, 0, 0.28);
   background-color: var(--color-status-amber-bg);
-  color: var(--color-brand-ink);
 }
 
 .card--low,
 .card--positive {
   border-color: rgba(67, 160, 71, 0.22);
   background-color: var(--color-status-green-bg);
-  color: var(--color-brand-ink);
-}
-
-.card--high :global(.color--primary),
-.card--high :global(.color--secondary),
-.card--medium :global(.color--primary),
-.card--medium :global(.color--secondary),
-.card--low :global(.color--primary),
-.card--low :global(.color--secondary),
-.card--positive :global(.color--primary),
-.card--positive :global(.color--secondary) {
-  color: var(--color-brand-ink);
-}
-
-.card--high *,
-.card--medium *,
-.card--low *,
-.card--positive * {
-  color: var(--color-brand-ink) !important;
 }
 
 .label {

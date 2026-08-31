@@ -25,6 +25,10 @@ import { TaskDropdown } from '../components/organisms/TaskDropdown/TaskDropdown'
 import { ScoutingAssignmentModal } from '../components/organisms/ScoutingAssignmentModal/ScoutingAssignmentModal';
 import { ReportModal } from '../components/organisms/ReportModal/ReportModal';
 import { MaintenanceNoteModal } from '../components/organisms/MaintenanceNoteModal/MaintenanceNoteModal';
+import { MapUnavailableState } from '../components/organisms/MapUnavailableState/MapUnavailableState';
+import { mapUnavailableContent } from '../components/organisms/MapUnavailableState/MapUnavailableState.content';
+import { OffscreenBlockAwareness } from '../components/organisms/OffscreenBlockAwareness/OffscreenBlockAwareness';
+import { NewDashboardWelcomeModal } from '../components/organisms/NewDashboardWelcomeModal/NewDashboardWelcomeModal';
 import { AccountSettings } from '../components/pages/AccountSettings/AccountSettings';
 import {
   blocks,
@@ -489,8 +493,8 @@ function getConnectivityMeta(sensor) {
 function getRsrpStatusColor(signalHistory = []) {
   const latestSignal = signalHistory.at(-1);
   if (latestSignal == null) return '#666666';
-  if (latestSignal >= -95) return '#0F7A4F';
-  if (latestSignal >= -105) return '#EAAA46';
+  if (latestSignal >= -95) return '#37CC88';
+  if (latestSignal >= -105) return '#F9B709';
   return '#E11932';
 }
 
@@ -874,6 +878,14 @@ const pageGroups = [
       { id: 'scouting-mobile', label: 'Scouting Modal Mobile', component: <MobileScoutingPage /> },
       { id: 'report', label: 'AI Report Modal', component: <ReportPage /> },
       { id: 'maintenance-note-modal-mobile', label: 'Maintenance Note Modal Mobile', component: <MobileMaintenanceNoteModalPage /> },
+    ],
+  },
+  {
+    title: 'UX States',
+    pages: [
+      { id: 'map-unavailable-states', label: 'Map Unavailable States', component: <MapUnavailableStatesPage /> },
+      { id: 'distributed-block-awareness', label: 'Distributed Blocks', component: <DistributedBlocksPage /> },
+      { id: 'new-dashboard-welcome', label: 'New Dashboard Welcome', component: <NewDashboardWelcomePage /> },
     ],
   },
   {
@@ -1495,7 +1507,7 @@ function MaintenanceDeviceDetail({ sensor }) {
         series={[{
           label: 'RSRP (dBm)',
           data: sensor.signalHistory,
-          color: '#EAAA46',
+          color: '#151560',
         }]}
       />
       <div className={styles.maintenanceHistory} id="maintenance-history">
@@ -2705,6 +2717,51 @@ function AccountPage() {
       <AccountSettings />
     </div>
   );
+}
+
+const mapUnavailableOptions = [
+  { value: 'connection', label: mapUnavailableContent.connection.badge },
+  { value: 'onboarding', label: mapUnavailableContent.onboarding.badge },
+  { value: 'waitingForData', label: mapUnavailableContent.waitingForData.badge },
+  { value: 'paused', label: mapUnavailableContent.paused.badge },
+];
+
+function MapUnavailableStatesPage() {
+  const [activeState, setActiveState] = useState('connection');
+
+  return (
+    <div className={styles.uxStatePage}>
+      <div className={styles.uxStateToolbar}>
+        <div>
+          <Typography variant="h3">Map unavailable states</Typography>
+          <Typography variant="body-sm" color="secondary">
+            Shared pattern for empty map, setup, sync, and subscription scenarios.
+          </Typography>
+        </div>
+        <div className={styles.uxStateButtons} role="group" aria-label="Map unavailable examples">
+          {mapUnavailableOptions.map((option) => (
+            <button
+              className={`${styles.uxStateButton} ${option.value === activeState ? styles.activeUxStateButton : ''}`}
+              key={option.value}
+              type="button"
+              onClick={() => setActiveState(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <MapUnavailableState variant={activeState} className={styles.uxMapState} />
+    </div>
+  );
+}
+
+function DistributedBlocksPage() {
+  return <OffscreenBlockAwareness />;
+}
+
+function NewDashboardWelcomePage() {
+  return <NewDashboardWelcomeModal />;
 }
 
 function CenteredPreview({ children, className = '' }) {

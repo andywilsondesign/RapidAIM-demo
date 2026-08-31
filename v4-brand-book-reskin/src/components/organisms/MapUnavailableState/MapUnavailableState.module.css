@@ -1,0 +1,211 @@
+.shell {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: var(--color-bg-base);
+}
+
+.globalBanner {
+  position: relative;
+  z-index: 20;
+}
+
+.mapFrame {
+  position: relative;
+  flex: 1;
+  min-height: 34rem;
+  overflow: hidden;
+  background: #d8dde0;
+}
+
+.frozenMap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(25deg, rgba(96, 108, 112, 0.18) 0 16%, transparent 16% 100%),
+    linear-gradient(120deg, transparent 0 38%, rgba(74, 85, 91, 0.22) 38% 44%, transparent 44% 100%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.22) 0 26%, transparent 26% 100%),
+    #cdd3d5;
+  filter: grayscale(1) saturate(0.18);
+}
+
+.frozenMap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(244, 244, 244, 0.58);
+}
+
+.mapGrid {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(rgba(80, 91, 99, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(80, 91, 99, 0.14) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  transform: rotate(-9deg);
+}
+
+.mapBlock {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  border: 2px solid rgba(8, 8, 26, 0.34);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.blockNorth {
+  top: 16%;
+  left: 52%;
+  width: 11rem;
+  height: 6rem;
+  transform: rotate(8deg) skew(-6deg);
+}
+
+.blockEast {
+  top: 42%;
+  right: 14%;
+  width: 8rem;
+  height: 8rem;
+  transform: rotate(-14deg);
+}
+
+.blockSouth {
+  bottom: 15%;
+  left: 25%;
+  width: 13rem;
+  height: 7rem;
+  transform: rotate(13deg) skew(4deg);
+}
+
+.sensorDot {
+  position: absolute;
+  z-index: 2;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: rgba(8, 8, 26, 0.42);
+}
+
+.sensorDotOne {
+  top: 23%;
+  left: 61%;
+}
+
+.sensorDotTwo {
+  top: 49%;
+  right: 18%;
+}
+
+.sensorDotThree {
+  bottom: 23%;
+  left: 35%;
+}
+
+.messagePanel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  width: min(31rem, calc(100% - var(--spacing-8)));
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-lg);
+  transform: translate(-50%, -50%);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1700;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-4);
+  background: rgba(8, 8, 26, 0.42);
+}
+
+.dialog {
+  display: flex;
+  width: min(33rem, 100%);
+  max-height: calc(100vh - var(--spacing-8));
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.dialogHeader,
+.dialogFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
+.dialogHeader {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.dialogHeader > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.dialogBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+}
+
+.dialogFooter {
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-base);
+}
+
+@media (max-width: 700px) {
+  .mapFrame {
+    min-height: 42rem;
+  }
+
+  .messagePanel {
+    top: 48%;
+    padding: var(--spacing-4);
+  }
+
+  .actions,
+  .actions button,
+  .dialogFooter,
+  .dialogFooter button {
+    width: 100%;
+  }
+
+  .dialogFooter {
+    flex-direction: column-reverse;
+  }
+}
