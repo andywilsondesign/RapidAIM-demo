@@ -813,21 +813,12 @@ const translatePolygonToCenter = (polygon, targetCenter) => {
   return offsetPolygon(polygon, targetLat - sourceLat, targetLng - sourceLng);
 };
 
-const distributedFocusModes = [
-  { value: 'overview', label: 'Clustered view' },
-  { value: 'north', label: 'North blocks' },
-  { value: 'south', label: 'South blocks' },
-  { value: 'east', label: 'East blocks' },
-  { value: 'west', label: 'West blocks' },
-  { value: 'central', label: 'Central blocks' },
-];
-
 const distributedClusters = [
-  { id: 'north', name: 'North Ridge', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24, mobileX: 50, mobileY: 36 },
-  { id: 'south', name: 'South Basin', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74, mobileX: 50, mobileY: 68 },
-  { id: 'east', name: 'East Trial', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49, mobileX: 76, mobileY: 52 },
-  { id: 'west', name: 'West Road', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50, mobileX: 24, mobileY: 52 },
-  { id: 'central', name: 'Home Block', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50, mobileX: 50, mobileY: 52 },
+  { id: 'north', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24, mobileX: 50, mobileY: 36 },
+  { id: 'south', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74, mobileX: 50, mobileY: 68 },
+  { id: 'east', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49, mobileX: 76, mobileY: 52 },
+  { id: 'west', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50, mobileX: 24, mobileY: 52 },
+  { id: 'central', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50, mobileX: 50, mobileY: 52 },
 ];
 
 const distributedIndicatorEdges = {
@@ -835,23 +826,23 @@ const distributedIndicatorEdges = {
     south: 'bottom',
     east: 'right',
     west: 'left',
-    central: 'bottomRight',
+    central: 'bottom',
   },
   south: {
     north: 'top',
     east: 'right',
     west: 'left',
-    central: 'topRight',
+    central: 'top',
   },
   east: {
-    north: 'topLeft',
-    south: 'bottomLeft',
+    north: 'top',
+    south: 'bottom',
     west: 'left',
     central: 'left',
   },
   west: {
-    north: 'topRight',
-    south: 'bottomRight',
+    north: 'top',
+    south: 'bottom',
     east: 'right',
     central: 'right',
   },
@@ -873,20 +864,58 @@ const distributedBlockOffsets = [
 
 const distributedRiskSequence = ['high', 'medium', 'low', 'medium', 'high'];
 
-const buildDistributedBlockOverlays = (clusterId) => {
+const distributedClusterSequence = ['north', 'east', 'west', 'south', 'central', 'east', 'north', 'south'];
+const distributedRiskRank = { high: 3, medium: 2, low: 1 };
+const directionLabels = {
+  top: 'north',
+  right: 'east',
+  bottom: 'south',
+  left: 'west',
+};
+
+const getDistributedClusterIdForBlock = (blockId) => {
+  const blockIndex = rankingBlocks.findIndex((block) => block.id === blockId);
+  return blockIndex >= 0 ? distributedClusterSequence[blockIndex] : '';
+};
+
+const getDistributedClusterBlocks = (clusterId) => {
+  const assignedBlocks = rankingBlocks.filter((block, index) => distributedClusterSequence[index] === clusterId);
+  const cluster = distributedClusters.find((item) => item.id === clusterId);
+  if (!cluster) return assignedBlocks;
+
+  return Array.from({ length: cluster.count }, (_, index) => (
+    assignedBlocks[index] || {
+      id: `${cluster.id}-synthetic-block-${index + 1}`,
+      name: `Block ${index + 1}`,
+      riskLevel: distributedRiskSequence[index] || cluster.risk,
+    }
+  ));
+};
+
+const buildDistributedBlockOverlays = (clusterId, selectedBlockId = '', previewBlockId = '') => {
   const cluster = distributedClusters.find((item) => item.id === clusterId);
   if (!cluster) return [];
 
   const basePolygon = scalePolygon(selectedBlock.polygon, 0.82);
-  return Array.from({ length: cluster.count }, (_, index) => {
+  return getDistributedClusterBlocks(clusterId).map((block, index) => {
     const [latOffset, lngOffset] = distributedBlockOffsets[index] || [0, 0];
     const center = [cluster.center[0] + latOffset, cluster.center[1] + lngOffset];
+    let state = 'default';
+
+    if (block.id === selectedBlockId) {
+      state = 'selected';
+    }
+
+    if (block.id === previewBlockId && block.id !== selectedBlockId) {
+      state = 'hover';
+    }
+
     return {
-      id: `${cluster.id}-block-${index + 1}`,
-      label: `${cluster.name} ${index + 1}`,
+      id: block.id,
+      label: block.name,
       positions: translatePolygonToCenter(basePolygon, center),
-      severity: index === 0 ? cluster.risk : distributedRiskSequence[index] || cluster.risk,
-      state: index === 0 ? 'selected' : 'default',
+      severity: block.riskLevel || distributedRiskSequence[index] || cluster.risk,
+      state,
     };
   });
 };
@@ -894,12 +923,27 @@ const buildDistributedBlockOverlays = (clusterId) => {
 const getDistributedIndicators = (focusMode) => {
   if (focusMode === 'overview') return [];
   const edgeMap = distributedIndicatorEdges[focusMode] || {};
-  return distributedClusters
+  return Object.values(distributedClusters
     .filter((cluster) => cluster.id !== focusMode)
-    .map((cluster) => ({
-      ...cluster,
-      edge: edgeMap[cluster.id] || 'right',
-    }));
+    .reduce((groups, cluster) => {
+      const edge = edgeMap[cluster.id] || 'right';
+      const current = groups[edge];
+      const risk = current && distributedRiskRank[current.risk] > distributedRiskRank[cluster.risk]
+        ? current.risk
+        : cluster.risk;
+
+      groups[edge] = {
+        id: `edge-${edge}`,
+        edge,
+        directionLabel: directionLabels[edge],
+        targetId: current?.targetId || cluster.id,
+        count: (current?.count || 0) + cluster.count,
+        risk,
+        clusterIds: [...(current?.clusterIds || []), cluster.id],
+      };
+
+      return groups;
+    }, {}));
 };
 
 const rankedRanches = ranches
@@ -2993,16 +3037,34 @@ function DistributedBlocksPage() {
   const [focusMode, setFocusMode] = useState('overview');
   const [selectedBlockId, setSelectedBlockId] = useState('');
   const [isMobileRankingOpen, setIsMobileRankingOpen] = useState(false);
-  const [, setPreviewBlockId] = useState('');
+  const [previewBlockId, setPreviewBlockId] = useState('');
   const isMobile = useResponsiveMobileView();
   const activeCluster = distributedClusters.find((cluster) => cluster.id === focusMode);
-  const blockOverlays = focusMode === 'overview' ? [] : buildDistributedBlockOverlays(focusMode);
+  const selectedClusterId = getDistributedClusterIdForBlock(selectedBlockId);
+  const previewClusterId = getDistributedClusterIdForBlock(previewBlockId);
+  const blockOverlays = focusMode === 'overview'
+    ? []
+    : buildDistributedBlockOverlays(focusMode, selectedBlockId, previewBlockId);
   const indicators = getDistributedIndicators(focusMode);
+  const activeBlockId = previewBlockId || selectedBlockId;
+  const activeBlock = rankingBlocks.find((block) => block.id === activeBlockId);
+  const handleFocusModeChange = (mode) => {
+    setFocusMode(mode);
+    setPreviewBlockId('');
+
+    if (mode === 'overview' || mode !== selectedClusterId) {
+      setSelectedBlockId('');
+    }
+  };
+  const handleSelectedBlockChange = (blockId) => {
+    setSelectedBlockId(blockId);
+    setFocusMode(getDistributedClusterIdForBlock(blockId) || 'overview');
+  };
   const rankingPanel = (
     <PestPressureRankingPanel
-      activeBlockId={selectedBlockId}
+      activeBlockId={activeBlockId}
       onPreviewBlockChange={setPreviewBlockId}
-      onSelectedBlockChange={setSelectedBlockId}
+      onSelectedBlockChange={handleSelectedBlockChange}
     />
   );
 
@@ -3031,14 +3093,15 @@ function DistributedBlocksPage() {
         lat: (activeCluster?.center[0] || sensor.lat) + (distributedBlockOffsets[index]?.[0] || 0),
         lng: (activeCluster?.center[1] || sensor.lng) + (distributedBlockOffsets[index]?.[1] || 0),
       }))}
-      activeBlockLabel={activeCluster?.name || 'Distributed blocks'}
+      activeBlockLabel={activeBlock?.name || ''}
       mapNotice={isMobile && isMobileRankingOpen ? null : (
         <OffscreenBlockAwareness
           focusMode={focusMode}
-          focusModes={distributedFocusModes}
           clusters={distributedClusters}
           indicators={indicators}
-          onFocusModeChange={setFocusMode}
+          activeClusterId={selectedClusterId}
+          previewClusterId={previewClusterId}
+          onFocusModeChange={handleFocusModeChange}
           mobileMode="overlay"
         />
       )}

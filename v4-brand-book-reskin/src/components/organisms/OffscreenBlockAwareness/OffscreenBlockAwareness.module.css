@@ -3,50 +3,17 @@
   inset: 0;
   z-index: 760;
   pointer-events: none;
+  --aware-visible-top: calc(var(--spacing-5) + 2.25rem + var(--spacing-5));
+  --aware-visible-right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
+  --aware-visible-bottom: var(--spacing-5);
+  --aware-visible-left: calc(var(--layout-map-panel-width) + (var(--spacing-5) * 2));
+  --aware-edge-size: 2.75rem;
 }
 
-.focusControls,
 .clusterMarker,
 .offscreenIndicator,
 .mapFooter {
   pointer-events: auto;
-}
-
-.focusControls {
-  position: absolute;
-  top: var(--spacing-5);
-  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
-  display: flex;
-  max-width: min(38rem, calc(100% - var(--layout-map-panel-width) - var(--layout-control-panel-width) - (var(--spacing-5) * 5)));
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--spacing-2);
-}
-
-.focusButton {
-  min-height: 2.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  padding: 0 var(--spacing-3);
-}
-
-.focusButton:hover,
-.focusButton:focus-visible,
-.activeFocusButton {
-  border-color: var(--color-border-focus);
-  color: var(--color-brand-primary);
-  outline: none;
-}
-
-.activeFocusButton {
-  background: var(--color-bg-hover);
 }
 
 .clusterLayer {
@@ -57,12 +24,10 @@
 .clusterMarker,
 .offscreenIndicator {
   position: absolute;
-  display: inline-grid;
-  min-width: 7.1rem;
-  min-height: 3.35rem;
-  grid-template-columns: auto minmax(0, 1fr);
+  display: inline-flex;
   align-items: center;
-  column-gap: var(--spacing-2);
+  justify-content: center;
+  gap: var(--spacing-2);
   border: 2px solid currentColor;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.92);
@@ -76,6 +41,10 @@
 .clusterMarker {
   top: var(--cluster-y);
   left: var(--cluster-x);
+  width: 3.25rem;
+  height: 3.25rem;
+  min-width: 3.25rem;
+  min-height: 3.25rem;
   transform: translate(-50%, -50%);
 }
 
@@ -93,9 +62,14 @@
 .clusterMarker:hover,
 .clusterMarker:focus-visible,
 .offscreenIndicator:hover,
-.offscreenIndicator:focus-visible {
+.offscreenIndicator:focus-visible,
+.activeClusterMarker {
   outline: 3px solid rgba(255, 255, 255, 0.72);
   outline-offset: 2px;
+}
+
+.clusterMarker.activeClusterMarker {
+  transform: translate(-50%, -50%) scale(1.08);
 }
 
 .clusterCount {
@@ -112,18 +86,6 @@
   font-family: var(--font-family-metric);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
-}
-
-.clusterLabel {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  color: currentColor;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .offscreenIndicator > span:first-child {
@@ -148,54 +110,64 @@
 }
 
 .top {
-  top: calc(var(--spacing-5) + 4rem);
-  left: 50%;
-  transform: translateX(-50%);
+  top: var(--aware-visible-top);
+  right: var(--aware-visible-right);
+  left: var(--aware-visible-left);
+  height: var(--aware-edge-size);
+  transform: none;
 }
 
 .bottom {
-  bottom: calc(var(--spacing-5) + 5.25rem);
-  left: 50%;
-  transform: translateX(-50%);
+  right: var(--aware-visible-right);
+  bottom: var(--aware-visible-bottom);
+  left: var(--aware-visible-left);
+  height: var(--aware-edge-size);
+  transform: none;
 }
 
 .left {
-  top: 40%;
-  left: calc(var(--spacing-5) + var(--layout-map-panel-width) + var(--spacing-5));
-  transform: translateY(-50%);
+  top: var(--aware-visible-top);
+  bottom: var(--aware-visible-bottom);
+  left: var(--aware-visible-left);
+  width: var(--aware-edge-size);
+  flex-direction: column;
+  transform: none;
 }
 
 .right {
-  top: 40%;
-  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
-  transform: translateY(-50%);
+  top: var(--aware-visible-top);
+  right: var(--aware-visible-right);
+  bottom: var(--aware-visible-bottom);
+  width: var(--aware-edge-size);
+  flex-direction: column;
+  transform: none;
 }
 
 .topLeft {
-  top: calc(var(--spacing-5) + 4rem);
-  left: calc(var(--spacing-5) + var(--layout-map-panel-width) + var(--spacing-5));
+  top: var(--aware-visible-top);
+  left: var(--aware-visible-left);
 }
 
 .topRight {
-  top: calc(var(--spacing-5) + 4rem);
-  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
+  top: var(--aware-visible-top);
+  right: var(--aware-visible-right);
 }
 
 .bottomLeft {
-  bottom: calc(var(--spacing-5) + 5.25rem);
-  left: calc(var(--spacing-5) + var(--layout-map-panel-width) + var(--spacing-5));
+  bottom: var(--aware-visible-bottom);
+  left: var(--aware-visible-left);
 }
 
 .bottomRight {
-  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
-  bottom: calc(var(--spacing-5) + 5.25rem);
+  right: var(--aware-visible-right);
+  bottom: var(--aware-visible-bottom);
 }
 
 .mapFooter {
   position: absolute;
-  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2) + 4rem);
-  bottom: var(--spacing-5);
-  left: calc(var(--spacing-5) + var(--layout-map-panel-width) + var(--spacing-5));
+  right: calc(var(--aware-visible-right) + (var(--spacing-8) * 2));
+  bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--spacing-3));
+  left: calc(var(--aware-visible-left) + (var(--spacing-8) * 2));
   display: flex;
   min-height: 3rem;
   align-items: center;
@@ -221,9 +193,13 @@
     gap: var(--spacing-4);
     padding: var(--spacing-4);
     background: var(--color-bg-base);
+    --aware-visible-top: var(--spacing-4);
+    --aware-visible-right: var(--spacing-4);
+    --aware-visible-bottom: var(--spacing-4);
+    --aware-visible-left: var(--spacing-4);
+    --aware-edge-size: 2.4rem;
   }
 
-  .focusControls,
   .clusterLayer,
   .mapFooter {
     position: static;
@@ -236,10 +212,6 @@
     flex-direction: column;
   }
 
-  .focusControls {
-    justify-content: flex-start;
-  }
-
   .clusterLayer {
     position: relative;
     min-height: 30rem;
@@ -249,11 +221,10 @@
   }
 
   .clusterMarker {
-    min-width: 6.5rem;
-  }
-
-  .clusterLabel {
-    max-width: 4rem;
+    width: 3rem;
+    height: 3rem;
+    min-width: 3rem;
+    min-height: 3rem;
   }
 
   .top,
@@ -280,27 +251,11 @@
     min-height: 0;
     padding: 0;
     background: transparent;
-  }
-
-  .mobileOverlayMode .focusControls {
-    position: absolute;
-    top: 12.75rem;
-    right: var(--spacing-3);
-    left: var(--spacing-3);
-    display: flex;
-    width: auto;
-    max-width: none;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: var(--spacing-1);
-  }
-
-  .mobileOverlayMode .focusButton {
-    min-width: max-content;
-    min-height: 2rem;
-    padding: 0 var(--spacing-2);
-    font-size: var(--font-size-xs);
+    --aware-visible-top: 8.5rem;
+    --aware-visible-right: var(--spacing-3);
+    --aware-visible-bottom: 6.25rem;
+    --aware-visible-left: var(--spacing-3);
+    --aware-edge-size: 2.35rem;
   }
 
   .mobileOverlayMode .clusterLayer {
@@ -314,8 +269,6 @@
 
   .mobileOverlayMode .clusterMarker,
   .mobileOverlayMode .offscreenIndicator {
-    min-width: 5.85rem;
-    min-height: 3rem;
     padding: var(--spacing-1) var(--spacing-2);
   }
 
@@ -330,29 +283,20 @@
     font-size: var(--font-size-xs);
   }
 
-  .mobileOverlayMode .clusterLabel {
-    max-width: 3.4rem;
-  }
-
   .mobileOverlayMode .top {
-    top: 18rem;
-  }
-
-  .mobileOverlayMode .left,
-  .mobileOverlayMode .right {
-    top: 48%;
+    top: var(--aware-visible-top);
   }
 
   .mobileOverlayMode .bottom,
   .mobileOverlayMode .bottomLeft,
   .mobileOverlayMode .bottomRight {
-    bottom: 6.25rem;
+    bottom: var(--aware-visible-bottom);
   }
 
   .mobileOverlayMode .mapFooter {
     position: absolute;
     right: var(--spacing-3);
-    bottom: 6.25rem;
+    bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--spacing-3));
     left: var(--spacing-3);
     align-items: stretch;
     flex-direction: column;
