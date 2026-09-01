@@ -2912,14 +2912,10 @@ function WaitingForDataMapNotice() {
   const bannerMessage = (
     <>
       {content.message}
-      {!isOpen && (
-        <>
-          {' '}
-          <button className={styles.inSituBannerLink} type="button" onClick={() => setIsOpen(true)}>
-            {content.resumeAction}
-          </button>
-        </>
-      )}
+      {' '}
+      <button className={styles.inSituBannerLink} type="button" onClick={() => setIsOpen(true)}>
+        {content.resumeAction}
+      </button>
     </>
   );
 
@@ -2933,8 +2929,8 @@ function WaitingForDataMapNotice() {
         className={styles.inSituBanner}
       />
       {isOpen && (
-        <div className={styles.inSituPanelZone}>
-          <div className={styles.inSituMessagePanel} role="dialog" aria-modal="false" aria-labelledby="waiting-data-map-example-title">
+        <div className={styles.inSituLightbox} role="presentation">
+          <div className={styles.inSituMessagePanel} role="dialog" aria-modal="true" aria-labelledby="waiting-data-map-example-title">
             <div className={styles.inSituMessageHeader}>
               <Badge variant={content.badgeVariant}>{content.badge}</Badge>
               <Button variant="ghost" size="sm" type="button" aria-label="Close waiting for data message" onClick={() => setIsOpen(false)}>

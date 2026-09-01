@@ -40,7 +40,7 @@ export const MapUnavailableState = ({
   const bannerMessage = (
     <>
       {content.message}
-      {canDismissMessage && !isMessageOpen && (
+      {canDismissMessage && (
         <>
           {' '}
           <button className={styles.bannerLink} type="button" onClick={() => setIsMessageOpen(true)}>
@@ -70,8 +70,11 @@ export const MapUnavailableState = ({
           <span className={`${styles.sensorDot} ${styles.sensorDotTwo}`} />
           <span className={`${styles.sensorDot} ${styles.sensorDotThree}`} />
         </div>
-        {isMessageOpen && (
-          <div className={styles.messagePanel}>
+      </div>
+
+      {isMessageOpen && (
+        <div className={styles.messageBackdrop} role="presentation">
+          <div className={styles.messagePanel} role="dialog" aria-modal="true" aria-labelledby={`${variant}-map-message-title`}>
             <div className={styles.messageHeader}>
               <Badge variant={content.badgeVariant}>{content.badge}</Badge>
               {content.dismissAction && (
@@ -81,7 +84,7 @@ export const MapUnavailableState = ({
               )}
             </div>
             <div className={styles.copy}>
-              <Typography variant="h3">{content.title}</Typography>
+              <Typography variant="h3" id={`${variant}-map-message-title`}>{content.title}</Typography>
               <Typography variant="body" color="secondary">{content.detail}</Typography>
             </div>
             <div className={styles.actions}>
@@ -100,8 +103,8 @@ export const MapUnavailableState = ({
               </Button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {isDetailsOpen && (
         <div className={styles.dialogBackdrop} role="presentation">
