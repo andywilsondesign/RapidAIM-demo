@@ -272,4 +272,89 @@
   .bottomRight {
     right: var(--spacing-3);
   }
+
+  .overlay.mobileOverlayMode {
+    position: absolute;
+    inset: 0;
+    display: block;
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .mobileOverlayMode .focusControls {
+    position: absolute;
+    top: 12.75rem;
+    right: var(--spacing-3);
+    left: var(--spacing-3);
+    display: flex;
+    width: auto;
+    max-width: none;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: var(--spacing-1);
+  }
+
+  .mobileOverlayMode .focusButton {
+    min-width: max-content;
+    min-height: 2rem;
+    padding: 0 var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .mobileOverlayMode .clusterLayer {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    overflow: visible;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .mobileOverlayMode .clusterMarker,
+  .mobileOverlayMode .offscreenIndicator {
+    min-width: 5.85rem;
+    min-height: 3rem;
+    padding: var(--spacing-1) var(--spacing-2);
+  }
+
+  .mobileOverlayMode .clusterMarker {
+    top: var(--cluster-mobile-y);
+    left: var(--cluster-mobile-x);
+  }
+
+  .mobileOverlayMode .clusterCount {
+    width: 1.45rem;
+    height: 1.45rem;
+    font-size: var(--font-size-xs);
+  }
+
+  .mobileOverlayMode .clusterLabel {
+    max-width: 3.4rem;
+  }
+
+  .mobileOverlayMode .top {
+    top: 18rem;
+  }
+
+  .mobileOverlayMode .left,
+  .mobileOverlayMode .right {
+    top: 48%;
+  }
+
+  .mobileOverlayMode .bottom,
+  .mobileOverlayMode .bottomLeft,
+  .mobileOverlayMode .bottomRight {
+    bottom: 6.25rem;
+  }
+
+  .mobileOverlayMode .mapFooter {
+    position: absolute;
+    right: var(--spacing-3);
+    bottom: 6.25rem;
+    left: var(--spacing-3);
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

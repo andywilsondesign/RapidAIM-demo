@@ -823,11 +823,11 @@ const distributedFocusModes = [
 ];
 
 const distributedClusters = [
-  { id: 'north', name: 'North Ridge', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24 },
-  { id: 'south', name: 'South Basin', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74 },
-  { id: 'east', name: 'East Trial', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49 },
-  { id: 'west', name: 'West Road', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50 },
-  { id: 'central', name: 'Home Block', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50 },
+  { id: 'north', name: 'North Ridge', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24, mobileX: 50, mobileY: 36 },
+  { id: 'south', name: 'South Basin', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74, mobileX: 50, mobileY: 68 },
+  { id: 'east', name: 'East Trial', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49, mobileX: 76, mobileY: 52 },
+  { id: 'west', name: 'West Road', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50, mobileX: 24, mobileY: 52 },
+  { id: 'central', name: 'Home Block', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50, mobileX: 50, mobileY: 52 },
 ];
 
 const distributedIndicatorEdges = {
@@ -985,6 +985,7 @@ const pageGroups = [
     title: 'UX States',
     pages: [
       { id: 'map-unavailable-states', label: 'Map Unavailable States', component: <MapUnavailableStatesPage /> },
+      { id: 'waiting-data-map-example', label: 'Waiting Data On Map', component: <WaitingDataMapExamplePage /> },
       { id: 'distributed-block-awareness', label: 'Distributed Blocks', component: <DistributedBlocksPage /> },
       { id: 'new-dashboard-welcome', label: 'New Dashboard Welcome', component: <NewDashboardWelcomePage /> },
     ],
@@ -2861,26 +2862,155 @@ function MapUnavailableStatesPage() {
   );
 }
 
-function DistributedBlocksPage() {
-  const [focusMode, setFocusMode] = useState('overview');
-  const [selectedBlockId, setSelectedBlockId] = useState('');
-  const [, setPreviewBlockId] = useState('');
-  const activeCluster = distributedClusters.find((cluster) => cluster.id === focusMode);
-  const blockOverlays = focusMode === 'overview' ? [] : buildDistributedBlockOverlays(focusMode);
-  const indicators = getDistributedIndicators(focusMode);
+function WaitingForDataMapNotice() {
+  const [isOpen, setIsOpen] = useState(true);
+  const content = mapUnavailableContent.waitingForData;
+  const bannerMessage = (
+    <>
+      {content.message}
+      {!isOpen && (
+        <>
+          {' '}
+          <button className={styles.inSituBannerLink} type="button" onClick={() => setIsOpen(true)}>
+            {content.resumeAction}
+          </button>
+        </>
+      )}
+    </>
+  );
+
+  return (
+    <section className={styles.inSituMapNotice} aria-label="Waiting for data map notice">
+      <Alert
+        type="global"
+        variant={content.alertVariant}
+        title={content.badge}
+        message={bannerMessage}
+        className={styles.inSituBanner}
+      />
+      {isOpen && (
+        <div className={styles.inSituPanelZone}>
+          <div className={styles.inSituMessagePanel} role="dialog" aria-modal="false" aria-labelledby="waiting-data-map-example-title">
+            <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+            <div className={styles.inSituNoticeCopy}>
+              <Typography variant="h3" id="waiting-data-map-example-title">{content.title}</Typography>
+              <Typography variant="body" color="secondary">{content.detail}</Typography>
+            </div>
+            <div className={styles.inSituNoticeActions}>
+              <Button variant="secondary" type="button" onClick={() => setIsOpen(false)}>
+                {content.dismissAction}
+              </Button>
+              <Button variant="secondary" type="button">
+                {content.secondaryAction}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function WaitingDataContextPanel() {
+  const waitingRows = sensors.slice(0, 4).map((sensor) => ({
+    id: sensor.id,
+    name: sensor.name,
+    status: 'Online',
+    sync: 'Awaiting first detection',
+  }));
+
+  return (
+    <DetailPanel
+      title={selectedBlock.name}
+      eyebrow={`${selectedRanch.name} / ${selectedBlock.pestName}`}
+      sections={[
+        {
+          label: 'Sensors',
+          badge: waitingRows.length,
+          content: (
+            <div className={styles.waitingDataSensorList}>
+              {waitingRows.map((sensor) => (
+                <div className={styles.waitingDataSensorRow} key={sensor.id}>
+                  <span className={styles.waitingDataSensorDot} aria-hidden="true" />
+                  <div>
+                    <Typography variant="body-sm" weight="semibold">{sensor.name}</Typography>
+                    <Typography variant="caption" color="secondary">{sensor.sync}</Typography>
+                  </div>
+                  <Badge variant="success">{sensor.status}</Badge>
+                </div>
+              ))}
+            </div>
+          ),
+        },
+      ]}
+    >
+      <div className={styles.waitingDataPanelStack}>
+        <Alert
+          type="inline"
+          variant="warning"
+          title="Waiting for data"
+          message="Sensors are connected, but recent detections have not arrived yet."
+        />
+        <div className={styles.waitingDataStats}>
+          <StatCard label="Active sensors" value="12/14" benchmark="Connected to this block" />
+          <StatCard label="Recent detections" value="Pending" benchmark="No detections received yet" />
+        </div>
+      </div>
+    </DetailPanel>
+  );
+}
+
+function WaitingDataMapExamplePage() {
+  const waitingSensors = sensors.slice(0, 5).map((sensor) => ({
+    ...sensor,
+    count: 0,
+    severity: 'low',
+    status: 'Online',
+    lastSync: 'Awaiting first detection',
+  }));
 
   return (
     <DesktopShell
-      detailPanel={(
-        <PestPressureRankingPanel
-          activeBlockId={selectedBlockId}
-          onPreviewBlockChange={setPreviewBlockId}
-          onSelectedBlockChange={setSelectedBlockId}
-        />
-      )}
+      detailPanel={<WaitingDataContextPanel />}
+      scopeExperiment
+      scopeLevel="block"
+      mapSensors={waitingSensors}
+      mapNotice={<WaitingForDataMapNotice />}
+    />
+  );
+}
+
+function DistributedBlocksPage() {
+  const [focusMode, setFocusMode] = useState('overview');
+  const [selectedBlockId, setSelectedBlockId] = useState('');
+  const [isMobileRankingOpen, setIsMobileRankingOpen] = useState(false);
+  const [, setPreviewBlockId] = useState('');
+  const isMobile = useResponsiveMobileView();
+  const activeCluster = distributedClusters.find((cluster) => cluster.id === focusMode);
+  const blockOverlays = focusMode === 'overview' ? [] : buildDistributedBlockOverlays(focusMode);
+  const indicators = getDistributedIndicators(focusMode);
+  const rankingPanel = (
+    <PestPressureRankingPanel
+      activeBlockId={selectedBlockId}
+      onPreviewBlockChange={setPreviewBlockId}
+      onSelectedBlockChange={setSelectedBlockId}
+    />
+  );
+
+  return (
+    <DesktopShell
+      detailPanel={isMobile ? (
+        <DistributedBlocksMobileRankingPanel
+          isOpen={isMobileRankingOpen}
+          onToggle={() => setIsMobileRankingOpen((current) => !current)}
+        >
+          {rankingPanel}
+        </DistributedBlocksMobileRankingPanel>
+      ) : rankingPanel}
       scopeExperiment
       scopeLevel="ranking"
       contentHeightPanel
+      shellClassName={`${styles.distributedBlocksShell} ${isMobile && !isMobileRankingOpen ? styles.distributedBlocksShellPanelCollapsed : ''}`}
       blockPolygon={[]}
       blockOverlays={blockOverlays}
       mapCenter={activeCluster?.center || [36.65, -119.82]}
@@ -2893,21 +3023,86 @@ function DistributedBlocksPage() {
         lng: (activeCluster?.center[1] || sensor.lng) + (distributedBlockOffsets[index]?.[1] || 0),
       }))}
       activeBlockLabel={activeCluster?.name || 'Distributed blocks'}
-      mapNotice={(
+      mapNotice={isMobile && isMobileRankingOpen ? null : (
         <OffscreenBlockAwareness
           focusMode={focusMode}
           focusModes={distributedFocusModes}
           clusters={distributedClusters}
           indicators={indicators}
           onFocusModeChange={setFocusMode}
+          mobileMode="overlay"
         />
       )}
     />
   );
 }
 
+function DistributedBlocksMobileRankingPanel({ isOpen, onToggle, children }) {
+  return (
+    <div className={styles.distributedBlocksMobilePanel}>
+      <button
+        className={styles.distributedBlocksMobileToggle}
+        type="button"
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <span>
+          <Typography variant="h4">Pest pressure ranking</Typography>
+          <Typography variant="caption" color="secondary">
+            {isOpen ? 'Collapse to review the map' : 'Expand to review block rankings'}
+          </Typography>
+        </span>
+        <span className="material-symbols-rounded" aria-hidden="true">
+          {isOpen ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}
+        </span>
+      </button>
+      {isOpen && (
+        <div className={styles.distributedBlocksMobileContent}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+DistributedBlocksMobileRankingPanel.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
 function NewDashboardWelcomePage() {
-  return <NewDashboardWelcomeModal />;
+  const [activeTab, setActiveTab] = useState('betaPrompt');
+  const options = [
+    { value: 'betaPrompt', label: 'Old dashboard prompt' },
+    { value: 'welcome', label: 'New dashboard welcome' },
+  ];
+
+  return (
+    <div className={styles.uxStatePage}>
+      <div className={styles.uxStateToolbar}>
+        <div>
+          <Typography variant="h3">New dashboard onboarding</Typography>
+          <Typography variant="body-sm" color="secondary">
+            Popup copy examples for turning on the beta and orientating users when they first arrive.
+          </Typography>
+        </div>
+        <div className={styles.uxStateButtons} role="group" aria-label="New dashboard onboarding examples">
+          {options.map((option) => (
+            <button
+              className={`${styles.uxStateButton} ${option.value === activeTab ? styles.activeUxStateButton : ''}`}
+              key={option.value}
+              type="button"
+              onClick={() => setActiveTab(option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <NewDashboardWelcomeModal variant={activeTab} className={styles.newDashboardOnboardingPreview} />
+    </div>
+  );
 }
 
 function CenteredPreview({ children, className = '' }) {

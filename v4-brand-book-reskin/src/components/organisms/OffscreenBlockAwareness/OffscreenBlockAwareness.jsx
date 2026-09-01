@@ -38,12 +38,16 @@ export const OffscreenBlockAwareness = ({
   clusters = defaultClusters,
   indicators = [],
   onFocusModeChange,
+  mobileMode = 'panel',
   className = '',
 }) => {
   const isOverview = focusMode === 'overview';
 
   return (
-    <section className={`${styles.overlay} ${className}`} aria-label="Distributed block awareness controls">
+    <section
+      className={`${styles.overlay} ${mobileMode === 'overlay' ? styles.mobileOverlayMode : ''} ${className}`}
+      aria-label="Distributed block awareness controls"
+    >
       <div className={styles.focusControls} role="group" aria-label="Distributed block map examples">
         {focusModes.map((mode) => (
           <button
@@ -63,7 +67,12 @@ export const OffscreenBlockAwareness = ({
             <button
               className={`${styles.clusterMarker} ${styles[`cluster-${cluster.risk}`]}`}
               key={cluster.id}
-              style={{ '--cluster-x': `${cluster.x}%`, '--cluster-y': `${cluster.y}%` }}
+              style={{
+                '--cluster-x': `${cluster.x}%`,
+                '--cluster-y': `${cluster.y}%`,
+                '--cluster-mobile-x': `${cluster.mobileX ?? cluster.x}%`,
+                '--cluster-mobile-y': `${cluster.mobileY ?? cluster.y}%`,
+              }}
               type="button"
               onClick={() => onFocusModeChange?.(cluster.id)}
               aria-label={`${cluster.name}, ${cluster.count} block cluster`}
@@ -111,6 +120,8 @@ const clusterShape = PropTypes.shape({
   risk: PropTypes.oneOf(['high', 'medium', 'low']).isRequired,
   x: PropTypes.number,
   y: PropTypes.number,
+  mobileX: PropTypes.number,
+  mobileY: PropTypes.number,
   edge: PropTypes.string,
 });
 
@@ -123,5 +134,6 @@ OffscreenBlockAwareness.propTypes = {
   clusters: PropTypes.arrayOf(clusterShape),
   indicators: PropTypes.arrayOf(clusterShape),
   onFocusModeChange: PropTypes.func,
+  mobileMode: PropTypes.oneOf(['panel', 'overlay']),
   className: PropTypes.string,
 };

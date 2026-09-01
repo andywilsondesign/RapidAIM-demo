@@ -11,6 +11,24 @@
   z-index: 20;
 }
 
+.bannerLink {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.bannerLink:hover,
+.bannerLink:focus-visible {
+  outline: none;
+  text-decoration-thickness: 2px;
+}
+
 .mapFrame {
   position: relative;
   flex: 1;

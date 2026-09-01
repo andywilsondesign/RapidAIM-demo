@@ -203,6 +203,137 @@
   min-height: calc(100vh - 6rem);
 }
 
+.newDashboardOnboardingPreview {
+  min-height: calc(100vh - 6rem);
+}
+
+.inSituMapNotice {
+  position: absolute;
+  inset: 0;
+  z-index: 780;
+  pointer-events: none;
+}
+
+.inSituBanner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  box-shadow: var(--shadow-sm);
+  pointer-events: auto;
+}
+
+.inSituBannerLink {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.inSituBannerLink:hover,
+.inSituBannerLink:focus-visible {
+  outline: none;
+  text-decoration-thickness: 2px;
+}
+
+.inSituPanelZone {
+  position: absolute;
+  top: 0;
+  right: calc(var(--layout-control-panel-width) + (var(--spacing-5) * 2));
+  bottom: 0;
+  left: calc(var(--layout-map-panel-width) + (var(--spacing-5) * 2));
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.inSituMessagePanel {
+  display: flex;
+  width: min(31rem, calc(100% - var(--spacing-8)));
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  padding: var(--spacing-6);
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+}
+
+.inSituNoticeCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.inSituNoticeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+.waitingDataPanelStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.waitingDataStats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-3);
+}
+
+.waitingDataSensorList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.waitingDataSensorRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.waitingDataSensorDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--color-status-green);
+  box-shadow: 0 0 0 3px var(--color-status-green-bg);
+}
+
+.distributedBlocksMobilePanel {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex-direction: column;
+  background: var(--color-bg-panel);
+}
+
+.distributedBlocksMobileToggle {
+  display: none;
+}
+
+.distributedBlocksMobileContent {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
 .desktopShell {
   display: flex;
   min-width: min(100%, var(--layout-desktop-min-width));
@@ -1909,6 +2040,68 @@
     left: var(--spacing-3);
     width: auto;
     max-height: min(62svh, 42rem);
+  }
+
+  .distributedBlocksShell .leftRail,
+  .distributedBlocksShell .leftRailWithContext {
+    z-index: 1500;
+    overflow: hidden;
+    max-height: min(58svh, 34rem);
+    border-radius: var(--radius-xl);
+  }
+
+  .distributedBlocksShellPanelCollapsed .leftRail,
+  .distributedBlocksShellPanelCollapsed .leftRailWithContext {
+    max-height: 5.25rem;
+  }
+
+  .distributedBlocksMobilePanel {
+    width: 100%;
+    height: 100%;
+    background: var(--color-panel-header-bg);
+  }
+
+  .distributedBlocksMobileToggle {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 0;
+    background: var(--color-panel-header-bg);
+    color: var(--color-panel-header-text);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+  }
+
+  .distributedBlocksMobileToggle > span:first-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .distributedBlocksMobileToggle h4,
+  .distributedBlocksMobileToggle p {
+    color: var(--color-panel-header-text);
+  }
+
+  .distributedBlocksMobileToggle > span:last-child {
+    flex: 0 0 auto;
+    font-size: var(--font-size-2xl);
+  }
+
+  .distributedBlocksMobileContent {
+    overflow: auto;
+  }
+
+  .distributedBlocksMobileContent > section {
+    width: 100%;
+    border-radius: 0;
   }
 
   .parentContextLink {

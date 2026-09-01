@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge } from '../../atoms/Badge/Badge';
 import { Button } from '../../atoms/Button/Button';
@@ -20,7 +20,14 @@ export const MapUnavailableState = ({
   onSecondaryAction,
 }) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isMessageOpen, setIsMessageOpen] = useState(true);
   const content = mapUnavailableContent[variant];
+  const canDismissMessage = Boolean(content.dismissAction);
+
+  useEffect(() => {
+    setIsMessageOpen(true);
+    setIsDetailsOpen(false);
+  }, [variant]);
 
   const handleSecondaryAction = () => {
     if (onSecondaryAction) {
@@ -30,13 +37,27 @@ export const MapUnavailableState = ({
     setIsDetailsOpen(true);
   };
 
+  const bannerMessage = (
+    <>
+      {content.message}
+      {canDismissMessage && !isMessageOpen && (
+        <>
+          {' '}
+          <button className={styles.bannerLink} type="button" onClick={() => setIsMessageOpen(true)}>
+            {content.resumeAction || 'Review message'}
+          </button>
+        </>
+      )}
+    </>
+  );
+
   return (
     <section className={`${styles.shell} ${className}`} aria-label={`${content.title} map state`}>
       <Alert
         type="global"
         variant={content.alertVariant}
         title={content.badge}
-        message={content.message}
+        message={bannerMessage}
         className={styles.globalBanner}
       />
       <div className={styles.mapFrame} role="status" aria-live="polite">
@@ -49,23 +70,30 @@ export const MapUnavailableState = ({
           <span className={`${styles.sensorDot} ${styles.sensorDotTwo}`} />
           <span className={`${styles.sensorDot} ${styles.sensorDotThree}`} />
         </div>
-        <div className={styles.messagePanel}>
-          <Badge variant={content.badgeVariant}>{content.badge}</Badge>
-          <div className={styles.copy}>
-            <Typography variant="h3">{content.title}</Typography>
-            <Typography variant="body" color="secondary">{content.detail}</Typography>
-          </div>
-          <div className={styles.actions}>
-            {content.primaryAction && (
-              <Button variant="primary" type="button" onClick={() => onPrimaryAction?.(variant)}>
-                {content.primaryAction}
+        {isMessageOpen && (
+          <div className={styles.messagePanel}>
+            <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+            <div className={styles.copy}>
+              <Typography variant="h3">{content.title}</Typography>
+              <Typography variant="body" color="secondary">{content.detail}</Typography>
+            </div>
+            <div className={styles.actions}>
+              {content.primaryAction && (
+                <Button variant="primary" type="button" onClick={() => onPrimaryAction?.(variant)}>
+                  {content.primaryAction}
+                </Button>
+              )}
+              {content.dismissAction && (
+                <Button variant="secondary" type="button" onClick={() => setIsMessageOpen(false)}>
+                  {content.dismissAction}
+                </Button>
+              )}
+              <Button variant="secondary" type="button" onClick={handleSecondaryAction}>
+                {content.secondaryAction}
               </Button>
-            )}
-            <Button variant="secondary" type="button" onClick={handleSecondaryAction}>
-              {content.secondaryAction}
-            </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {isDetailsOpen && (
