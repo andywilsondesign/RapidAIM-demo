@@ -25,6 +25,11 @@ const BLOCK_RISK_COLORS = {
   },
 };
 
+const BLOCK_HIGHLIGHT_COLORS = {
+  outer: 'rgba(8, 8, 26, 0.82)',
+  inner: '#FFFFFF',
+};
+
 const getSensorHealthState = (sensor) => {
   if (sensor.severity === 'offline' || sensor.status === 'Inactive' || sensor.signal === 'Offline') {
     return 'offline';
@@ -351,6 +356,18 @@ export const InteractiveMap = ({
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
 
+  const getBlockHighlightPathOptions = (layer) => ({
+    color: BLOCK_HIGHLIGHT_COLORS[layer] || BLOCK_HIGHLIGHT_COLORS.inner,
+    fill: false,
+    fillOpacity: 0,
+    interactive: false,
+    lineCap: 'round',
+    lineJoin: 'round',
+    opacity: layer === 'outer' ? 0.78 : 0.96,
+    weight: layer === 'outer' ? 10 : 7,
+    dashArray: null,
+  });
+
   const getBlockPathOptions = (severity, state = 'default', visualStyle = 'risk') => {
     if (visualStyle === 'idle') {
       const idlePalette = BLOCK_RISK_COLORS.idle;
@@ -363,10 +380,10 @@ export const InteractiveMap = ({
       if (state === 'selected') {
         return {
           ...idleBase,
-          color: '#FFFFFF',
-          fillOpacity: 0.42,
+          color: idlePalette.stroke,
+          fillOpacity: 0.38,
           opacity: 1,
-          weight: 5,
+          weight: 3,
           dashArray: null,
         };
       }
@@ -377,9 +394,8 @@ export const InteractiveMap = ({
           color: idlePalette.stroke,
           fillOpacity: 0.34,
           opacity: 0.96,
-          weight: 4,
+          weight: 3,
           dashArray: null,
-          className: styles.blockPathHover,
         };
       }
 
@@ -442,10 +458,10 @@ export const InteractiveMap = ({
     if (state === 'selected') {
       return {
         ...baseOptions,
-        color: '#FFFFFF',
-        fillOpacity: 0.46,
+        color: palette.stroke,
+        fillOpacity: 0.42,
         opacity: 1,
-        weight: 6,
+        weight: 3,
         dashArray: null,
       };
     }
@@ -456,9 +472,8 @@ export const InteractiveMap = ({
         color: palette.stroke,
         fillOpacity: 0.4,
         opacity: 0.96,
-        weight: 4,
+        weight: 3,
         dashArray: null,
-        className: styles.blockPathHover,
       };
     }
 
@@ -481,6 +496,9 @@ export const InteractiveMap = ({
     ...block,
     visualState: hoveredBlockId === block.id ? 'hover' : block.state,
   }));
+  const highlightedBlockOverlays = visualBlockOverlays.filter((block) => (
+    block.visualStyle !== 'boundary' && ['hover', 'selected'].includes(block.visualState)
+  ));
   const activeBlockOverlay = visualBlockOverlays.find((block) => block.visualState === 'hover')
     || visualBlockOverlays.find((block) => block.visualState === 'selected');
   const clearVisibleSensorTooltip = () => onSensorTooltipChange?.('');
@@ -522,6 +540,21 @@ export const InteractiveMap = ({
           url={tileConfig.url}
           attribution={tileConfig.attribution}
         />
+
+        {highlightedBlockOverlays.map((block) => (
+          <React.Fragment key={`${block.id}-highlight`}>
+            <Polygon
+              positions={block.positions}
+              pathOptions={getBlockHighlightPathOptions('outer')}
+              interactive={false}
+            />
+            <Polygon
+              positions={block.positions}
+              pathOptions={getBlockHighlightPathOptions('inner')}
+              interactive={false}
+            />
+          </React.Fragment>
+        ))}
 
         {visualBlockOverlays.map((block) => (
           <Polygon

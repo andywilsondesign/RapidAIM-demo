@@ -74,6 +74,66 @@ const blockStateOverlays = [
   },
 ];
 
+const blockHighlightOverlays = [
+  {
+    id: 'block-high-hover',
+    label: 'High risk block',
+    severity: 'high',
+    state: 'hover',
+    positions: [
+      [36.742, -119.796],
+      [36.742, -119.790],
+      [36.736, -119.790],
+      [36.736, -119.796],
+    ],
+  },
+  {
+    id: 'block-medium-hover',
+    label: 'Medium risk block',
+    severity: 'medium',
+    state: 'hover',
+    positions: [
+      [36.742, -119.788],
+      [36.742, -119.782],
+      [36.736, -119.782],
+      [36.736, -119.788],
+    ],
+  },
+  {
+    id: 'block-low-hover',
+    label: 'Low risk block',
+    severity: 'low',
+    state: 'hover',
+    positions: [
+      [36.735, -119.796],
+      [36.735, -119.790],
+      [36.729, -119.790],
+      [36.729, -119.796],
+    ],
+  },
+  {
+    id: 'block-idle-hover',
+    label: 'Idle block',
+    severity: 'idle',
+    state: 'hover',
+    visualStyle: 'idle',
+    positions: [
+      [36.735, -119.788],
+      [36.735, -119.782],
+      [36.729, -119.782],
+      [36.729, -119.788],
+    ],
+  },
+];
+
+const blockHighlightParameters = {
+  docs: {
+    description: {
+      story: 'Design-system audit state for block hover/focus. Each block keeps its semantic outline and fill, with an additional white contrast frame and dark outer edge for accessible emphasis.',
+    },
+  },
+};
+
 // Dummy sensors scattered within the block
 const dummySensors = [
   { id: 's1', lat: 36.738, lng: -119.788, name: 'Sensor 1', count: 45, severity: 'high' },
@@ -122,3 +182,25 @@ SlateBlockInteractionStates.args = {
   sensors: dummySensors,
   mapStyle: 'slate',
 };
+
+export const AccessibleBlockHighlightStates = Template.bind({});
+AccessibleBlockHighlightStates.args = {
+  center: FRESNO_CENTER,
+  zoom: 15,
+  blockOverlays: blockHighlightOverlays,
+  activeBlockLabel: 'High risk block',
+  sensors: [],
+  mapStyle: 'satellite',
+};
+AccessibleBlockHighlightStates.parameters = blockHighlightParameters;
+
+export const SlateAccessibleBlockHighlightStates = Template.bind({});
+SlateAccessibleBlockHighlightStates.args = {
+  center: FRESNO_CENTER,
+  zoom: 15,
+  blockOverlays: blockHighlightOverlays,
+  activeBlockLabel: 'High risk block',
+  sensors: [],
+  mapStyle: 'slate',
+};
+SlateAccessibleBlockHighlightStates.parameters = blockHighlightParameters;
