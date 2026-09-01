@@ -26,8 +26,33 @@ const BLOCK_RISK_COLORS = {
 };
 
 const BLOCK_HIGHLIGHT_COLORS = {
-  outer: 'rgba(8, 8, 26, 0.82)',
-  inner: '#FFFFFF',
+  outer: 'rgba(8, 8, 26, 0.16)',
+  ring: 'rgba(255, 255, 255, 0.82)',
+};
+
+const BLOCK_HIGHLIGHT_SCALE = 1.14;
+
+const getPolygonCenter = (positions) => {
+  if (positions.length === 0) {
+    return [0, 0];
+  }
+
+  const lat = positions.reduce((sum, [pointLat]) => sum + pointLat, 0) / positions.length;
+  const lng = positions.reduce((sum, [, pointLng]) => sum + pointLng, 0) / positions.length;
+  return [lat, lng];
+};
+
+const scalePolygonAroundCenter = (positions, scale) => {
+  if (positions.length === 0) {
+    return positions;
+  }
+
+  const [centerLat, centerLng] = getPolygonCenter(positions);
+
+  return positions.map(([lat, lng]) => [
+    centerLat + ((lat - centerLat) * scale),
+    centerLng + ((lng - centerLng) * scale),
+  ]);
 };
 
 const getSensorHealthState = (sensor) => {
@@ -357,14 +382,14 @@ export const InteractiveMap = ({
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
 
   const getBlockHighlightPathOptions = (layer) => ({
-    color: BLOCK_HIGHLIGHT_COLORS[layer] || BLOCK_HIGHLIGHT_COLORS.inner,
+    color: BLOCK_HIGHLIGHT_COLORS[layer] || BLOCK_HIGHLIGHT_COLORS.ring,
     fill: false,
     fillOpacity: 0,
     interactive: false,
     lineCap: 'round',
     lineJoin: 'round',
-    opacity: layer === 'outer' ? 0.78 : 0.96,
-    weight: layer === 'outer' ? 10 : 7,
+    opacity: 1,
+    weight: layer === 'outer' ? 7 : 3,
     dashArray: null,
   });
 
@@ -498,7 +523,10 @@ export const InteractiveMap = ({
   }));
   const highlightedBlockOverlays = visualBlockOverlays.filter((block) => (
     block.visualStyle !== 'boundary' && ['hover', 'selected'].includes(block.visualState)
-  ));
+  )).map((block) => ({
+    ...block,
+    highlightPositions: scalePolygonAroundCenter(block.positions, BLOCK_HIGHLIGHT_SCALE),
+  }));
   const activeBlockOverlay = visualBlockOverlays.find((block) => block.visualState === 'hover')
     || visualBlockOverlays.find((block) => block.visualState === 'selected');
   const clearVisibleSensorTooltip = () => onSensorTooltipChange?.('');
@@ -544,13 +572,13 @@ export const InteractiveMap = ({
         {highlightedBlockOverlays.map((block) => (
           <React.Fragment key={`${block.id}-highlight`}>
             <Polygon
-              positions={block.positions}
+              positions={block.highlightPositions}
               pathOptions={getBlockHighlightPathOptions('outer')}
               interactive={false}
             />
             <Polygon
-              positions={block.positions}
-              pathOptions={getBlockHighlightPathOptions('inner')}
+              positions={block.highlightPositions}
+              pathOptions={getBlockHighlightPathOptions('ring')}
               interactive={false}
             />
           </React.Fragment>

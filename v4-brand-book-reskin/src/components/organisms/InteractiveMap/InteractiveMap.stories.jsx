@@ -129,7 +129,7 @@ const blockHighlightOverlays = [
 const blockHighlightParameters = {
   docs: {
     description: {
-      story: 'Design-system audit state for block hover/focus. Each block keeps its semantic outline and fill, with an additional white contrast frame and dark outer edge for accessible emphasis.',
+      story: 'Design-system audit state for block hover/focus. Each block keeps its semantic outline and fill, with a separate offset highlight ring outside the coloured block edge so the risk or idle signal remains unchanged.',
     },
   },
 };
