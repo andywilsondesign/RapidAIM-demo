@@ -52,30 +52,24 @@
 
 .changeList {
   display: grid;
-  gap: var(--spacing-3);
+  gap: var(--spacing-2);
 }
 
 .changeItem {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-3);
-  padding: var(--spacing-3);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-base);
+  gap: var(--spacing-2);
 }
 
 .changeItem > span {
   display: inline-flex;
-  width: 1.5rem;
-  height: 1.5rem;
-  flex: 0 0 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--color-brand-yellow);
-  color: var(--color-brand-ink);
-  font-size: var(--font-size-base);
+  color: var(--color-status-green);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
 }
 
