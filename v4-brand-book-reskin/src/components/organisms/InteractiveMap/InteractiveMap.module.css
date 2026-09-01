@@ -24,6 +24,12 @@
   color: rgba(17, 24, 39, 0.72);
 }
 
+.blockPathHover {
+  filter:
+    drop-shadow(0 0 0.16rem rgba(255, 255, 255, 0.96))
+    drop-shadow(0 0 0.42rem rgba(8, 8, 26, 0.28));
+}
+
 /* Ensure Leaflet controls don't conflict with our custom UI */
 :global(.leaflet-control-container) {
   z-index: 500;

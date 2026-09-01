@@ -41,16 +41,18 @@ export const OffscreenBlockAwareness = ({
   activeClusterId = '',
   previewClusterId = '',
   onFocusModeChange,
+  indicatorMode = 'edge',
   mobileMode = 'panel',
   className = '',
 }) => {
   const isOverview = focusMode === 'overview';
   const highlightedClusterId = previewClusterId || activeClusterId;
   const hiddenBlockCount = indicators.reduce((total, indicator) => total + indicator.count, 0);
+  const modeClassName = indicatorMode === 'pinned' ? styles.pinnedMode : styles.edgeMode;
 
   return (
     <section
-      className={`${styles.overlay} ${mobileMode === 'overlay' ? styles.mobileOverlayMode : ''} ${className}`}
+      className={`${styles.overlay} ${modeClassName} ${mobileMode === 'overlay' ? styles.mobileOverlayMode : ''} ${className}`}
       aria-label="Distributed block awareness"
     >
       {isOverview && (
@@ -81,11 +83,19 @@ export const OffscreenBlockAwareness = ({
           <button
             className={`${styles.offscreenIndicator} ${styles[indicator.edge]} ${styles[`cluster-${indicator.risk}`]} ${indicator.clusterIds?.includes(highlightedClusterId) ? styles.activeClusterMarker : ''}`}
             key={indicator.id}
+            style={{
+              '--indicator-x': `${indicator.x ?? 50}%`,
+              '--indicator-y': `${indicator.y ?? 50}%`,
+              '--indicator-mobile-x': `${indicator.mobileX ?? indicator.x ?? 50}%`,
+              '--indicator-mobile-y': `${indicator.mobileY ?? indicator.y ?? 50}%`,
+            }}
             type="button"
             onClick={() => onFocusModeChange?.(indicator.targetId || indicator.id)}
             aria-label={`${indicator.count} ${indicator.count === 1 ? 'block is' : 'blocks are'} ${directionLabel} of this view. Select to move ${directionLabel}.`}
           >
-            <span className="material-symbols-rounded" aria-hidden="true">{getIndicatorIcon(indicator.edge)}</span>
+            {indicatorMode === 'edge' && (
+              <span className="material-symbols-rounded" aria-hidden="true">{getIndicatorIcon(indicator.edge)}</span>
+            )}
             <span className={styles.clusterCount}>{indicator.count}</span>
           </button>
         );
@@ -93,7 +103,9 @@ export const OffscreenBlockAwareness = ({
 
       {!isOverview && indicators.length > 0 && (
         <footer className={styles.mapFooter} aria-live="polite">
-          <span className="material-symbols-rounded" aria-hidden="true">zoom_out_map</span>
+          {indicatorMode === 'pinned' && (
+            <span className={`material-symbols-rounded ${styles.mapFooterIcon}`} aria-hidden="true">zoom_out_map</span>
+          )}
           <Typography variant="body-sm">
             {hiddenBlockCount} {hiddenBlockCount === 1 ? 'block is' : 'blocks are'} outside this view.
           </Typography>
@@ -128,6 +140,7 @@ OffscreenBlockAwareness.propTypes = {
   activeClusterId: PropTypes.string,
   previewClusterId: PropTypes.string,
   onFocusModeChange: PropTypes.func,
+  indicatorMode: PropTypes.oneOf(['edge', 'pinned']),
   mobileMode: PropTypes.oneOf(['panel', 'overlay']),
   className: PropTypes.string,
 };

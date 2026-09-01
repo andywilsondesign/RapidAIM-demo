@@ -823,11 +823,11 @@ const translatePolygonToCenter = (polygon, targetCenter) => {
 };
 
 const distributedClusters = [
-  { id: 'north', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24, mobileX: 50, mobileY: 36 },
-  { id: 'south', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74, mobileX: 50, mobileY: 68 },
-  { id: 'east', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49, mobileX: 76, mobileY: 52 },
-  { id: 'west', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50, mobileX: 24, mobileY: 52 },
-  { id: 'central', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50, mobileX: 50, mobileY: 52 },
+  { id: 'north', count: 12, risk: 'high', center: [37.92, -119.84], x: 55, y: 24, mobileX: 50, mobileY: 36 },
+  { id: 'south', count: 6, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74, mobileX: 50, mobileY: 68 },
+  { id: 'east', count: 12, risk: 'high', center: [36.64, -117.92], x: 65, y: 49, mobileX: 76, mobileY: 52 },
+  { id: 'west', count: 5, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50, mobileX: 24, mobileY: 52 },
+  { id: 'central', count: 8, risk: 'low', center: [36.647, -119.8], x: 55, y: 50, mobileX: 50, mobileY: 52 },
 ];
 
 const distributedIndicatorEdges = {
@@ -869,9 +869,16 @@ const distributedBlockOffsets = [
   [-0.015, 0.025],
   [0.025, -0.024],
   [-0.026, -0.018],
+  [0.039, 0.006],
+  [-0.041, 0.004],
+  [0.011, -0.046],
+  [-0.009, 0.049],
+  [0.052, -0.034],
+  [-0.053, -0.03],
+  [0.046, 0.044],
 ];
 
-const distributedRiskSequence = ['high', 'medium', 'low', 'medium', 'high'];
+const distributedRiskSequence = ['high', 'medium', 'low', 'medium', 'high', 'low', 'medium', 'high', 'low', 'medium', 'high', 'low'];
 
 const distributedClusterSequence = ['north', 'east', 'west', 'south', 'central', 'east', 'north', 'south'];
 const distributedRiskRank = { high: 3, medium: 2, low: 1 };
@@ -880,6 +887,13 @@ const directionLabels = {
   right: 'east',
   bottom: 'south',
   left: 'west',
+};
+
+const pinnedIndicatorPositions = {
+  top: { x: 50, y: 18, mobileX: 50, mobileY: 30 },
+  right: { x: 82, y: 49, mobileX: 82, mobileY: 52 },
+  bottom: { x: 50, y: 78, mobileX: 50, mobileY: 72 },
+  left: { x: 18, y: 50, mobileX: 18, mobileY: 52 },
 };
 
 const getDistributedClusterIdForBlock = (blockId) => {
@@ -953,6 +967,29 @@ const getDistributedIndicators = (focusMode) => {
 
       return groups;
     }, {}));
+};
+
+const getDistributedPinnedIndicators = (focusMode) => {
+  if (focusMode === 'overview') return [];
+  const edgeMap = distributedIndicatorEdges[focusMode] || {};
+
+  return distributedClusters
+    .filter((cluster) => cluster.id !== focusMode)
+    .map((cluster) => {
+      const edge = edgeMap[cluster.id] || 'right';
+      const position = pinnedIndicatorPositions[edge] || pinnedIndicatorPositions.right;
+
+      return {
+        id: `pinned-${cluster.id}`,
+        edge,
+        directionLabel: directionLabels[edge],
+        targetId: cluster.id,
+        count: cluster.count,
+        risk: cluster.risk,
+        clusterIds: [cluster.id],
+        ...position,
+      };
+    });
 };
 
 const rankedRanches = ranches
@@ -1039,7 +1076,8 @@ const pageGroups = [
     pages: [
       { id: 'map-unavailable-states', label: 'Map Unavailable States', component: <MapUnavailableStatesPage /> },
       { id: 'waiting-data-map-example', label: 'Waiting Data On Map', component: <WaitingDataMapExamplePage /> },
-      { id: 'distributed-block-awareness', label: 'Distributed Blocks', component: <DistributedBlocksPage /> },
+      { id: 'distributed-block-awareness', label: 'Distributed Blocks Example 1', component: <DistributedBlocksPage indicatorMode="edge" /> },
+      { id: 'distributed-block-awareness-pinned', label: 'Distributed Blocks Example 2', component: <DistributedBlocksPage indicatorMode="pinned" initialFocusMode="central" /> },
       { id: 'new-dashboard-welcome', label: 'New Dashboard Welcome', component: <NewDashboardWelcomePage /> },
     ],
   },
@@ -3044,8 +3082,8 @@ function WaitingDataMapExamplePage() {
   );
 }
 
-function DistributedBlocksPage() {
-  const [focusMode, setFocusMode] = useState('overview');
+function DistributedBlocksPage({ indicatorMode = 'edge', initialFocusMode = 'overview' }) {
+  const [focusMode, setFocusMode] = useState(initialFocusMode);
   const [selectedBlockId, setSelectedBlockId] = useState('');
   const [isMobileRankingOpen, setIsMobileRankingOpen] = useState(false);
   const [previewBlockId, setPreviewBlockId] = useState('');
@@ -3056,7 +3094,9 @@ function DistributedBlocksPage() {
   const blockOverlays = focusMode === 'overview'
     ? []
     : buildDistributedBlockOverlays(focusMode, selectedBlockId, previewBlockId);
-  const indicators = getDistributedIndicators(focusMode);
+  const indicators = indicatorMode === 'pinned'
+    ? getDistributedPinnedIndicators(focusMode)
+    : getDistributedIndicators(focusMode);
   const activeBlockId = previewBlockId || selectedBlockId;
   const activeBlock = rankingBlocks.find((block) => block.id === activeBlockId);
   const handleFocusModeChange = (mode) => {
@@ -3112,6 +3152,7 @@ function DistributedBlocksPage() {
           indicators={indicators}
           activeClusterId={selectedClusterId}
           previewClusterId={previewClusterId}
+          indicatorMode={indicatorMode}
           onFocusModeChange={handleFocusModeChange}
           mobileMode="overlay"
         />
@@ -3119,6 +3160,11 @@ function DistributedBlocksPage() {
     />
   );
 }
+
+DistributedBlocksPage.propTypes = {
+  indicatorMode: PropTypes.oneOf(['edge', 'pinned']),
+  initialFocusMode: PropTypes.string,
+};
 
 function DistributedBlocksMobileRankingPanel({ isOpen, onToggle, children }) {
   return (

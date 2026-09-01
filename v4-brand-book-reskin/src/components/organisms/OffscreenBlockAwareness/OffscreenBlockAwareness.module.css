@@ -8,6 +8,11 @@
   --aware-visible-bottom: var(--spacing-5);
   --aware-visible-left: calc(var(--layout-map-panel-width) + (var(--spacing-5) * 2));
   --aware-edge-size: 2.75rem;
+  --aware-edge-gap: var(--spacing-2);
+}
+
+.edgeMode {
+  /* Mode class used to scope edge-strip specific rules. */
 }
 
 .clusterMarker,
@@ -29,13 +34,14 @@
   justify-content: center;
   gap: var(--spacing-2);
   border: 2px solid currentColor;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.92);
+  border-radius: 0;
+  background: var(--cluster-fill);
   box-shadow: var(--shadow-md);
   color: var(--color-brand-primary);
   cursor: pointer;
   font: inherit;
   padding: var(--spacing-2);
+  backdrop-filter: blur(2px) saturate(0.92);
 }
 
 .clusterMarker {
@@ -50,13 +56,7 @@
 
 .clusterMarker::before,
 .offscreenIndicator::before {
-  content: '';
-  position: absolute;
-  inset: 0.35rem;
-  border-radius: calc(var(--radius-sm) - 1px);
-  background: var(--cluster-color);
-  opacity: 0.12;
-  pointer-events: none;
+  display: none;
 }
 
 .clusterMarker:hover,
@@ -64,8 +64,11 @@
 .offscreenIndicator:hover,
 .offscreenIndicator:focus-visible,
 .activeClusterMarker {
-  outline: 3px solid rgba(255, 255, 255, 0.72);
+  outline: 3px solid rgba(255, 255, 255, 0.82);
   outline-offset: 2px;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 4px rgba(8, 8, 26, 0.16);
 }
 
 .clusterMarker.activeClusterMarker {
@@ -80,15 +83,15 @@
   height: 1.65rem;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--cluster-color);
-  color: #fff;
+  border-radius: 0;
+  background: var(--cluster-count-bg);
+  color: var(--cluster-count-color);
   font-family: var(--font-family-metric);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
 }
 
-.offscreenIndicator > span:first-child {
+.edgeMode .offscreenIndicator > span:first-child {
   position: relative;
   z-index: 1;
   font-size: var(--font-size-lg);
@@ -96,16 +99,25 @@
 
 .cluster-high {
   --cluster-color: var(--color-map-risk-high-stroke);
+  --cluster-fill: rgba(225, 25, 50, 0.18);
+  --cluster-count-bg: var(--color-status-red);
+  --cluster-count-color: #fff;
   color: var(--cluster-color);
 }
 
 .cluster-medium {
   --cluster-color: var(--color-map-risk-medium-stroke);
+  --cluster-fill: rgba(249, 166, 2, 0.18);
+  --cluster-count-bg: var(--color-status-amber);
+  --cluster-count-color: #fff;
   color: var(--cluster-color);
 }
 
 .cluster-low {
   --cluster-color: var(--color-map-risk-low-stroke);
+  --cluster-fill: rgba(25, 181, 107, 0.18);
+  --cluster-count-bg: var(--color-status-green);
+  --cluster-count-color: #fff;
   color: var(--cluster-color);
 }
 
@@ -126,8 +138,8 @@
 }
 
 .left {
-  top: var(--aware-visible-top);
-  bottom: var(--aware-visible-bottom);
+  top: calc(var(--aware-visible-top) + var(--aware-edge-size) + var(--aware-edge-gap));
+  bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--aware-edge-gap));
   left: var(--aware-visible-left);
   width: var(--aware-edge-size);
   flex-direction: column;
@@ -135,9 +147,9 @@
 }
 
 .right {
-  top: var(--aware-visible-top);
+  top: calc(var(--aware-visible-top) + var(--aware-edge-size) + var(--aware-edge-gap));
   right: var(--aware-visible-right);
-  bottom: var(--aware-visible-bottom);
+  bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--aware-edge-gap));
   width: var(--aware-edge-size);
   flex-direction: column;
   transform: none;
@@ -165,23 +177,72 @@
 
 .mapFooter {
   position: absolute;
-  right: calc(var(--aware-visible-right) + (var(--spacing-8) * 2));
-  bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--spacing-3));
-  left: calc(var(--aware-visible-left) + (var(--spacing-8) * 2));
-  display: flex;
+  right: calc(var(--aware-visible-right) + var(--aware-edge-size) + var(--spacing-4));
+  bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--spacing-4));
+  left: calc(var(--aware-visible-left) + var(--aware-edge-size) + var(--spacing-4));
+  display: grid;
   min-height: 3rem;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   gap: var(--spacing-3);
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: var(--spacing-4);
   border: 1px solid rgba(255, 255, 255, 0.86);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.94);
   box-shadow: var(--shadow-md);
+  text-align: center;
 }
 
-.mapFooter > span {
+.mapFooter button {
+  width: 100%;
+}
+
+.mapFooterIcon {
+  justify-self: center;
   color: var(--color-brand-primary);
+}
+
+.pinnedMode .offscreenIndicator {
+  top: var(--indicator-y);
+  left: var(--indicator-x);
+  right: auto;
+  bottom: auto;
+  width: 3.75rem;
+  height: 3.75rem;
+  min-width: 3.75rem;
+  min-height: 3.75rem;
+  transform: translate(-50%, -50%);
+}
+
+.pinnedMode .top {
+  top: calc(var(--aware-visible-top) + var(--spacing-8));
+  left: 50%;
+}
+
+.pinnedMode .right {
+  top: 50%;
+  right: calc(var(--aware-visible-right) + var(--spacing-8));
+  left: auto;
+}
+
+.pinnedMode .bottom {
+  top: auto;
+  bottom: calc(var(--aware-visible-bottom) + 8rem);
+  left: 50%;
+}
+
+.pinnedMode .left {
+  top: 50%;
+  bottom: auto;
+  left: calc(var(--aware-visible-left) + var(--spacing-8));
+}
+
+.pinnedMode .mapFooter {
+  right: calc(var(--aware-visible-right) + var(--spacing-4));
+  bottom: calc(var(--aware-visible-bottom) + var(--spacing-5));
+  left: calc(var(--aware-visible-left) + var(--spacing-4));
+  max-width: 18rem;
+  margin-inline: auto;
 }
 
 @media (max-width: 900px) {
@@ -209,7 +270,6 @@
 
   .mapFooter {
     align-items: stretch;
-    flex-direction: column;
   }
 
   .clusterLayer {
@@ -299,6 +359,12 @@
     bottom: calc(var(--aware-visible-bottom) + var(--aware-edge-size) + var(--spacing-3));
     left: var(--spacing-3);
     align-items: stretch;
-    flex-direction: column;
+  }
+
+  .mobileOverlayMode.pinnedMode .offscreenIndicator {
+    top: var(--indicator-mobile-y);
+    left: var(--indicator-mobile-x);
+    right: auto;
+    bottom: auto;
   }
 }

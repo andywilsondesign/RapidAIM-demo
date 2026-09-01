@@ -374,11 +374,12 @@ export const InteractiveMap = ({
       if (state === 'hover') {
         return {
           ...idleBase,
-          color: '#FFFFFF',
-          fillOpacity: 0.36,
+          color: idlePalette.stroke,
+          fillOpacity: 0.34,
           opacity: 0.96,
           weight: 4,
-          dashArray: '8 5',
+          dashArray: null,
+          className: styles.blockPathHover,
         };
       }
 
@@ -452,11 +453,12 @@ export const InteractiveMap = ({
     if (state === 'hover') {
       return {
         ...baseOptions,
-        color: '#FFFFFF',
+        color: palette.stroke,
         fillOpacity: 0.4,
         opacity: 0.96,
         weight: 4,
-        dashArray: '8 5',
+        dashArray: null,
+        className: styles.blockPathHover,
       };
     }
 
