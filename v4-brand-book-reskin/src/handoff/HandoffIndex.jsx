@@ -3138,12 +3138,7 @@ function DistributedBlocksPage({ indicatorMode = 'edge', initialFocusMode = 'ove
       mapCenter={activeCluster?.center || [36.65, -119.82]}
       mapZoom={focusMode === 'overview' ? 7 : 13}
       mapStyle="slate"
-      mapSensors={focusMode === 'overview' ? [] : sensors.slice(0, 3).map((sensor, index) => ({
-        ...sensor,
-        id: `${focusMode}-sensor-${index + 1}`,
-        lat: (activeCluster?.center[0] || sensor.lat) + (distributedBlockOffsets[index]?.[0] || 0),
-        lng: (activeCluster?.center[1] || sensor.lng) + (distributedBlockOffsets[index]?.[1] || 0),
-      }))}
+      mapSensors={[]}
       activeBlockLabel={activeBlock?.name || ''}
       mapNotice={isMobile && isMobileRankingOpen ? null : (
         <OffscreenBlockAwareness
