@@ -39,7 +39,7 @@ export const mapUnavailableContent = {
     primaryAction: '',
     dismissAction: 'Dismiss',
     secondaryAction: 'Contact support',
-    resumeAction: 'Review message',
+    resumeAction: 'More information',
     detailsTitle: 'Waiting for data details',
     details: [
       'The map can show your setup before live detections are available.',

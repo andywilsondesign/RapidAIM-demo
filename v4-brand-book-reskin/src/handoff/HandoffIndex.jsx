@@ -2891,7 +2891,12 @@ function WaitingForDataMapNotice() {
       {isOpen && (
         <div className={styles.inSituPanelZone}>
           <div className={styles.inSituMessagePanel} role="dialog" aria-modal="false" aria-labelledby="waiting-data-map-example-title">
-            <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+            <div className={styles.inSituMessageHeader}>
+              <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+              <Button variant="ghost" size="sm" type="button" aria-label="Close waiting for data message" onClick={() => setIsOpen(false)}>
+                <span className="material-symbols-rounded" aria-hidden="true">close</span>
+              </Button>
+            </div>
             <div className={styles.inSituNoticeCopy}>
               <Typography variant="h3" id="waiting-data-map-example-title">{content.title}</Typography>
               <Typography variant="body" color="secondary">{content.detail}</Typography>
@@ -2976,6 +2981,10 @@ function WaitingDataMapExamplePage() {
       scopeLevel="block"
       mapSensors={waitingSensors}
       mapNotice={<WaitingForDataMapNotice />}
+      controlCenterProps={{
+        defaultPestFocusOpen: false,
+        defaultMapControlsOpen: false,
+      }}
     />
   );
 }

@@ -72,7 +72,14 @@ export const MapUnavailableState = ({
         </div>
         {isMessageOpen && (
           <div className={styles.messagePanel}>
-            <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+            <div className={styles.messageHeader}>
+              <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+              {content.dismissAction && (
+                <Button variant="ghost" size="sm" type="button" aria-label="Close message" onClick={() => setIsMessageOpen(false)}>
+                  <span className="material-symbols-rounded" aria-hidden="true">close</span>
+                </Button>
+              )}
+            </div>
             <div className={styles.copy}>
               <Typography variant="h3">{content.title}</Typography>
               <Typography variant="body" color="secondary">{content.detail}</Typography>

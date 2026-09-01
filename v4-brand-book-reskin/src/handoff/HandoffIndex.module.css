@@ -254,7 +254,7 @@
 
 .inSituMessagePanel {
   display: flex;
-  width: min(31rem, calc(100% - var(--spacing-8)));
+  width: min(35rem, calc(100% - var(--spacing-8)));
   flex-direction: column;
   align-items: flex-start;
   gap: var(--spacing-4);
@@ -266,6 +266,20 @@
   pointer-events: auto;
 }
 
+.inSituMessageHeader {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.inSituMessageHeader button {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+}
+
 .inSituNoticeCopy {
   display: flex;
   flex-direction: column;
@@ -273,9 +287,15 @@
 }
 
 .inSituNoticeActions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spacing-3);
+}
+
+.inSituNoticeActions button {
+  width: 100%;
+  white-space: nowrap;
 }
 
 .waitingDataPanelStack {

@@ -141,6 +141,20 @@
   transform: translate(-50%, -50%);
 }
 
+.messageHeader {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.messageHeader button {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+}
+
 .copy {
   display: flex;
   flex-direction: column;
@@ -148,8 +162,9 @@
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
   gap: var(--spacing-3);
 }
 
