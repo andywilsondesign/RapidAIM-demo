@@ -38,7 +38,8 @@
 }
 
 .sectionHeader,
-.betaCopy {
+.betaCopy,
+.dialogBody {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
@@ -55,11 +56,106 @@
   background: var(--color-bg-base);
 }
 
-.betaActions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.switchField {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   gap: var(--spacing-3);
+  justify-self: end;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  padding: 0;
+}
+
+.switchText {
+  white-space: nowrap;
+}
+
+.switchTrack {
+  position: relative;
+  display: inline-flex;
+  width: 3rem;
+  height: 1.65rem;
+  flex: 0 0 3rem;
+  align-items: center;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.switchThumb {
+  position: absolute;
+  left: 0.18rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+}
+
+.switchTrackOn {
+  border-color: var(--color-brand-primary);
+  background: var(--color-brand-primary);
+}
+
+.switchTrackOn .switchThumb {
+  transform: translateX(1.32rem);
+}
+
+.switchField:focus-visible .switchTrack {
+  outline: 3px solid rgba(21, 21, 96, 0.26);
+  outline-offset: 3px;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1700;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-4);
+  background: rgba(8, 8, 26, 0.42);
+}
+
+.dialog {
+  display: flex;
+  width: min(32rem, 100%);
+  max-height: calc(100vh - var(--spacing-8));
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.dialogHeader,
+.dialogFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+}
+
+.dialogHeader {
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.dialogBody {
+  padding: var(--spacing-4);
+}
+
+.dialogFooter {
+  border-top: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-base);
 }
 
 .grid {
@@ -105,12 +201,19 @@
     grid-template-columns: 1fr;
   }
 
-  .betaActions {
-    align-items: stretch;
+  .switchField {
+    width: 100%;
+    justify-content: space-between;
+    justify-self: stretch;
   }
 
   .actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .dialogFooter {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 }

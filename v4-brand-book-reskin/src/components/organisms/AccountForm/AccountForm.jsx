@@ -4,7 +4,6 @@ import { FormField } from '../../molecules/FormField/FormField';
 import { Input } from '../../atoms/Input/Input';
 import { Select } from '../../atoms/Select/Select';
 import { Button } from '../../atoms/Button/Button';
-import { Checkbox } from '../../atoms/Checkbox/Checkbox';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Alert } from '../../molecules/Alert/Alert';
 import styles from './AccountForm.module.css';
@@ -16,6 +15,23 @@ export const AccountForm = ({
   successMessage = null,
   className = '',
 }) => {
+  const [useNewDashboard, setUseNewDashboard] = React.useState(true);
+  const [isDashboardPromptOpen, setIsDashboardPromptOpen] = React.useState(false);
+
+  const handleDashboardToggle = () => {
+    if (!useNewDashboard) {
+      setUseNewDashboard(true);
+      return;
+    }
+
+    setIsDashboardPromptOpen(true);
+  };
+
+  const confirmOldDashboard = () => {
+    setUseNewDashboard(false);
+    setIsDashboardPromptOpen(false);
+  };
+
   return (
     <form 
       className={`${styles.form} ${className}`} 
@@ -78,25 +94,75 @@ export const AccountForm = ({
         <div className={styles.sectionHeader}>
           <Typography variant="h5" className={styles.sectionTitle}>Dashboard Experience</Typography>
           <Typography variant="body-sm" color="secondary">
-            Choose which dashboard your team sees while the new experience is in beta.
+            The new dashboard is planned to become the standard RapidAIM experience by the end of 2026.
           </Typography>
         </div>
         <div className={styles.betaPanel}>
           <div className={styles.betaCopy}>
             <Typography variant="h6">New dashboard beta</Typography>
             <Typography variant="body-sm" color="secondary">
-              Use the new RapidAIM dashboard for this account. You can return to the previous interface if the beta feels unfamiliar.
+              Use the redesigned dashboard for this account while the beta is available.
             </Typography>
-            <Typography variant="caption" color="secondary">
-              This changes the dashboard view only. It does not affect sensors, billing, saved data, or team access.
+            <Typography variant="caption" color="secondary" id="dashboard-experience-help">
+              You can return to the old dashboard for now. This changes the dashboard view only and does not affect sensors, billing, saved data, or team access.
             </Typography>
           </div>
-          <div className={styles.betaActions}>
-            <Checkbox label="Use new dashboard" defaultChecked />
-            <Button variant="secondary" type="button">Return to old dashboard</Button>
-          </div>
+          <button
+            className={styles.switchField}
+            type="button"
+            role="switch"
+            aria-checked={useNewDashboard}
+            aria-describedby="dashboard-experience-help"
+            onClick={handleDashboardToggle}
+          >
+            <span className={styles.switchText}>Use new dashboard</span>
+            <span className={`${styles.switchTrack} ${useNewDashboard ? styles.switchTrackOn : ''}`} aria-hidden="true">
+              <span className={styles.switchThumb} />
+            </span>
+          </button>
         </div>
+        {!useNewDashboard && (
+          <Alert
+            type="inline"
+            variant="info"
+            message="Old dashboard selected. You can turn the new dashboard back on from this setting while the beta is available."
+          />
+        )}
       </div>
+
+      {isDashboardPromptOpen && (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <section
+            className={styles.dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="return-old-dashboard-title"
+          >
+            <header className={styles.dialogHeader}>
+              <Typography variant="h4" id="return-old-dashboard-title">Return to the old dashboard?</Typography>
+              <Button variant="ghost" size="sm" type="button" aria-label="Close confirmation" onClick={() => setIsDashboardPromptOpen(false)}>
+                <span className="material-symbols-rounded" aria-hidden="true">close</span>
+              </Button>
+            </header>
+            <div className={styles.dialogBody}>
+              <Typography variant="body" color="secondary">
+                You can keep using the old dashboard while the beta is available. The new dashboard is planned to become the standard RapidAIM experience by the end of 2026.
+              </Typography>
+              <Typography variant="body-sm" color="secondary">
+                Your sensors, billing, saved data, and team access will stay the same.
+              </Typography>
+            </div>
+            <footer className={styles.dialogFooter}>
+              <Button variant="secondary" type="button" onClick={() => setIsDashboardPromptOpen(false)}>
+                Keep new dashboard
+              </Button>
+              <Button variant="primary" type="button" onClick={confirmOldDashboard}>
+                Return to old dashboard
+              </Button>
+            </footer>
+          </section>
+        </div>
+      )}
 
       <div className={styles.actions}>
         <Button variant="ghost" type="button">Cancel</Button>
