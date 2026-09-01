@@ -1,7 +1,7 @@
 export const mapUnavailableContent = {
   connection: {
     alertVariant: 'error',
-    badgeVariant: 'high',
+    badgeVariant: 'error',
     badge: 'Connection issue',
     title: 'Map data is unavailable',
     message: 'We cannot connect to RapidAIM map data right now, and our team has been alerted.',
@@ -16,7 +16,7 @@ export const mapUnavailableContent = {
   },
   onboarding: {
     alertVariant: 'info',
-    badgeVariant: 'entity',
+    badgeVariant: 'info',
     badge: 'Setup in progress',
     title: 'Your map is being prepared',
     message: 'Your account is active, and setup is underway.',
@@ -30,8 +30,8 @@ export const mapUnavailableContent = {
     ],
   },
   waitingForData: {
-    alertVariant: 'warning',
-    badgeVariant: 'medium',
+    alertVariant: 'info',
+    badgeVariant: 'info',
     badge: 'Waiting for data',
     title: 'Waiting for field data',
     message: 'Your blocks and sensors are set up, but recent detections have not arrived yet.',
@@ -46,7 +46,7 @@ export const mapUnavailableContent = {
   },
   paused: {
     alertVariant: 'warning',
-    badgeVariant: 'offline',
+    badgeVariant: 'warning',
     badge: 'Subscription paused',
     title: 'Live map access is paused',
     message: 'Your account information is retained, but live map access is paused until your subscription resumes.',

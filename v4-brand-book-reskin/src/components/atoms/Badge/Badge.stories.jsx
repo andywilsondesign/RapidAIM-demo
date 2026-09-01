@@ -7,7 +7,7 @@ export default {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['high', 'medium', 'low', 'offline', 'neutral', 'entity'],
+      options: ['high', 'medium', 'low', 'offline', 'neutral', 'entity', 'info', 'success', 'warning', 'error'],
     },
   },
 };
@@ -42,4 +42,28 @@ export const Entity = Template.bind({});
 Entity.args = {
   children: 'Block 1',
   variant: 'entity',
+};
+
+export const Info = Template.bind({});
+Info.args = {
+  children: 'Info',
+  variant: 'info',
+};
+
+export const Success = Template.bind({});
+Success.args = {
+  children: 'Success',
+  variant: 'success',
+};
+
+export const Warning = Template.bind({});
+Warning.args = {
+  children: 'Warning',
+  variant: 'warning',
+};
+
+export const Error = Template.bind({});
+Error.args = {
+  children: 'Error',
+  variant: 'error',
 };
