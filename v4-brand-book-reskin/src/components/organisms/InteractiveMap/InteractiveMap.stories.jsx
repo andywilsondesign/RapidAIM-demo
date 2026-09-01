@@ -10,7 +10,7 @@ export default {
   argTypes: {
     blockSeverity: {
       control: { type: 'select' },
-      options: ['high', 'medium', 'low'],
+      options: ['high', 'medium', 'low', 'idle'],
     },
     mapStyle: {
       control: { type: 'select' },

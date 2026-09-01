@@ -330,8 +330,8 @@
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 999px;
-  background: var(--color-status-green);
-  box-shadow: 0 0 0 3px var(--color-status-green-bg);
+  background: var(--color-status-idle);
+  box-shadow: 0 0 0 3px var(--color-status-idle-bg);
 }
 
 .distributedBlocksMobilePanel {

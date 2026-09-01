@@ -45,6 +45,10 @@
   --marker-fill: var(--color-status-green);
 }
 
+.marker--idle {
+  --marker-fill: var(--color-status-idle);
+}
+
 .marker--medium {
   --marker-fill: var(--color-status-amber);
 }
@@ -54,7 +58,7 @@
 }
 
 .marker--offline {
-  --marker-fill: #64748b;
+  --marker-fill: var(--color-status-idle);
 }
 
 .marker--selected {

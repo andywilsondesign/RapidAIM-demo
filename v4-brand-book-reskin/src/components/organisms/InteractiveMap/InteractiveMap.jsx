@@ -19,6 +19,10 @@ const BLOCK_RISK_COLORS = {
     fill: 'var(--color-map-risk-low-fill, #19B56B)',
     stroke: 'var(--color-map-risk-low-stroke, #66F27A)',
   },
+  idle: {
+    fill: 'var(--color-map-idle-fill, #94A3B8)',
+    stroke: 'var(--color-map-idle-stroke, #64748B)',
+  },
 };
 
 const getSensorHealthState = (sensor) => {
@@ -213,7 +217,8 @@ const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') 
     || sensorDisplayMode === 'healthLevel'
     || sensorDisplayMode === 'healthBattery'
     || sensorDisplayMode === 'healthBatteryBare'
-    || sensorDisplayMode === 'maintenance';
+    || sensorDisplayMode === 'maintenance'
+    || sensorDisplayMode === 'gathering';
   const healthVariantByMode = {
     health: 'number',
     healthLevel: 'level',
@@ -221,7 +226,9 @@ const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') 
     healthBatteryBare: 'batteryBare',
   };
   const healthVariant = healthVariantByMode[sensorDisplayMode];
-  const html = sensorDisplayMode === 'maintenance'
+  const html = sensorDisplayMode === 'gathering'
+    ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${getRiskMarkerSvgMarkup('idle', selected)}</span>`
+    : sensorDisplayMode === 'maintenance'
     ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createMaintenanceMarkerSvgMarkup(sensor, selected)}</span>`
     : healthVariant
     ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createHealthMarkerSvgMarkup(sensor, selected, healthVariant)}</span>`
@@ -345,6 +352,46 @@ export const InteractiveMap = ({
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
 
   const getBlockPathOptions = (severity, state = 'default', visualStyle = 'risk') => {
+    if (visualStyle === 'idle') {
+      const idlePalette = BLOCK_RISK_COLORS.idle;
+      const idleBase = {
+        fillColor: idlePalette.fill,
+        lineCap: 'round',
+        lineJoin: 'round',
+      };
+
+      if (state === 'selected') {
+        return {
+          ...idleBase,
+          color: '#FFFFFF',
+          fillOpacity: 0.42,
+          opacity: 1,
+          weight: 5,
+          dashArray: null,
+        };
+      }
+
+      if (state === 'hover') {
+        return {
+          ...idleBase,
+          color: '#FFFFFF',
+          fillOpacity: 0.36,
+          opacity: 0.96,
+          weight: 4,
+          dashArray: '8 5',
+        };
+      }
+
+      return {
+        ...idleBase,
+        color: idlePalette.stroke,
+        fillOpacity: 0.28,
+        opacity: 0.96,
+        weight: 3,
+        dashArray: null,
+      };
+    }
+
     if (visualStyle === 'boundary') {
       const boundaryBase = {
         fillColor: '#FFFFFF',
@@ -505,7 +552,9 @@ export const InteractiveMap = ({
             position={[sensor.lat, sensor.lng]}
             icon={createSensorIcon(sensor, sensor.id === selectedSensorId, sensorDisplayMode)}
             title={sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined'
-              ? `${sensor.name}: battery ${sensor.battery}%, connectivity ${getSensorConnectivityLabel(sensor)}, device health ${getSensorDeviceHealthLabel(sensor)}, lure ${sensor.lureStatus || 'not recorded'}, last sync ${sensor.lastSync}`
+              ? sensorDisplayMode === 'gathering'
+                ? `${sensor.name}: gathering data, awaiting first detection`
+                : `${sensor.name}: battery ${sensor.battery}%, connectivity ${getSensorConnectivityLabel(sensor)}, device health ${getSensorDeviceHealthLabel(sensor)}, lure ${sensor.lureStatus || 'not recorded'}, last sync ${sensor.lastSync}`
               : `${sensor.name}: ${sensor.count} detections, ${sensor.severity === 'offline' ? 'offline' : `${sensor.severity} risk`}`}
             alt={`${sensor.name} map marker`}
             zIndexOffset={sensor.id === selectedSensorId ? 800 : 0}
@@ -527,7 +576,12 @@ export const InteractiveMap = ({
               permanent={showSelectedSensorTooltip && sensor.id === visibleSensorTooltipId}
             >
               <strong>{sensor.name}</strong><br />
-              {sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
+              {sensorDisplayMode === 'gathering' ? (
+                <>
+                  Status: Gathering data<br />
+                  Last sync: {sensor.lastSync}
+                </>
+              ) : sensorDisplayMode !== 'pest' && sensorDisplayMode !== 'combined' ? (
                 <>
                   Battery: {sensor.battery}%<br />
                   Connectivity: {getSensorConnectivityLabel(sensor)}<br />
@@ -557,9 +611,9 @@ InteractiveMap.propTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string,
     positions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
-    severity: PropTypes.oneOf(['high', 'medium', 'low']).isRequired,
+    severity: PropTypes.oneOf(['high', 'medium', 'low', 'idle']).isRequired,
     state: PropTypes.oneOf(['default', 'hover', 'selected']),
-    visualStyle: PropTypes.oneOf(['risk', 'boundary']),
+    visualStyle: PropTypes.oneOf(['risk', 'boundary', 'idle']),
   })),
   activeBlockLabel: PropTypes.string,
   sensors: PropTypes.arrayOf(PropTypes.shape({
@@ -568,14 +622,14 @@ InteractiveMap.propTypes = {
     lng: PropTypes.number.isRequired,
     name: PropTypes.string,
     count: PropTypes.number,
-    severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']).isRequired,
+    severity: PropTypes.oneOf(['high', 'medium', 'low', 'idle', 'offline']).isRequired,
     maintenanceState: PropTypes.oneOf(['offline', 'warning', 'healthy']),
     maintenanceReason: PropTypes.string,
   })),
   selectedSensorId: PropTypes.string,
-  blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
+  blockSeverity: PropTypes.oneOf(['high', 'medium', 'low', 'idle']),
   mapStyle: PropTypes.oneOf(['satellite', 'stylized', 'slate']),
-  sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance']),
+  sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance', 'gathering']),
   showSelectedSensorTooltip: PropTypes.bool,
   visibleSensorTooltipId: PropTypes.string,
   onBlockSelect: PropTypes.func,

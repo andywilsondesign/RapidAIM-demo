@@ -23,7 +23,7 @@ export const RiskMarker = ({ severity = 'low', size = 'md', selected = false, cl
 };
 
 RiskMarker.propTypes = {
-  severity: PropTypes.oneOf(['high', 'medium', 'low', 'offline']),
+  severity: PropTypes.oneOf(['high', 'medium', 'low', 'idle', 'offline']),
   size: PropTypes.oneOf(['sm', 'md']),
   selected: PropTypes.bool,
   className: PropTypes.string,

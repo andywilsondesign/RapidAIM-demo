@@ -32,6 +32,8 @@
     --color-status-green-bg: #EFF1F3;
     --color-status-info: #0D47A1;
     --color-status-info-bg: #E3F2FD;
+    --color-status-idle: #475569;
+    --color-status-idle-bg: #F1F5F9;
 
     /* Map block overlays - tuned for satellite imagery contrast */
     --color-map-risk-high-fill: #E11932;
@@ -40,6 +42,8 @@
     --color-map-risk-medium-stroke: #FFB000;
     --color-map-risk-low-fill: #19B56B;
     --color-map-risk-low-stroke: #66F27A;
+    --color-map-idle-fill: #94A3B8;
+    --color-map-idle-stroke: #64748B;
     
     /* Brand Accent */
     --color-brand-primary: var(--color-brand-navy);

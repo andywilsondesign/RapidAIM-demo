@@ -7,7 +7,7 @@ export default {
   argTypes: {
     severity: {
       control: { type: 'select' },
-      options: ['high', 'medium', 'low', 'offline'],
+      options: ['high', 'medium', 'low', 'idle', 'offline'],
     },
     size: {
       control: { type: 'select' },
@@ -38,12 +38,19 @@ Offline.args = {
   severity: 'offline',
 };
 
+export const Idle = Template.bind({});
+Idle.args = {
+  severity: 'idle',
+  label: 'Gathering data marker',
+};
+
 export const MarkerSet = {
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center', padding: 24 }}>
       <RiskMarker severity="high" />
       <RiskMarker severity="medium" />
       <RiskMarker severity="low" />
+      <RiskMarker severity="idle" label="Gathering data marker" />
       <RiskMarker severity="offline" />
     </div>
   ),
@@ -55,6 +62,7 @@ export const SelectedStates = {
       <RiskMarker severity="high" selected />
       <RiskMarker severity="medium" selected />
       <RiskMarker severity="low" selected />
+      <RiskMarker severity="idle" selected label="Selected gathering data marker" />
       <RiskMarker severity="offline" selected />
     </div>
   ),

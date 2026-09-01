@@ -787,6 +787,15 @@ const buildRanchBlockOverlays = (selectedBlockId, previewBlockId) => (
   buildBlockOverlays(selectedRanchBlocks.slice(0, 10), selectedBlockId, previewBlockId)
 );
 
+const buildWaitingDataBlockOverlays = () => (
+  buildBlockOverlays(selectedRanchBlocks.slice(0, 4), '', '').map((block) => ({
+    ...block,
+    severity: 'idle',
+    state: 'default',
+    visualStyle: 'idle',
+  }))
+);
+
 const buildMaintenanceBlockOverlays = () => {
   const maintenanceBlocks = selectedRanchBlocks.slice(0, 8);
   const blockMapPolygons = buildBlockMapPolygons(maintenanceBlocks);
@@ -2960,7 +2969,7 @@ function WaitingDataContextPanel() {
   const waitingRows = sensors.slice(0, 4).map((sensor) => ({
     id: sensor.id,
     name: sensor.name,
-    status: 'Online',
+    status: 'Gathering data',
     sync: 'Awaiting first detection',
   }));
 
@@ -2981,7 +2990,7 @@ function WaitingDataContextPanel() {
                     <Typography variant="body-sm" weight="semibold">{sensor.name}</Typography>
                     <Typography variant="caption" color="secondary">{sensor.sync}</Typography>
                   </div>
-                  <Badge variant="success">{sensor.status}</Badge>
+                  <Badge variant="idle">{sensor.status}</Badge>
                 </div>
               ))}
             </div>
@@ -3006,11 +3015,12 @@ function WaitingDataContextPanel() {
 }
 
 function WaitingDataMapExamplePage() {
+  const [selectedWaitingSensorId, setSelectedWaitingSensorId] = useState('');
   const waitingSensors = sensors.slice(0, 5).map((sensor) => ({
     ...sensor,
     count: 0,
-    severity: 'low',
-    status: 'Online',
+    severity: 'idle',
+    status: 'Gathering data',
     lastSync: 'Awaiting first detection',
   }));
 
@@ -3019,7 +3029,12 @@ function WaitingDataMapExamplePage() {
       detailPanel={<WaitingDataContextPanel />}
       scopeExperiment
       scopeLevel="block"
+      blockPolygon={[]}
+      blockOverlays={buildWaitingDataBlockOverlays()}
       mapSensors={waitingSensors}
+      selectedSensorIdOverride={selectedWaitingSensorId}
+      sensorDisplayMode="gathering"
+      onSensorSelect={(sensor) => setSelectedWaitingSensorId(sensor.id)}
       mapNotice={<WaitingForDataMapNotice />}
       controlCenterProps={{
         defaultPestFocusOpen: false,

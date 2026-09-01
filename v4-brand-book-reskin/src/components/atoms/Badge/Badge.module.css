@@ -33,8 +33,14 @@
 }
 
 .badge--offline {
-  background-color: #f1f5f9;
-  color: #475569;
+  background-color: var(--color-status-idle-bg);
+  color: var(--color-status-idle);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.badge--idle {
+  background-color: var(--color-status-idle-bg);
+  color: var(--color-status-idle);
   border: 1px solid rgba(100, 116, 139, 0.3);
 }
 

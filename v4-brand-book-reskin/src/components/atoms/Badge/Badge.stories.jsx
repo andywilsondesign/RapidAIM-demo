@@ -7,7 +7,7 @@ export default {
   argTypes: {
     variant: {
       control: { type: 'select' },
-      options: ['high', 'medium', 'low', 'offline', 'neutral', 'entity', 'info', 'success', 'warning', 'error'],
+      options: ['high', 'medium', 'low', 'offline', 'idle', 'neutral', 'entity', 'info', 'success', 'warning', 'error'],
     },
   },
 };
@@ -36,6 +36,12 @@ export const Offline = Template.bind({});
 Offline.args = {
   children: 'Offline',
   variant: 'offline',
+};
+
+export const Idle = Template.bind({});
+Idle.args = {
+  children: 'Gathering data',
+  variant: 'idle',
 };
 
 export const Entity = Template.bind({});

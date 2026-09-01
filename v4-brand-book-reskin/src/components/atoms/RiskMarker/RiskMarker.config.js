@@ -14,10 +14,15 @@ export const markerConfig = {
     icon: 'M7.8 12.2l2.7 2.7 5.7-6',
     fill: 'var(--color-status-green)',
   },
+  idle: {
+    shape: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z',
+    icon: 'M7.8 12.2l2.7 2.7 5.7-6',
+    fill: 'var(--color-status-idle)',
+  },
   offline: {
     shape: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z',
     icon: 'M8 12h8',
-    fill: '#64748b',
+    fill: 'var(--color-status-idle)',
   },
 };
 
