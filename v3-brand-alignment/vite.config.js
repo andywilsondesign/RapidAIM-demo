@@ -13,7 +13,10 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['andrews-macbook-air.tailf99531.ts.net'],
+    allowedHosts: [
+      'andrews-macbook-air.tailf99531.ts.net',
+      'masters-mac-mini.tailf99531.ts.net',
+    ],
   },
   test: {
     projects: [{
