@@ -19,14 +19,14 @@ export const mapUnavailableContent = {
     badgeVariant: 'entity',
     badge: 'Setup in progress',
     title: 'Your map is being prepared',
-    message: 'Your account is active, but your blocks and sensors have not been connected yet.',
-    detail: 'Setup usually appears here once the onboarding team has linked your account data.',
-    primaryAction: 'View setup status',
+    message: 'Your account is active, and setup is underway.',
+    detail: 'Blocks and sensors usually appear within 1-3 days once the onboarding team has linked your account data.',
+    primaryAction: '',
     secondaryAction: 'Contact support',
     detailsTitle: 'Setup in progress details',
     details: [
       'This state is expected for newly onboarded users before block and sensor records are assigned.',
-      'You can keep using account settings while the onboarding team completes the setup.',
+      'You can keep using account settings while the onboarding team completes setup, which usually takes 1-3 days.',
     ],
   },
   waitingForData: {

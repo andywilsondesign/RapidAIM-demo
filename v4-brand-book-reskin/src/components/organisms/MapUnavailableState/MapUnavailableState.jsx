@@ -56,9 +56,11 @@ export const MapUnavailableState = ({
             <Typography variant="body" color="secondary">{content.detail}</Typography>
           </div>
           <div className={styles.actions}>
-            <Button variant="primary" type="button" onClick={() => onPrimaryAction?.(variant)}>
-              {content.primaryAction}
-            </Button>
+            {content.primaryAction && (
+              <Button variant="primary" type="button" onClick={() => onPrimaryAction?.(variant)}>
+                {content.primaryAction}
+              </Button>
+            )}
             <Button variant="secondary" type="button" onClick={handleSecondaryAction}>
               {content.secondaryAction}
             </Button>
@@ -90,7 +92,9 @@ export const MapUnavailableState = ({
             </div>
             <footer className={styles.dialogFooter}>
               <Button variant="secondary" type="button" onClick={() => setIsDetailsOpen(false)}>Close</Button>
-              <Button variant="primary" type="button">{content.primaryAction}</Button>
+              {content.primaryAction && (
+                <Button variant="primary" type="button">{content.primaryAction}</Button>
+              )}
             </footer>
           </section>
         </div>
