@@ -70,7 +70,6 @@ export const NewDashboardWelcomeModal = ({
             <Alert
               type="inline"
               variant="info"
-              title="Beta reminder"
               message={content.supportAlert}
               className={styles.supportAlert}
             />
