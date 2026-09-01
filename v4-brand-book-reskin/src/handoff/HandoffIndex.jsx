@@ -3028,7 +3028,7 @@ function WaitingDataContextPanel() {
                     <Typography variant="body-sm" weight="semibold">{sensor.name}</Typography>
                     <Typography variant="caption" color="secondary">{sensor.sync}</Typography>
                   </div>
-                  <Badge variant="idle">{sensor.status}</Badge>
+                  <Badge variant="success">{sensor.status}</Badge>
                 </div>
               ))}
             </div>

@@ -232,7 +232,7 @@ const createSensorIcon = (sensor, selected = false, sensorDisplayMode = 'pest') 
   };
   const healthVariant = healthVariantByMode[sensorDisplayMode];
   const html = sensorDisplayMode === 'gathering'
-    ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${getRiskMarkerSvgMarkup('idle', selected)}</span>`
+    ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${getRiskMarkerSvgMarkup('low', selected)}</span>`
     : sensorDisplayMode === 'maintenance'
     ? `<span class="leaflet-risk-marker ${selected ? 'leaflet-risk-marker--selected' : ''}">${createMaintenanceMarkerSvgMarkup(sensor, selected)}</span>`
     : healthVariant
