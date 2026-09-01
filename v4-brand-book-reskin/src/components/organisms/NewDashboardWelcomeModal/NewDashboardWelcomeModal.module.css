@@ -73,6 +73,10 @@
   font-weight: var(--font-weight-bold);
 }
 
+.supportAlert {
+  box-sizing: border-box;
+}
+
 .footer {
   display: flex;
   justify-content: flex-end;

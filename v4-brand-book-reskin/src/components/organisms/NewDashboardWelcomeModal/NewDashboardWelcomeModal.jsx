@@ -2,19 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '../../atoms/Button/Button';
 import { Typography } from '../../atoms/Typography/Typography';
+import { Alert } from '../../molecules/Alert/Alert';
 import styles from './NewDashboardWelcomeModal.module.css';
 
 const modalContent = {
   betaPrompt: {
     icon: 'rocket_launch',
     title: 'Try the new RapidAIM dashboard',
-    message: 'The new dashboard is available for beta users. Turn it on when you are ready to explore the updated map, tasks, and account tools.',
-    changes: [
-      '[What changed: map navigation]',
-      '[What changed: tasks and reports]',
-      '[What changed: account and support]',
-    ],
-    supportMessage: 'You can return to the old dashboard from account settings while the beta is available.',
+    message: '[The new dashboard is available for beta users. Turn it on when you are ready to explore the updated map, tasks, and account tools.]',
+    supportAlert: 'You can return to the old dashboard from account settings while the beta is available.',
     secondaryAction: 'Not now',
     primaryAction: 'Turn on new dashboard',
   },
@@ -54,23 +50,35 @@ export const NewDashboardWelcomeModal = ({
         <div className={styles.body}>
           <div className={styles.titleGroup}>
             <Typography variant="h3" id={`new-dashboard-${variant}-title`}>{content.title}</Typography>
-            <Typography variant="body" color="secondary">
+            <Typography variant="body-sm" color="secondary">
               {content.message}
             </Typography>
           </div>
 
-          <div className={styles.changeList} aria-label="What has changed">
-            {content.changes.map((change) => (
-              <div className={styles.changeItem} key={change}>
-                <span className="material-symbols-rounded" aria-hidden="true">check</span>
-                <Typography variant="body-sm">{change}</Typography>
-              </div>
-            ))}
-          </div>
+          {content.changes && (
+            <div className={styles.changeList} aria-label="What has changed">
+              {content.changes.map((change) => (
+                <div className={styles.changeItem} key={change}>
+                  <span className="material-symbols-rounded" aria-hidden="true">check</span>
+                  <Typography variant="body-sm">{change}</Typography>
+                </div>
+              ))}
+            </div>
+          )}
 
-          <Typography variant="body-sm" color="secondary">
-            {content.supportMessage}
-          </Typography>
+          {content.supportAlert ? (
+            <Alert
+              type="inline"
+              variant="info"
+              title="Beta reminder"
+              message={content.supportAlert}
+              className={styles.supportAlert}
+            />
+          ) : (
+            <Typography variant="body-sm" color="secondary">
+              {content.supportMessage}
+            </Typography>
+          )}
         </div>
 
         <footer className={styles.footer}>
