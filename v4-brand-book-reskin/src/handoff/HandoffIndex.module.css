@@ -248,7 +248,7 @@
   display: grid;
   place-items: center;
   padding: var(--spacing-8);
-  background: rgba(8, 8, 26, 0.48);
+  background: rgba(8, 8, 26, 0.62);
   pointer-events: auto;
 }
 
