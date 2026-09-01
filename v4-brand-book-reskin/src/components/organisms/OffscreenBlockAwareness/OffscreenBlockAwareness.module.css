@@ -197,11 +197,6 @@
   width: 100%;
 }
 
-.mapFooterIcon {
-  justify-self: center;
-  color: var(--color-brand-primary);
-}
-
 .pinnedMode .offscreenIndicator {
   top: var(--indicator-y);
   left: var(--indicator-x);

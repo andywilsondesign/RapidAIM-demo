@@ -103,9 +103,6 @@ export const OffscreenBlockAwareness = ({
 
       {!isOverview && indicators.length > 0 && (
         <footer className={styles.mapFooter} aria-live="polite">
-          {indicatorMode === 'pinned' && (
-            <span className={`material-symbols-rounded ${styles.mapFooterIcon}`} aria-hidden="true">zoom_out_map</span>
-          )}
           <Typography variant="body-sm">
             {hiddenBlockCount} {hiddenBlockCount === 1 ? 'block is' : 'blocks are'} outside this view.
           </Typography>
