@@ -14,7 +14,7 @@ export default {
     },
     mapStyle: {
       control: { type: 'select' },
-      options: ['satellite', 'stylized'],
+      options: ['satellite', 'stylized', 'slate'],
     },
   },
 };
@@ -111,4 +111,14 @@ BlockInteractionStates.args = {
   activeBlockLabel: 'Block 3',
   sensors: dummySensors,
   mapStyle: 'satellite',
+};
+
+export const SlateBlockInteractionStates = Template.bind({});
+SlateBlockInteractionStates.args = {
+  center: FRESNO_CENTER,
+  zoom: 15,
+  blockOverlays: blockStateOverlays,
+  activeBlockLabel: 'Block 3',
+  sensors: dummySensors,
+  mapStyle: 'slate',
 };

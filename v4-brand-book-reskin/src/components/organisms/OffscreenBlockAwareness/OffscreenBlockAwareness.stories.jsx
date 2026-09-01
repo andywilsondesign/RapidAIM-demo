@@ -9,4 +9,10 @@ export default {
   },
 };
 
-export const Prototype = {};
+export const Prototype = {
+  render: () => (
+    <div style={{ position: 'relative', minHeight: '720px', background: '#1f2937', overflow: 'hidden' }}>
+      <OffscreenBlockAwareness />
+    </div>
+  ),
+};

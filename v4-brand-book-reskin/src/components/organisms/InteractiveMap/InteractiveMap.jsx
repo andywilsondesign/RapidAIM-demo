@@ -295,6 +295,22 @@ const MapResizer = () => {
   return null;
 };
 
+const MapViewportUpdater = ({ center, zoom }) => {
+  const map = useMap();
+  const [lat, lng] = center;
+
+  React.useEffect(() => {
+    map.setView([lat, lng], zoom, { animate: false });
+  }, [lat, lng, map, zoom]);
+
+  return null;
+};
+
+MapViewportUpdater.propTypes = {
+  center: PropTypes.arrayOf(PropTypes.number).isRequired,
+  zoom: PropTypes.number.isRequired,
+};
+
 const MapInteractionHandler = ({ onMapClick }) => {
   useMapEvents({
     click: () => onMapClick?.(),
@@ -317,7 +333,7 @@ export const InteractiveMap = ({
   selectedSensorId = '',
   blockSeverity = 'low', // 'low', 'medium', 'high'
   activeBlockLabel = '',
-  mapStyle = 'satellite', // 'satellite' or 'stylized'
+  mapStyle = 'satellite', // 'satellite', 'stylized', or 'slate'
   sensorDisplayMode = 'pest',
   showSelectedSensorTooltip = false,
   visibleSensorTooltipId = '',
@@ -422,16 +438,40 @@ export const InteractiveMap = ({
 
   const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const stylizedUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'; // CartoDB Positron for clean view
+  const slateUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  const tileConfig = {
+    satellite: {
+      url: satelliteUrl,
+      attribution: 'Tiles &copy; Esri',
+    },
+    stylized: {
+      url: stylizedUrl,
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    },
+    slate: {
+      url: slateUrl,
+      attribution: '&copy; OpenStreetMap contributors',
+    },
+  }[mapStyle] || {
+    url: satelliteUrl,
+    attribution: 'Tiles &copy; Esri',
+  };
+  const mapClassName = [
+    styles.mapWrapper,
+    mapStyle === 'slate' ? styles.slateMap : '',
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
-    <div className={`${styles.mapWrapper} ${className}`} onPointerDown={clearVisibleSensorTooltip}>
+    <div className={mapClassName} onPointerDown={clearVisibleSensorTooltip}>
       <MapContainer center={center} zoom={zoom} zoomControl={false} style={{ height: '100%', width: '100%' }}>
         <MapResizer />
+        <MapViewportUpdater center={center} zoom={zoom} />
         <MapInteractionHandler onMapClick={clearVisibleSensorTooltip} />
         <ZoomControl position="bottomright" />
         <TileLayer
-          url={mapStyle === 'satellite' ? satelliteUrl : stylizedUrl}
-          attribution={mapStyle === 'satellite' ? 'Tiles &copy; Esri' : '&copy; OpenStreetMap contributors &copy; CARTO'}
+          url={tileConfig.url}
+          attribution={tileConfig.attribution}
         />
 
         {visualBlockOverlays.map((block) => (
@@ -534,7 +574,7 @@ InteractiveMap.propTypes = {
   })),
   selectedSensorId: PropTypes.string,
   blockSeverity: PropTypes.oneOf(['high', 'medium', 'low']),
-  mapStyle: PropTypes.oneOf(['satellite', 'stylized']),
+  mapStyle: PropTypes.oneOf(['satellite', 'stylized', 'slate']),
   sensorDisplayMode: PropTypes.oneOf(['pest', 'combined', 'combinedLevel', 'combinedBattery', 'health', 'healthLevel', 'healthBattery', 'healthBatteryBare', 'maintenance']),
   showSelectedSensorTooltip: PropTypes.bool,
   visibleSensorTooltipId: PropTypes.string,

@@ -801,6 +801,107 @@ const buildMaintenanceBlockOverlays = () => {
   }));
 };
 
+const getPolygonCenter = (polygon) => {
+  const lat = polygon.reduce((sum, [pointLat]) => sum + pointLat, 0) / polygon.length;
+  const lng = polygon.reduce((sum, [, pointLng]) => sum + pointLng, 0) / polygon.length;
+  return [lat, lng];
+};
+
+const translatePolygonToCenter = (polygon, targetCenter) => {
+  const [sourceLat, sourceLng] = getPolygonCenter(polygon);
+  const [targetLat, targetLng] = targetCenter;
+  return offsetPolygon(polygon, targetLat - sourceLat, targetLng - sourceLng);
+};
+
+const distributedFocusModes = [
+  { value: 'overview', label: 'Clustered view' },
+  { value: 'north', label: 'North blocks' },
+  { value: 'south', label: 'South blocks' },
+  { value: 'east', label: 'East blocks' },
+  { value: 'west', label: 'West blocks' },
+  { value: 'central', label: 'Central blocks' },
+];
+
+const distributedClusters = [
+  { id: 'north', name: 'North Ridge', count: 4, risk: 'high', center: [37.92, -119.84], x: 55, y: 24 },
+  { id: 'south', name: 'South Basin', count: 3, risk: 'medium', center: [35.48, -119.66], x: 55, y: 74 },
+  { id: 'east', name: 'East Trial', count: 5, risk: 'high', center: [36.64, -117.92], x: 65, y: 49 },
+  { id: 'west', name: 'West Road', count: 2, risk: 'medium', center: [36.76, -121.6], x: 43, y: 50 },
+  { id: 'central', name: 'Home Block', count: 1, risk: 'low', center: [36.647, -119.8], x: 55, y: 50 },
+];
+
+const distributedIndicatorEdges = {
+  north: {
+    south: 'bottom',
+    east: 'right',
+    west: 'left',
+    central: 'bottomRight',
+  },
+  south: {
+    north: 'top',
+    east: 'right',
+    west: 'left',
+    central: 'topRight',
+  },
+  east: {
+    north: 'topLeft',
+    south: 'bottomLeft',
+    west: 'left',
+    central: 'left',
+  },
+  west: {
+    north: 'topRight',
+    south: 'bottomRight',
+    east: 'right',
+    central: 'right',
+  },
+  central: {
+    north: 'top',
+    south: 'bottom',
+    east: 'right',
+    west: 'left',
+  },
+};
+
+const distributedBlockOffsets = [
+  [0, 0],
+  [0.014, 0.028],
+  [-0.015, 0.025],
+  [0.025, -0.024],
+  [-0.026, -0.018],
+];
+
+const distributedRiskSequence = ['high', 'medium', 'low', 'medium', 'high'];
+
+const buildDistributedBlockOverlays = (clusterId) => {
+  const cluster = distributedClusters.find((item) => item.id === clusterId);
+  if (!cluster) return [];
+
+  const basePolygon = scalePolygon(selectedBlock.polygon, 0.82);
+  return Array.from({ length: cluster.count }, (_, index) => {
+    const [latOffset, lngOffset] = distributedBlockOffsets[index] || [0, 0];
+    const center = [cluster.center[0] + latOffset, cluster.center[1] + lngOffset];
+    return {
+      id: `${cluster.id}-block-${index + 1}`,
+      label: `${cluster.name} ${index + 1}`,
+      positions: translatePolygonToCenter(basePolygon, center),
+      severity: index === 0 ? cluster.risk : distributedRiskSequence[index] || cluster.risk,
+      state: index === 0 ? 'selected' : 'default',
+    };
+  });
+};
+
+const getDistributedIndicators = (focusMode) => {
+  if (focusMode === 'overview') return [];
+  const edgeMap = distributedIndicatorEdges[focusMode] || {};
+  return distributedClusters
+    .filter((cluster) => cluster.id !== focusMode)
+    .map((cluster) => ({
+      ...cluster,
+      edge: edgeMap[cluster.id] || 'right',
+    }));
+};
+
 const rankedRanches = ranches
   .filter((ranch) => ranch.organization === selectedOrganization.name)
   .sort((a, b) => b.currentCount - a.currentCount);
@@ -1040,6 +1141,7 @@ function DesktopShell({
   scopeExperiment = false,
   scopeLevel = 'block',
   contentHeightPanel = false,
+  blockPolygon = selectedBlock.polygon,
   blockOverlays,
   activeBlockLabel = selectedBlock.name,
   mapSensors = sensors,
@@ -1049,6 +1151,9 @@ function DesktopShell({
   rightRailContent,
   mapNotice,
   mapClassName = '',
+  mapCenter = [36.647, -119.8],
+  mapZoom = 15,
+  mapStyle = 'satellite',
   shellClassName = '',
   onSensorSelect,
   topNavigationProps = {},
@@ -1075,16 +1180,16 @@ function DesktopShell({
         <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''} ${contentHeightPanel ? styles.leftRailContentHeight : ''}`}>{resolvedDetailPanel}</aside>
         <section className={styles.mapStage}>
           <InteractiveMap
-            center={[36.647, -119.8]}
-            zoom={15}
-            blockPolygon={selectedBlock.polygon}
+            center={mapCenter}
+            zoom={mapZoom}
+            blockPolygon={blockPolygon}
             blockOverlays={resolvedBlockOverlays}
             activeBlockLabel={activeBlockLabel}
             sensors={mapSensors}
             selectedSensorId={selectedSensorId}
             sensorDisplayMode={sensorDisplayMode}
             blockSeverity={selectedBlock.riskLevel}
-            mapStyle="satellite"
+            mapStyle={mapStyle}
             className={mapClassName}
             onSensorSelect={onSensorSelect}
           />
@@ -2757,7 +2862,48 @@ function MapUnavailableStatesPage() {
 }
 
 function DistributedBlocksPage() {
-  return <OffscreenBlockAwareness />;
+  const [focusMode, setFocusMode] = useState('overview');
+  const [selectedBlockId, setSelectedBlockId] = useState('');
+  const [, setPreviewBlockId] = useState('');
+  const activeCluster = distributedClusters.find((cluster) => cluster.id === focusMode);
+  const blockOverlays = focusMode === 'overview' ? [] : buildDistributedBlockOverlays(focusMode);
+  const indicators = getDistributedIndicators(focusMode);
+
+  return (
+    <DesktopShell
+      detailPanel={(
+        <PestPressureRankingPanel
+          activeBlockId={selectedBlockId}
+          onPreviewBlockChange={setPreviewBlockId}
+          onSelectedBlockChange={setSelectedBlockId}
+        />
+      )}
+      scopeExperiment
+      scopeLevel="ranking"
+      contentHeightPanel
+      blockPolygon={[]}
+      blockOverlays={blockOverlays}
+      mapCenter={activeCluster?.center || [36.65, -119.82]}
+      mapZoom={focusMode === 'overview' ? 7 : 13}
+      mapStyle="slate"
+      mapSensors={focusMode === 'overview' ? [] : sensors.slice(0, 3).map((sensor, index) => ({
+        ...sensor,
+        id: `${focusMode}-sensor-${index + 1}`,
+        lat: (activeCluster?.center[0] || sensor.lat) + (distributedBlockOffsets[index]?.[0] || 0),
+        lng: (activeCluster?.center[1] || sensor.lng) + (distributedBlockOffsets[index]?.[1] || 0),
+      }))}
+      activeBlockLabel={activeCluster?.name || 'Distributed blocks'}
+      mapNotice={(
+        <OffscreenBlockAwareness
+          focusMode={focusMode}
+          focusModes={distributedFocusModes}
+          clusters={distributedClusters}
+          indicators={indicators}
+          onFocusModeChange={setFocusMode}
+        />
+      )}
+    />
+  );
 }
 
 function NewDashboardWelcomePage() {
