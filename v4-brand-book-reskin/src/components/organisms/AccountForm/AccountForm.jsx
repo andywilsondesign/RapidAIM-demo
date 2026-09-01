@@ -103,7 +103,7 @@ export const AccountForm = ({
             <Typography variant="body-sm" color="secondary">
               Use the redesigned dashboard for this account while the beta is available.
             </Typography>
-            <Typography variant="caption" color="secondary" id="dashboard-experience-help">
+            <Typography variant="body-sm" color="secondary" id="dashboard-experience-help">
               You can return to the old dashboard for now. This changes the dashboard view only and does not affect sensors, billing, saved data, or team access.
             </Typography>
           </div>
@@ -148,7 +148,7 @@ export const AccountForm = ({
               <Typography variant="body" color="secondary">
                 You can keep using the old dashboard while the beta is available. The new dashboard is planned to become the standard RapidAIM experience by the end of 2026.
               </Typography>
-              <Typography variant="body-sm" color="secondary">
+              <Typography variant="body" color="secondary">
                 Your sensors, billing, saved data, and team access will stay the same.
               </Typography>
             </div>
