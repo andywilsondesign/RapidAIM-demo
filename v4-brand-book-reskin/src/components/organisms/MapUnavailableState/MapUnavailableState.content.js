@@ -4,14 +4,14 @@ export const mapUnavailableContent = {
     badgeVariant: 'high',
     badge: 'Connection issue',
     title: 'Map data is unavailable',
-    message: 'We cannot connect to RapidAIM map data right now.',
-    detail: 'This can happen when the map service or RapidAIM database is temporarily unavailable.',
+    message: 'We cannot connect to RapidAIM map data right now, and our team has been alerted.',
+    detail: 'We are checking the map service and RapidAIM database, and aim to restore access shortly.',
     primaryAction: 'Retry connection',
     secondaryAction: 'Contact support',
     detailsTitle: 'Connection issue details',
     details: [
       'The dashboard could not load blocks, sensors, or recent detections.',
-      'If this continues, send the support team the error reference shown in the dashboard so they can investigate quickly.',
+      'If this continues, contact support with the error reference shown in the dashboard so the team can investigate quickly.',
     ],
   },
   onboarding: {
@@ -37,7 +37,7 @@ export const mapUnavailableContent = {
     message: 'Your blocks and sensors are set up, but recent detections have not arrived yet.',
     detail: 'New information can take up to 7 days to appear after setup or sensor changes.',
     primaryAction: 'View sensors',
-    secondaryAction: 'More details',
+    secondaryAction: 'Contact support',
     detailsTitle: 'Waiting for data details',
     details: [
       'The map can show your setup before live detections are available.',
