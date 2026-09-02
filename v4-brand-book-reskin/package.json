@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:sites": "vite build && storybook build && node scripts/prepare-sites-build.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6007",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.2.1",
+    "@openai/sites-vite-plugin": "^0.2.0",
     "@storybook/addon-a11y": "^10.4.6",
     "@storybook/addon-docs": "^10.4.6",
     "@storybook/addon-mcp": "^0.6.0",
