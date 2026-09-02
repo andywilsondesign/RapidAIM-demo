@@ -1,6 +1,19 @@
-import { cp, mkdir, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, rm, writeFile } from 'node:fs/promises';
 
-await cp('storybook-static', 'dist/storybook', { recursive: true });
+await rm('dist/client', { recursive: true, force: true });
+await mkdir('dist/client', { recursive: true });
+
+const staticEntries = await readdir('dist', { withFileTypes: true });
+
+for (const entry of staticEntries) {
+  if (['.openai', 'client', 'server'].includes(entry.name)) {
+    continue;
+  }
+
+  await cp(`dist/${entry.name}`, `dist/client/${entry.name}`, { recursive: true });
+}
+
+await cp('storybook-static', 'dist/client/storybook', { recursive: true });
 await mkdir('dist/server', { recursive: true });
 
 const worker = `const INDEX_PATH = '/index.html';
