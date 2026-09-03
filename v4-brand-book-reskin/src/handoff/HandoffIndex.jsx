@@ -494,7 +494,7 @@ function getRsrpStatusColor(signalHistory = []) {
   const latestSignal = signalHistory.at(-1);
   if (latestSignal == null) return '#666666';
   if (latestSignal >= -95) return '#37CC88';
-  if (latestSignal >= -105) return '#F9B709';
+  if (latestSignal >= -105) return '#EAAA46';
   return '#E11932';
 }
 
@@ -1704,7 +1704,7 @@ function MaintenanceDeviceDetail({ sensor }) {
         series={[{
           label: 'RSRP (dBm)',
           data: sensor.signalHistory,
-          color: '#151560',
+          color: '#2D5768',
         }]}
       />
       <div className={styles.maintenanceHistory} id="maintenance-history">

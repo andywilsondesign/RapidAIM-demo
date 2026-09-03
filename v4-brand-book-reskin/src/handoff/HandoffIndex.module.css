@@ -589,7 +589,7 @@
 }
 
 .healthLegendDotWarning {
-  background: var(--color-brand-yellow);
+  background: var(--color-brand-accent);
   color: var(--color-brand-ink);
 }
 
@@ -749,8 +749,8 @@
 }
 
 .healthOptionMock.activeHealthToggle {
-  border-color: rgba(21, 21, 96, 0.42);
-  background: rgba(21, 21, 96, 0.08);
+  border-color: rgba(var(--color-brand-primary-rgb), 0.42);
+  background: rgba(var(--color-brand-primary-rgb), 0.08);
   color: var(--color-brand-primary);
 }
 
@@ -1574,8 +1574,8 @@
 }
 
 .activeRankingListItem {
-  border-color: rgba(21, 21, 96, 0.34);
-  background: rgba(21, 21, 96, 0.06);
+  border-color: rgba(var(--color-brand-primary-rgb), 0.34);
+  background: rgba(var(--color-brand-primary-rgb), 0.06);
 }
 
 .centeredPreview {

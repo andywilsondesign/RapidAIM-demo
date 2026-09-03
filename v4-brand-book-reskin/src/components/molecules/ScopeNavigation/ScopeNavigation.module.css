@@ -121,7 +121,7 @@
 .scopeDropdown:focus-within .scopeButton,
 .scopeButton:hover,
 .activeScopeButton {
-  box-shadow: inset 0 0 0 1px rgba(21, 21, 96, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(var(--color-brand-primary-rgb), 0.16);
 }
 
 .scopeButton .material-symbols-rounded {
@@ -185,6 +185,6 @@
 
 .scopeOption:hover,
 .scopeOption[aria-selected='true'] {
-  border-color: rgba(21, 21, 96, 0.16);
+  border-color: rgba(var(--color-brand-primary-rgb), 0.16);
   background: var(--color-bg-hover);
 }

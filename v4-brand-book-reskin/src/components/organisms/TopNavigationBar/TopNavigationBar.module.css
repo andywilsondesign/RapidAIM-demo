@@ -32,8 +32,8 @@
 
 .logo img {
   display: block;
-  width: auto;
-  height: 35px;
+  width: 160px;
+  height: auto;
 }
 
 .modeChip {
@@ -41,9 +41,9 @@
   align-items: center;
   min-height: 1.5rem;
   padding: 0 var(--spacing-2);
-  border: 1px solid rgba(21, 21, 96, 0.16);
+  border: 1px solid rgba(var(--color-brand-primary-rgb), 0.2);
   border-radius: var(--radius-sm);
-  background: rgba(21, 21, 96, 0.08);
+  background: rgba(var(--color-brand-primary-rgb), 0.08);
   color: var(--color-brand-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
@@ -56,9 +56,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-height: 1.75rem;
-  border: 1px solid rgba(21, 21, 96, 0.16);
+  border: 1px solid rgba(var(--color-brand-primary-rgb), 0.2);
   border-radius: var(--radius-sm);
-  background: rgba(21, 21, 96, 0.08);
+  background: rgba(var(--color-brand-primary-rgb), 0.08);
   color: var(--color-brand-primary);
 }
 
@@ -156,7 +156,7 @@
 .profileMenu button:hover,
 .profileMenu button:focus-visible,
 .profileMenu .activeProfileMenuItem {
-  background: rgba(21, 21, 96, 0.08);
+  background: rgba(var(--color-brand-primary-rgb), 0.08);
   color: var(--color-brand-primary);
   outline: none;
 }

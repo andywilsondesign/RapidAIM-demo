@@ -38,10 +38,10 @@ button, input, select, textarea {
 
 .ra-section-title {
   color: var(--color-text-secondary) !important;
-  font-family: var(--font-family-title);
+  font-family: var(--font-family-metric);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold) !important;
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-regular) !important;
+  letter-spacing: 0.16em;
   line-height: 1.2;
   text-transform: uppercase;
 }

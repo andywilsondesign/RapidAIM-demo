@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { SearchBar } from '../../molecules/SearchBar/SearchBar';
 import { Button } from '../../atoms/Button/Button';
 import styles from './TopNavigationBar.module.css';
-import logo from '../../../assets/rapidaim_logo.svg';
+import logo from '../../../assets/rapidaim-brand2-horizontal-on-light.png';
 
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',

@@ -110,7 +110,7 @@
 }
 
 .switchField:focus-visible .switchTrack {
-  outline: 3px solid rgba(21, 21, 96, 0.26);
+  outline: 3px solid rgba(var(--color-brand-primary-rgb), 0.26);
   outline-offset: 3px;
 }
 
