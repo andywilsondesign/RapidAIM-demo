@@ -21,7 +21,7 @@
 
 .count {
   padding: var(--spacing-1) var(--spacing-2);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--color-bg-base);
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);

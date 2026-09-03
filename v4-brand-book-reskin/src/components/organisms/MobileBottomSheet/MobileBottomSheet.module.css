@@ -77,7 +77,7 @@
   display: block;
   width: 42px;
   height: 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.72);
 }
 

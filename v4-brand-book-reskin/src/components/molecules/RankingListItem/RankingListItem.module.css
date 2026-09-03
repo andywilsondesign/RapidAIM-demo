@@ -44,7 +44,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background-color: var(--color-bg-base);
   color: var(--color-text-secondary);
   font-family: var(--font-family-mono);

@@ -6,6 +6,8 @@ V4 is a separate UX sandbox copied from the V3 brand-alignment prototype. It exi
 
 The active V4 direction is light-first and intentionally close to V3. A previous dark-first Brand Book 2.0 spike is preserved at the local `v4-dark-style-spike` tag for reference, but it should not be treated as the current build direction until the client confirms the visual style guide.
 
+The current UX baseline is frozen at `v4-ux-baseline-2026-09-03`. Brand Book 2.0 UI experiments should happen on a separate branch and should keep the current UX pages and Storybook stories intact for side-by-side comparison.
+
 ## V4 Guardrails
 
 1. Preserve the accessible badge model.
@@ -22,6 +24,12 @@ The active V4 direction is light-first and intentionally close to V3. A previous
 
 5. Keep V3 available.
    V3 is the current baseline. V4 is exploratory and should be easy to revert or discard.
+
+6. Keep Brand Book 2.0 experiments tidy.
+   The newer source is `/Users/master/Downloads/New branding/RapidAIM_Brand_Book 2.0.pdf`. Experimental theme controls, review-only labels, or comparison affordances must be documented and removed or clearly separated before implementation handoff.
+
+7. Prefer sharper product geometry.
+   Brand Book 2.0 leans toward a more technical, right-angled visual language. Shared radius tokens should stay sharp by default, while circles remain available for semantic controls such as avatars, status dots, sensor pins, and toggle thumbs.
 
 ## Product Positioning
 

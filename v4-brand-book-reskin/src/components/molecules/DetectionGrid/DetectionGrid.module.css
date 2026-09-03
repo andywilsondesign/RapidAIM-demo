@@ -96,7 +96,7 @@
   display: inline-block;
   width: var(--spacing-2);
   height: var(--spacing-2);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .statusDot--low {

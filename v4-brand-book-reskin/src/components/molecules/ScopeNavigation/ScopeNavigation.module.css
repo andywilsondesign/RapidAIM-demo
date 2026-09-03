@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid var(--color-border-subtle);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow-sm);
   color: var(--color-brand-primary);
@@ -51,7 +51,7 @@
   overflow: hidden;
   padding: 0 var(--spacing-2);
   border: 1px solid var(--color-border-subtle);
-  border-radius: 999px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px) saturate(1.1);
@@ -89,7 +89,7 @@
   gap: var(--spacing-2);
   padding: var(--spacing-1) var(--spacing-3);
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-brand-primary);
   cursor: pointer;

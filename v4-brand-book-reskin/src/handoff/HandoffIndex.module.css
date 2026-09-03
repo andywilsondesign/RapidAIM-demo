@@ -329,7 +329,7 @@
 .waitingDataSensorDot {
   width: 0.75rem;
   height: 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--color-status-green);
   box-shadow: 0 0 0 3px var(--color-status-green-bg);
 }
@@ -525,7 +525,7 @@
   max-width: calc(100% - (var(--spacing-4) * 2));
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid rgba(255, 255, 255, 0.74);
-  border-radius: 999px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-md);
   color: var(--color-text-primary);
@@ -572,7 +572,7 @@
   align-items: center;
   justify-content: center;
   border: 1.5px solid #fff;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18);
   font-family: var(--font-family-metric);
   font-size: 0.55rem;
@@ -627,7 +627,7 @@
   width: 0.72rem;
   height: 0.42rem;
   border: 1.5px solid #fff;
-  border-radius: 0.1rem;
+  border-radius: var(--radius-xs);
 }
 
 .healthLegendBatteryFull::after,
@@ -636,7 +636,7 @@
   width: 0.1rem;
   height: 0.22rem;
   margin-left: -0.05rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: #fff;
 }
 
@@ -651,7 +651,7 @@
   content: '';
   position: absolute;
   inset: 0.42rem 0.42rem;
-  border-radius: 0.12rem;
+  border-radius: var(--radius-xs);
   background: #fff;
 }
 
@@ -1062,7 +1062,7 @@
   display: inline-flex;
   width: 2.75rem;
   height: 1.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.24);
 }
 
@@ -1072,7 +1072,7 @@
   left: 1.45rem;
   width: 1.1rem;
   height: 1.1rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: #fff;
   content: '';
 }
@@ -1361,7 +1361,7 @@
   bottom: 0;
   left: 0;
   height: 3px;
-  border-radius: 999px 999px 0 0;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   background: var(--color-brand-primary);
   content: '';
 }
@@ -1632,7 +1632,7 @@
   overflow: hidden;
   flex-direction: column;
   border: 1px solid var(--color-border-subtle);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   background: var(--color-bg-base);
   box-shadow: var(--shadow-lg);
 }
@@ -1737,7 +1737,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   overflow: hidden;
   border: 1px solid var(--color-border-floating-panel);
-  border-radius: 999px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.82);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px) saturate(1.1);
@@ -1775,7 +1775,7 @@
   height: 44px;
   padding: 0;
   border: 1px solid var(--color-border-subtle);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.74);
   box-shadow: var(--shadow-sm);
   color: var(--color-brand-primary);
