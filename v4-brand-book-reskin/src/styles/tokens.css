@@ -103,11 +103,11 @@
     --size-icon-button: 2rem; /* 32px */
     
     --radius-none: 0;
-    --radius-xs: 0;
-    --radius-sm: 0;
-    --radius-md: 0;
-    --radius-lg: 0;
-    --radius-xl: 0;
+    --radius-xs: 1px;
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+    --radius-xl: 6px;
     --radius-full: 999px;
     
     /* Shadows - Replacing Glassmorphism */
