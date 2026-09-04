@@ -1852,6 +1852,19 @@
   color: var(--color-brand-primary);
 }
 
+.shell[data-rapidaim-theme='dark'] .fab.fab {
+  border-color: var(--color-border-floating-panel);
+  background: color-mix(in srgb, var(--color-bg-panel) 88%, transparent);
+  color: var(--color-brand-primary);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.shell[data-rapidaim-theme='dark'] .fab.fab:hover,
+.shell[data-rapidaim-theme='dark'] .fab.fab:focus-visible {
+  background: color-mix(in srgb, var(--color-bg-hover) 92%, transparent);
+  color: var(--color-brand-primary);
+}
+
 .sheetContent {
   display: flex;
   min-height: 0;
