@@ -13,6 +13,11 @@
   overflow: visible;
 }
 
+:global([data-rapidaim-theme='dark']) .root {
+  --scope-surface: rgba(26, 32, 38, 0.86);
+  --scope-hover-surface: rgba(45, 87, 104, 0.54);
+}
+
 .homeButton {
   display: inline-flex;
   width: var(--scope-control-height);

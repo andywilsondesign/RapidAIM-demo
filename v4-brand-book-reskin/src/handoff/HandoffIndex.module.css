@@ -3,6 +3,7 @@
   grid-template-columns: 286px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--color-bg-base);
+  color: var(--color-text-primary);
 }
 
 .shellCollapsed {
@@ -19,10 +20,10 @@
   height: 100vh;
   overflow: auto;
   padding: var(--spacing-4);
-  border-right: 3px solid #1f2937;
-  background: #111827;
-  color: #f9fafb;
-  box-shadow: 12px 0 26px rgba(17, 24, 39, 0.18);
+  border-right: 3px solid var(--color-brand-steel);
+  background: var(--color-brand-ink);
+  color: var(--color-brand-snow);
+  box-shadow: 12px 0 26px rgba(11, 12, 14, 0.22);
 }
 
 .brand {
@@ -105,6 +106,52 @@
   color: #9ca3af;
 }
 
+.themePreview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.themePreview > span {
+  color: #9ca3af;
+  font-family: var(--font-family-metric);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.themePreview > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-1);
+}
+
+.themePreview button {
+  min-height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #d1d5db;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.themePreview button:hover,
+.themePreview button:focus-visible,
+.themePreview .activeThemeButton {
+  border-color: var(--color-brand-signal);
+  background: var(--color-brand-signal);
+  color: var(--color-brand-ink);
+  outline: none;
+}
+
 .navItem {
   width: 100%;
   border: 1px solid transparent;
@@ -135,17 +182,20 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
+  color: var(--color-text-primary);
 }
 
 .viewport {
   min-height: 0;
   flex: 1;
   overflow: auto;
+  color: var(--color-text-primary);
 }
 
 .uxStatePage {
   min-height: 100vh;
   background: var(--color-bg-base);
+  color: var(--color-text-primary);
 }
 
 .uxStateToolbar {
@@ -158,7 +208,7 @@
   gap: var(--spacing-4);
   padding: var(--spacing-5) var(--spacing-6);
   border-bottom: 1px solid var(--color-border-subtle);
-  background: rgba(244, 244, 244, 0.96);
+  background: color-mix(in srgb, var(--color-bg-base) 96%, transparent);
 }
 
 .uxStateToolbar > div:first-child {
@@ -367,6 +417,20 @@
   min-height: 560px;
   overflow: hidden;
   background: var(--color-bg-base);
+}
+
+.shell[data-rapidaim-theme='dark'] .desktopShell :global(.leaflet-container) {
+  background: var(--color-brand-ink);
+}
+
+.shell[data-rapidaim-theme='dark'] .desktopShell :global(.leaflet-tile-pane) {
+  filter: grayscale(0.42) saturate(0.52) brightness(0.44) contrast(1.08);
+  opacity: 0.96;
+}
+
+.shell[data-rapidaim-theme='dark'] .desktopShell :global(.leaflet-control-attribution) {
+  background: rgba(11, 12, 14, 0.76);
+  color: rgba(247, 247, 247, 0.72);
 }
 
 @media (max-width: 900px) {

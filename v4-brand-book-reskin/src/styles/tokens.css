@@ -50,7 +50,7 @@
     --color-brand-light: #3A7187;
     --color-brand-hover: var(--color-brand-steel);
     --color-brand-accent: var(--color-brand-signal);
-    --color-panel-header-bg: var(--color-brand-ink);
+    --color-panel-header-bg: var(--color-brand-steel);
     --color-panel-header-text: #FFFFFF;
 
     /* Semantic Actions */
@@ -118,4 +118,29 @@
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-rapidaim-theme='dark'] {
+    --color-bg-base: var(--color-brand-ink);
+    --color-bg-panel: var(--color-brand-steel);
+    --color-bg-card: #10171D;
+    --color-bg-hover: #21333B;
+    --color-bg-data-surface: #111A20;
+    --color-text-primary: var(--color-brand-snow);
+    --color-text-secondary: var(--color-brand-grey-light);
+    --color-border-subtle: rgba(247, 247, 247, 0.16);
+    --color-border-floating-panel: rgba(247, 247, 247, 0.22);
+    --color-border-focus: var(--color-brand-signal);
+    --color-brand-primary: var(--color-brand-signal);
+    --color-brand-light: #F0C36D;
+    --color-brand-hover: #F4D48F;
+    --color-brand-primary-rgb: 234, 170, 70;
+    --color-panel-header-bg: var(--color-brand-steel);
+    --color-panel-header-text: var(--color-brand-snow);
+    --color-action-primary-bg: var(--color-brand-signal);
+    --color-action-primary-hover: #F0C36D;
+    --color-action-primary-text: var(--color-brand-ink);
+    --color-action-secondary-bg: #10171D;
+    --color-action-secondary-hover: #18252D;
+    --color-action-secondary-text: var(--color-brand-snow);
 }

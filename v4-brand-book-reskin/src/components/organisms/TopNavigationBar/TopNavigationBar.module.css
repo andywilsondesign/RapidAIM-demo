@@ -36,6 +36,18 @@
   height: auto;
 }
 
+.logoDark {
+  display: none !important;
+}
+
+:global([data-rapidaim-theme='dark']) .logoLight {
+  display: none !important;
+}
+
+:global([data-rapidaim-theme='dark']) .logoDark {
+  display: block !important;
+}
+
 .modeChip {
   display: inline-flex;
   align-items: center;

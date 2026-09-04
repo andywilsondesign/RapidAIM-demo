@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { SearchBar } from '../../molecules/SearchBar/SearchBar';
 import { Button } from '../../atoms/Button/Button';
 import styles from './TopNavigationBar.module.css';
-import logo from '../../../assets/rapidaim-brand2-horizontal-on-light.png';
+import logoLight from '../../../assets/rapidaim-brand2-horizontal-on-light.png';
+import logoDark from '../../../assets/rapidaim-brand2-horizontal-on-dark.png';
 
 export const TopNavigationBar = ({
   organizationName = 'RapidAIM',
@@ -44,7 +45,8 @@ export const TopNavigationBar = ({
               </Button>
             )}
             <div className={styles.logo}>
-              <img src={logo} alt={organizationName} />
+              <img className={styles.logoLight} src={logoLight} alt={organizationName} />
+              <img className={styles.logoDark} src={logoDark} alt={organizationName} />
             </div>
             {modeOptions.length > 0 ? (
               <label className={styles.modeSelectWrap}>

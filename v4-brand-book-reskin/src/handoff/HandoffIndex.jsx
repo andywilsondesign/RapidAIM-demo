@@ -1135,12 +1135,22 @@ function getInitialPageId(fallbackPageId) {
   return pageIds.has(requestedPageId) ? requestedPageId : fallbackPageId;
 }
 
-function getPageHref(pageId) {
-  return `?page=${encodeURIComponent(pageId)}`;
+function getInitialThemeMode() {
+  if (typeof window === 'undefined') return 'light';
+  return new URLSearchParams(window.location.search).get('theme') === 'dark' ? 'dark' : 'light';
+}
+
+function getPageHref(pageId, themeMode = 'light') {
+  const params = new URLSearchParams({ page: pageId });
+  if (themeMode === 'dark') {
+    params.set('theme', 'dark');
+  }
+  return `?${params.toString()}`;
 }
 
 export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = true }) => {
   const [activePageId, setActivePageId] = useState(() => getInitialPageId(initialPageId));
+  const [themeMode, setThemeMode] = useState(getInitialThemeMode);
   const [isNavigatorOpen, setIsNavigatorOpen] = useState(true);
   const isResponsiveMobile = useResponsiveMobileView();
   const activePage = useMemo(
@@ -1156,9 +1166,16 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
   const selectPage = useCallback((pageId) => {
     setActivePageId(pageId);
     if (typeof window !== 'undefined' && pageIds.has(pageId)) {
-      window.history.replaceState(null, '', getPageHref(pageId));
+      window.history.replaceState(null, '', getPageHref(pageId, themeMode));
     }
-  }, []);
+  }, [themeMode]);
+
+  const updateThemeMode = useCallback((nextThemeMode) => {
+    setThemeMode(nextThemeMode);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', getPageHref(activePageId, nextThemeMode));
+    }
+  }, [activePageId]);
 
   useEffect(() => {
     const handleNavigateHome = () => selectPage('consolidated-pest-pressure-ranking');
@@ -1167,7 +1184,10 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
   }, [selectPage]);
 
   return (
-    <div className={`${styles.shell} ${!shouldShowNavigator || !isNavigatorOpen ? styles.shellCollapsed : ''}`}>
+    <div
+      className={`${styles.shell} ${!shouldShowNavigator || !isNavigatorOpen ? styles.shellCollapsed : ''}`}
+      data-rapidaim-theme={themeMode}
+    >
       {shouldShowNavigator && isNavigatorOpen ? (
       <aside className={styles.sidebar} aria-label="Handoff page navigator">
         <div className={styles.brand}>
@@ -1185,6 +1205,27 @@ export const HandoffIndex = ({ initialPageId = flatPages[0].id, showNavigator = 
           <span className="material-symbols-rounded">left_panel_close</span>
           Hide navigator
         </button>
+        <div className={styles.themePreview} aria-label="Prototype theme preview">
+          <span>Theme preview</span>
+          <div>
+            <button
+              className={themeMode === 'light' ? styles.activeThemeButton : ''}
+              onClick={() => updateThemeMode('light')}
+              aria-pressed={themeMode === 'light'}
+              type="button"
+            >
+              Light
+            </button>
+            <button
+              className={themeMode === 'dark' ? styles.activeThemeButton : ''}
+              onClick={() => updateThemeMode('dark')}
+              aria-pressed={themeMode === 'dark'}
+              type="button"
+            >
+              Dark
+            </button>
+          </div>
+        </div>
         <div className={styles.navGroups}>
           {pageGroups.map((group) => (
             <div className={styles.navGroup} key={group.title}>
