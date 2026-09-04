@@ -3,21 +3,31 @@
   --stat-card-border: var(--color-border-subtle);
   --stat-card-on-accent: var(--color-bg-panel);
   --stat-card-tint: var(--color-bg-data-surface);
-  --stat-card-min-height: 8.75rem;
-  --stat-card-title-min-height: 3.35rem;
+  --stat-card-min-height: auto;
+  --stat-card-title-min-height: auto;
   --stat-card-meta-min-height: 1.25rem;
+  --stat-card-padding: var(--spacing-3);
+  --stat-card-gap: var(--spacing-1);
 
   position: relative;
   background-color: var(--stat-card-tint);
   border: 1px solid var(--stat-card-border);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  padding: var(--spacing-4);
+  padding: var(--stat-card-padding);
   display: grid;
   min-height: var(--stat-card-min-height);
-  grid-template-rows: minmax(var(--stat-card-title-min-height), auto) auto minmax(var(--stat-card-meta-min-height), auto);
-  gap: var(--spacing-2);
+  grid-template-rows: auto auto auto;
+  gap: var(--stat-card-gap);
   min-width: 150px;
+}
+
+.hasTrend.hasMeta {
+  --stat-card-min-height: 7.75rem;
+  --stat-card-title-min-height: 2.625rem;
+  --stat-card-gap: var(--spacing-2);
+
+  grid-template-rows: minmax(var(--stat-card-title-min-height), auto) minmax(2.375rem, 1fr) minmax(var(--stat-card-meta-min-height), auto);
 }
 
 .card--neutral {
@@ -48,9 +58,12 @@
 }
 
 .label {
-  min-height: var(--stat-card-title-min-height);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.hasTrend.hasMeta .label {
+  min-height: var(--stat-card-title-min-height);
 }
 
 .hasInfo .label {
@@ -83,6 +96,10 @@
   gap: var(--spacing-3);
 }
 
+.hasTrend.hasMeta .valueRow {
+  align-self: center;
+}
+
 .valueRow > :first-child {
   min-width: 0;
 }
@@ -91,7 +108,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-1);
-  min-width: 4.75rem;
   justify-content: center;
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);

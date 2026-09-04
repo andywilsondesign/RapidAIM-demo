@@ -18,9 +18,11 @@ export const StatCard = ({
 }) => {
   const isPositive = trend > 0;
   const hasInfo = Boolean(infoTitle && infoDescription);
+  const hasTrend = trend !== undefined && trend !== 0;
+  const hasMeta = Boolean(trendContext || trendLabel || benchmark);
 
   return (
-    <div className={`${styles.card} ${styles[`card--${tone}`]} ${hasInfo ? styles.hasInfo : ''} ${className}`}>
+    <div className={`${styles.card} ${styles[`card--${tone}`]} ${hasInfo ? styles.hasInfo : ''} ${hasTrend ? styles.hasTrend : ''} ${hasMeta ? styles.hasMeta : ''} ${className}`}>
       {hasInfo && (
         <span className={styles.infoSlot}>
           <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
@@ -33,7 +35,7 @@ export const StatCard = ({
       <div className={styles.valueRow}>
         <Typography variant="h3" className="font-metric">{value}</Typography>
         
-        {trend !== undefined && trend !== 0 && (
+        {hasTrend && (
           <div className={`${styles.trend} ${styles[`trend--${tone}`]} ${isPositive ? styles.trendDirectionPositive : styles.trendDirectionNegative}`}>
             <span className={`material-symbols-rounded ${styles.trendIcon}`} aria-hidden="true">
               {isPositive ? 'trending_up' : 'trending_down'}
@@ -44,7 +46,7 @@ export const StatCard = ({
           </div>
         )}
       </div>
-      {(trendContext || trendLabel || benchmark) && (
+      {hasMeta && (
         <div className={styles.meta}>
           {trendContext && (
             <Typography variant="caption" color="secondary" className={styles.metaLine}>

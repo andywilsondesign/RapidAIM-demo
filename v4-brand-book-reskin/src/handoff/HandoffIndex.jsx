@@ -2365,7 +2365,7 @@ function OrganizationTasks() {
       {taskStreams.map((stream) => (
         <div className={styles.taskStream} key={stream.title}>
           <div className={styles.sectionHeader}>
-            <Typography variant="body" weight="semibold">{stream.title}</Typography>
+            <PanelSectionTitle>{stream.title}</PanelSectionTitle>
             <Typography variant="caption" color="secondary">{stream.summary}</Typography>
           </div>
           <div className={styles.taskStats}>

@@ -1383,13 +1383,17 @@
 }
 
 .anchorTabs {
+  --anchor-tab-active-color: var(--color-brand-accent);
+  --anchor-tab-hover-bg: rgba(255, 255, 255, 0.08);
+
   display: grid;
   flex: 0 0 auto;
   grid-template-columns: repeat(var(--tab-count, 2), minmax(0, 1fr));
   gap: 0;
   padding: 0;
   border-bottom: 0;
-  background: color-mix(in srgb, var(--color-bg-panel) 96%, transparent);
+  background: var(--color-panel-header-bg);
+  color: var(--color-panel-header-text);
   backdrop-filter: blur(8px);
 }
 
@@ -1403,7 +1407,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: color-mix(in srgb, var(--color-panel-header-text) 68%, transparent);
   cursor: pointer;
   font: inherit;
   font-size: var(--font-size-xs);
@@ -1412,14 +1416,14 @@
 
 .anchorTabs button:hover,
 .anchorTabs button:focus-visible {
-  background: var(--color-bg-hover);
-  color: var(--color-brand-primary);
+  background: var(--anchor-tab-hover-bg);
+  color: var(--color-panel-header-text);
   outline: none;
 }
 
 .anchorTabs .activeAnchorTab {
-  background: var(--color-bg-card);
-  color: var(--color-brand-primary);
+  background: color-mix(in srgb, var(--color-panel-header-text) 7%, transparent);
+  color: var(--anchor-tab-active-color);
   box-shadow: none;
 }
 
@@ -1430,7 +1434,7 @@
   left: 0;
   height: 3px;
   border-radius: 0;
-  background: var(--color-brand-primary);
+  background: var(--anchor-tab-active-color);
   content: '';
 }
 
@@ -1521,8 +1525,8 @@
 }
 
 .pestPressureGrid [class*='card'] {
-  --stat-card-min-height: 8.5rem;
-  --stat-card-title-min-height: 3.25rem;
+  --stat-card-min-height: 7.75rem;
+  --stat-card-title-min-height: 2.625rem;
 
   min-width: 0;
   padding: var(--spacing-3);
