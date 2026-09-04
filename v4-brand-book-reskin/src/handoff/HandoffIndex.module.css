@@ -1411,14 +1411,15 @@
 }
 
 .anchorTabs button:hover,
-.anchorTabs button:focus-visible,
-.anchorTabs .activeAnchorTab {
+.anchorTabs button:focus-visible {
   background: var(--color-bg-hover);
   color: var(--color-brand-primary);
   outline: none;
 }
 
 .anchorTabs .activeAnchorTab {
+  background: var(--color-bg-card);
+  color: var(--color-brand-primary);
   box-shadow: none;
 }
 

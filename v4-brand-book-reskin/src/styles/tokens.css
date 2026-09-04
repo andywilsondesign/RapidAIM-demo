@@ -147,10 +147,10 @@
 
 [data-rapidaim-theme='dark'] {
     --color-bg-base: var(--color-brand-ink);
-    --color-bg-panel: var(--color-brand-steel);
-    --color-bg-card: #10171D;
-    --color-bg-hover: #21333B;
-    --color-bg-data-surface: #111A20;
+    --color-bg-panel: var(--color-brand-ink);
+    --color-bg-card: var(--color-brand-steel);
+    --color-bg-hover: #202A32;
+    --color-bg-data-surface: var(--color-brand-steel);
     --color-text-primary: var(--color-brand-snow);
     --color-text-secondary: var(--color-brand-grey-light);
     --color-status-red-solid: #FF5D73;
@@ -209,7 +209,7 @@
     --color-action-primary-bg: var(--color-brand-signal);
     --color-action-primary-hover: #F0C36D;
     --color-action-primary-text: var(--color-brand-ink);
-    --color-action-secondary-bg: #10171D;
+    --color-action-secondary-bg: var(--color-bg-card);
     --color-action-secondary-hover: #18252D;
     --color-action-secondary-text: var(--color-brand-snow);
 }
