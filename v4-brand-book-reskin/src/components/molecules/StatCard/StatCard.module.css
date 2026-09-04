@@ -1,7 +1,12 @@
 .card {
+  --stat-card-accent: var(--color-text-primary);
+  --stat-card-border: var(--color-border-subtle);
+  --stat-card-on-accent: var(--color-bg-panel);
+  --stat-card-tint: var(--color-bg-data-surface);
+
   position: relative;
-  background-color: var(--color-bg-data-surface);
-  border: 1px solid var(--color-border-subtle);
+  background-color: var(--stat-card-tint);
+  border: 1px solid var(--stat-card-border);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
   padding: var(--spacing-4);
@@ -12,23 +17,30 @@
 }
 
 .card--neutral {
-  background-color: var(--color-bg-data-surface);
+  --stat-card-tint: var(--color-bg-data-surface);
+  --stat-card-border: var(--color-border-subtle);
 }
 
 .card--high {
-  border-color: rgba(211, 47, 47, 0.22);
-  background-color: var(--color-status-red-bg);
+  --stat-card-accent: var(--color-status-red-solid);
+  --stat-card-border: var(--color-status-red-border);
+  --stat-card-on-accent: var(--color-status-red-on-solid);
+  --stat-card-tint: var(--color-status-red-tint);
 }
 
 .card--medium {
-  border-color: rgba(251, 140, 0, 0.28);
-  background-color: var(--color-status-amber-bg);
+  --stat-card-accent: var(--color-status-amber-solid);
+  --stat-card-border: var(--color-status-amber-border);
+  --stat-card-on-accent: var(--color-status-amber-on-solid);
+  --stat-card-tint: var(--color-status-amber-tint);
 }
 
 .card--low,
 .card--positive {
-  border-color: rgba(67, 160, 71, 0.22);
-  background-color: var(--color-status-green-bg);
+  --stat-card-accent: var(--color-status-green-solid);
+  --stat-card-border: var(--color-status-green-border);
+  --stat-card-on-accent: var(--color-status-green-on-solid);
+  --stat-card-tint: var(--color-status-green-tint);
 }
 
 .label {
@@ -67,8 +79,8 @@
   gap: var(--spacing-1);
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
-  background-color: var(--color-text-primary);
-  color: var(--color-bg-panel);
+  background-color: var(--stat-card-accent);
+  color: var(--stat-card-on-accent);
   white-space: nowrap;
 }
 
@@ -77,24 +89,27 @@
 }
 
 .trendDirectionPositive {
-  background-color: var(--color-text-primary);
+  background-color: var(--stat-card-accent);
 }
 
 .trendDirectionNegative {
-  background-color: var(--color-text-primary);
+  background-color: var(--stat-card-accent);
 }
 
 .trend--high {
-  background-color: var(--color-status-red);
+  background-color: var(--color-status-red-solid);
+  color: var(--color-status-red-on-solid);
 }
 
 .trend--medium {
-  background-color: var(--color-status-amber);
+  background-color: var(--color-status-amber-solid);
+  color: var(--color-status-amber-on-solid);
 }
 
 .trend--low,
 .trend--positive {
-  background-color: var(--color-status-green);
+  background-color: var(--color-status-green-solid);
+  color: var(--color-status-green-on-solid);
 }
 
 .meta {
