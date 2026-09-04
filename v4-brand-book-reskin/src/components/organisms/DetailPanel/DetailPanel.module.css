@@ -141,7 +141,7 @@
   padding: 0 var(--spacing-1);
   border-radius: var(--radius-full);
   background: var(--color-status-amber-bg);
-  color: var(--color-status-amber);
+  color: var(--color-status-amber-on-tint);
   font-family: var(--font-family-metric);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
@@ -150,7 +150,7 @@
 
 .anchorTabBadge--critical {
   background: var(--color-status-red);
-  color: #fff;
+  color: var(--color-status-red-on-solid);
 }
 
 .anchorTabs button:hover,

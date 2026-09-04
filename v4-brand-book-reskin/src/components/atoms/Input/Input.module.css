@@ -25,7 +25,7 @@
 }
 
 .input--error:focus {
-  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-status-red) 14%, transparent);
 }
 
 .input--full {

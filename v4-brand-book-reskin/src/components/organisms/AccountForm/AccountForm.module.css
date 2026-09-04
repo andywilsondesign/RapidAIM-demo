@@ -39,11 +39,28 @@
 }
 
 .sectionHeader,
+.preferenceCopy,
 .betaCopy,
 .dialogBody {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
+}
+
+.preferencePanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, auto);
+  gap: var(--spacing-4);
+  align-items: center;
+  padding: var(--spacing-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-base);
+}
+
+.themePreferenceControl {
+  justify-self: end;
+  min-width: min(100%, 16rem);
 }
 
 .betaPanel {
@@ -86,7 +103,7 @@
   align-items: center;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-full);
-  background: #cbd5e1;
+  background: var(--color-status-idle-border);
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
@@ -122,7 +139,7 @@
   display: grid;
   place-items: center;
   padding: var(--spacing-4);
-  background: rgba(8, 8, 26, 0.42);
+  background: rgba(8, 8, 26, 0.62);
 }
 
 .dialog {
@@ -201,6 +218,14 @@
 
   .betaPanel {
     grid-template-columns: 1fr;
+  }
+
+  .preferencePanel {
+    grid-template-columns: 1fr;
+  }
+
+  .themePreferenceControl {
+    justify-self: stretch;
   }
 
   .switchField {

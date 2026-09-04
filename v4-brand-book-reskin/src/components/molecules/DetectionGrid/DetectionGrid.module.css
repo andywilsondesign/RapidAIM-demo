@@ -117,19 +117,19 @@
 
 .low {
   background: var(--color-status-green-bg);
-  color: #1f6b24;
+  color: var(--color-status-green-on-tint);
   font-weight: var(--font-weight-semibold);
 }
 
 .medium {
   background: var(--color-status-amber-bg);
-  color: #7a4300;
+  color: var(--color-status-amber-on-tint);
   font-weight: var(--font-weight-semibold);
 }
 
 .high {
   background: var(--color-status-red-bg);
-  color: #b3261e;
+  color: var(--color-status-red-on-tint);
   font-weight: var(--font-weight-bold);
 }
 

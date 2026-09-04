@@ -6,6 +6,7 @@ import { Select } from '../../atoms/Select/Select';
 import { Button } from '../../atoms/Button/Button';
 import { Typography } from '../../atoms/Typography/Typography';
 import { Alert } from '../../molecules/Alert/Alert';
+import { SegmentedControl } from '../../molecules/SegmentedControl/SegmentedControl';
 import styles from './AccountForm.module.css';
 
 export const AccountForm = ({
@@ -17,6 +18,7 @@ export const AccountForm = ({
 }) => {
   const [useNewDashboard, setUseNewDashboard] = React.useState(true);
   const [isDashboardPromptOpen, setIsDashboardPromptOpen] = React.useState(false);
+  const [themePreference, setThemePreference] = React.useState('system');
 
   const handleDashboardToggle = () => {
     if (!useNewDashboard) {
@@ -87,6 +89,34 @@ export const AccountForm = ({
               { label: 'None', value: 'none' },
             ]} />
           </FormField>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <Typography variant="h5" className={styles.sectionTitle}>Appearance</Typography>
+          <Typography variant="body-sm" color="secondary">
+            Choose how the dashboard should appear on this device.
+          </Typography>
+        </div>
+        <div className={styles.preferencePanel}>
+          <div className={styles.preferenceCopy}>
+            <Typography variant="body-sm" weight="bold">Theme preference</Typography>
+            <Typography variant="body-sm" color="secondary" id="theme-preference-help">
+              Use light mode, dark mode, or follow your browser and operating system setting automatically.
+            </Typography>
+          </div>
+          <SegmentedControl
+            ariaLabel="Theme preference"
+            value={themePreference}
+            onChange={setThemePreference}
+            options={[
+              { label: 'Light', value: 'light' },
+              { label: 'Dark', value: 'dark' },
+              { label: 'Automatic', value: 'system' },
+            ]}
+            className={styles.themePreferenceControl}
+          />
         </div>
       </div>
 

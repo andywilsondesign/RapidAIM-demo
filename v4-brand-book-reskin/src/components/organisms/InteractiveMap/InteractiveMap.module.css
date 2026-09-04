@@ -7,11 +7,11 @@
 }
 
 .slateMap {
-  background: #111827;
+  background: var(--color-brand-steel);
 }
 
 .slateMap :global(.leaflet-container) {
-  background: #111827;
+  background: var(--color-brand-steel);
 }
 
 .slateMap :global(.leaflet-tile-pane) {
@@ -75,7 +75,7 @@
 
 :global(.leaflet-health-marker--healthy .leaflet-health-marker__shape) {
   fill: rgba(255, 255, 255, 0.88);
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
 }
 
 :global(.leaflet-health-marker--healthy .leaflet-health-marker__icon) {
@@ -83,7 +83,7 @@
 }
 
 :global(.leaflet-health-marker--warning .leaflet-health-marker__shape) {
-  fill: #f9b709;
+  fill: var(--color-status-amber-solid);
 }
 
 :global(.leaflet-health-marker--warning.leaflet-health-marker--level .leaflet-health-marker__shape) {
@@ -91,7 +91,7 @@
 }
 
 :global(.leaflet-health-marker--warning .leaflet-health-marker__text) {
-  fill: #fff;
+  fill: var(--color-status-amber-on-solid);
   font-family: var(--font-family-metric);
   font-size: 8.4px;
   font-weight: var(--font-weight-bold);
@@ -101,11 +101,11 @@
 }
 
 :global(.leaflet-health-marker--offline .leaflet-health-marker__shape) {
-  fill: #111827;
+  fill: var(--color-status-idle-solid);
 }
 
 :global(.leaflet-health-marker--offline .leaflet-health-marker__icon) {
-  stroke: #fff;
+  stroke: var(--color-status-idle-on-solid);
 }
 
 :global(.leaflet-health-marker--level .leaflet-health-marker__level-base) {
@@ -127,23 +127,23 @@
 }
 
 :global(.leaflet-health-marker--warning.leaflet-health-marker--level .leaflet-health-marker__shape) {
-  stroke: #e11932;
+  stroke: var(--color-status-red-solid);
 }
 
 :global(.leaflet-health-marker--warning .leaflet-health-marker__level-fill) {
-  fill: #e11932;
+  fill: var(--color-status-red-solid);
 }
 
 :global(.leaflet-health-marker--offline.leaflet-health-marker--level .leaflet-health-marker__shape) {
-  stroke: #111827;
+  stroke: var(--color-status-idle-solid);
 }
 
 :global(.leaflet-health-marker--offline .leaflet-health-marker__level-fill) {
-  fill: #111827;
+  fill: var(--color-status-idle-solid);
 }
 
 :global(.leaflet-health-marker--battery .leaflet-health-marker__shape) {
-  fill: #111827;
+  fill: var(--color-status-idle-solid);
 }
 
 :global(.leaflet-health-marker--healthy.leaflet-health-marker--battery .leaflet-health-marker__shape) {
@@ -151,11 +151,11 @@
 }
 
 :global(.leaflet-health-marker--warning.leaflet-health-marker--battery .leaflet-health-marker__shape) {
-  fill: #e11932;
+  fill: var(--color-status-red-solid);
 }
 
 :global(.leaflet-health-marker--battery .leaflet-health-marker__icon) {
-  stroke: #fff;
+  stroke: var(--color-status-idle-on-solid);
 }
 
 :global(.leaflet-health-marker--battery-bare) {
@@ -164,21 +164,21 @@
 
 :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-shell) {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-width: 1.9;
   stroke-linejoin: round;
 }
 
 :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-cap) {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-base) {
-  fill: #fff;
+  fill: var(--color-brand-snow);
 }
 
 :global(.leaflet-health-marker--battery-full .leaflet-health-marker__battery-fill) {
@@ -186,15 +186,15 @@
 }
 
 :global(.leaflet-health-marker--battery-mid .leaflet-health-marker__battery-fill) {
-  fill: var(--color-map-risk-medium-stroke, #ffb000);
+  fill: var(--color-map-risk-medium-stroke);
 }
 
 :global(.leaflet-health-marker--battery-low .leaflet-health-marker__battery-fill) {
-  fill: var(--color-map-risk-high-stroke, #ff2d55);
+  fill: var(--color-map-risk-high-stroke);
 }
 
 :global(.leaflet-health-marker--battery-empty .leaflet-health-marker__battery-fill) {
-  fill: #111827;
+  fill: var(--color-status-idle-solid);
 }
 
 :global(.leaflet-health-badge) {
@@ -232,9 +232,9 @@
   padding: var(--spacing-1) var(--spacing-2);
   border: 1px solid rgba(var(--color-brand-primary-rgb), 0.16);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.74);
+  background: color-mix(in srgb, var(--color-brand-snow) 88%, transparent);
   box-shadow: var(--shadow-sm);
-  color: var(--color-brand-primary);
+  color: var(--color-brand-ink);
   font-family: var(--font-family-base);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);

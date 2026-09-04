@@ -118,9 +118,9 @@
 
 .btn--urgent {
   background-color: var(--color-status-red-bg);
-  color: var(--color-status-red);
-  border: 1px solid rgba(211, 47, 47, 0.3);
+  color: var(--color-status-red-on-tint);
+  border: 1px solid var(--color-status-red-border);
 }
 .btn--urgent:hover {
-  background-color: #F8D7DA;
+  background-color: var(--color-status-red-tint);
 }

@@ -309,9 +309,10 @@
   align-items: flex-start;
   gap: var(--spacing-5);
   padding: var(--spacing-8);
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--color-border-floating-panel);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.97);
+  background: color-mix(in srgb, var(--color-bg-panel) 97%, transparent);
+  color: var(--color-text-primary);
   box-shadow: var(--shadow-lg);
 }
 
@@ -635,7 +636,7 @@
   flex: 0 0 var(--size-map-marker);
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--color-brand-snow);
   border-radius: var(--radius-full);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18);
   font-family: var(--font-family-metric);
@@ -648,7 +649,7 @@
 }
 
 .healthLegendDotHealthy {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-bg-card);
   color: var(--color-status-green);
 }
 
@@ -658,8 +659,8 @@
 }
 
 .healthLegendDotOffline {
-  background: #111827;
-  color: #fff;
+  background: var(--color-status-idle-solid);
+  color: var(--color-status-idle-on-solid);
 }
 
 .healthLegendLevelFull {
@@ -669,7 +670,7 @@
 
 .healthLegendLevelLow {
   background:
-    linear-gradient(to top, #e11932 0 14%, rgba(255, 255, 255, 0.86) 14% 100%);
+    linear-gradient(to top, var(--color-status-red-solid) 0 14%, rgba(255, 255, 255, 0.86) 14% 100%);
 }
 
 .healthLegendBatteryFull,
@@ -682,7 +683,7 @@
 
 .healthLegendBatteryLow,
 .healthLegendBatteryBareLow {
-  background: #e11932;
+  background: var(--color-status-red-solid);
 }
 
 .healthLegendBatteryFull::before,
@@ -690,7 +691,7 @@
   content: '';
   width: 0.72rem;
   height: 0.42rem;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--color-brand-snow);
   border-radius: var(--radius-xs);
 }
 
@@ -701,7 +702,7 @@
   height: 0.22rem;
   margin-left: -0.05rem;
   border-radius: var(--radius-full);
-  background: #fff;
+  background: var(--color-brand-snow);
 }
 
 .healthLegendBatteryBareFull,
@@ -716,7 +717,7 @@
   position: absolute;
   inset: 0.42rem 0.42rem;
   border-radius: var(--radius-xs);
-  background: #fff;
+  background: var(--color-brand-snow);
 }
 
 .healthLegendBatteryBareFull::before {
@@ -737,14 +738,14 @@
 
 .batteryLegendShell {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-linejoin: round;
   stroke-width: 1.9;
 }
 
 .batteryLegendCap {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.9;
@@ -755,11 +756,11 @@
 }
 
 .batteryLegendGlyphLow .batteryLegendFill {
-  fill: #e11932;
+  fill: var(--color-status-red-solid);
 }
 
 .batteryLegendGlyphWarning .batteryLegendFill {
-  fill: #f9b709;
+  fill: var(--color-status-amber-solid);
 }
 
 .healthControlsMock,
@@ -835,13 +836,15 @@
 }
 
 .healthAlertWarning {
-  border: 1px solid rgba(138, 90, 0, 0.28);
+  border: 1px solid var(--color-status-amber-border);
   background: var(--color-status-amber-bg);
+  color: var(--color-status-amber-on-tint);
 }
 
 .healthAlertCritical {
-  border: 1px solid rgba(193, 18, 31, 0.28);
+  border: 1px solid var(--color-status-red-border);
   background: var(--color-status-red-bg);
+  color: var(--color-status-red-on-tint);
 }
 
 .healthAlert a {
@@ -879,14 +882,14 @@
 }
 
 .maintenanceShell {
-  --maintenance-critical: #08081a;
-  --maintenance-warning: #666666;
-  --maintenance-healthy: rgba(255, 255, 255, 0.94);
+  --maintenance-critical: var(--color-status-red-solid);
+  --maintenance-warning: var(--color-status-idle-solid);
+  --maintenance-healthy: var(--color-bg-card);
 }
 
 .maintenanceMap :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-shell),
 .maintenanceMap :global(.leaflet-health-marker--battery-bare .leaflet-health-marker__battery-cap) {
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-width: 1.9;
 }
 
@@ -1037,11 +1040,11 @@
 }
 
 .maintenanceAlertWarning.maintenanceAlertWarning {
-  border: 1px solid rgba(138, 90, 0, 0.28);
+  border: 1px solid var(--color-status-amber-border);
 }
 
 .maintenanceAlertCritical.maintenanceAlertCritical {
-  border: 1px solid rgba(193, 18, 31, 0.28);
+  border: 1px solid var(--color-status-red-border);
 }
 
 .maintenanceAlert > span:first-child {

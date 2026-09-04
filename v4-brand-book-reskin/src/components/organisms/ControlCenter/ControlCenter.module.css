@@ -427,13 +427,13 @@
 }
 
 .batteryLegendBase {
-  fill: #fff;
+  fill: var(--color-brand-snow);
 }
 
 .batteryLegendShell,
 .batteryLegendCap {
   fill: none;
-  stroke: #fff;
+  stroke: var(--color-brand-snow);
   stroke-linejoin: round;
   stroke-width: 1.9;
 }
@@ -447,9 +447,9 @@
 }
 
 .batteryLegendGlyphWarning .batteryLegendFill {
-  fill: var(--color-map-risk-medium-stroke, #ffb000);
+  fill: var(--color-map-risk-medium-stroke);
 }
 
 .batteryLegendGlyphLow .batteryLegendFill {
-  fill: var(--color-map-risk-high-stroke, #ff2d55);
+  fill: var(--color-map-risk-high-stroke);
 }

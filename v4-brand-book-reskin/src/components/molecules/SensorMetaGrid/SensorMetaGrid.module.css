@@ -61,7 +61,7 @@
   padding: 0;
   border-radius: var(--radius-sm);
   background: var(--color-status-green);
-  color: #fff;
+  color: var(--color-status-green-on-solid);
 }
 
 .indicatorIcon {
@@ -69,26 +69,29 @@
 }
 
 .item--positive {
-  border-color: rgba(46, 125, 50, 0.18);
+  border-color: var(--color-status-green-border);
   background: var(--color-status-green-bg);
+  color: var(--color-status-green-on-tint);
 }
 
 .item--warning {
-  border-color: rgba(138, 90, 0, 0.28);
+  border-color: var(--color-status-amber-border);
   background: var(--color-status-amber-bg);
+  color: var(--color-status-amber-on-tint);
 }
 
 .item--warning .indicator {
   background: var(--color-status-amber);
-  color: #fff;
+  color: var(--color-status-amber-on-solid);
 }
 
 .item--error {
-  border-color: rgba(193, 18, 31, 0.28);
+  border-color: var(--color-status-red-border);
   background: var(--color-status-red-bg);
+  color: var(--color-status-red-on-tint);
 }
 
 .item--error .indicator {
   background: var(--color-status-red);
-  color: #fff;
+  color: var(--color-status-red-on-solid);
 }
