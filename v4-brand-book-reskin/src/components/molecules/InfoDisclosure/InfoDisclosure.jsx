@@ -12,6 +12,7 @@ export const InfoDisclosure = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState(null);
+  const [themeMode, setThemeMode] = useState(null);
   const panelId = useId();
   const triggerRef = useRef(null);
 
@@ -29,6 +30,7 @@ export const InfoDisclosure = ({
         top: rect.bottom + 8,
         width: panelWidth,
       });
+      setThemeMode(triggerRef.current.closest('[data-rapidaim-theme]')?.getAttribute('data-rapidaim-theme') || null);
     };
 
     updatePosition();
@@ -57,6 +59,7 @@ export const InfoDisclosure = ({
       {isOpen && position && createPortal(
         <span
           className={styles.panel}
+          data-rapidaim-theme={themeMode || undefined}
           id={panelId}
           role="status"
           style={{ left: position.left, top: position.top, width: position.width }}
