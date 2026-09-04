@@ -1520,6 +1520,9 @@
 }
 
 .pestPressureGrid [class*='card'] {
+  --stat-card-min-height: 8.5rem;
+  --stat-card-title-min-height: 3.25rem;
+
   min-width: 0;
   padding: var(--spacing-3);
 }
@@ -1555,7 +1558,7 @@
   min-height: var(--layout-panel-action-tray-height);
   padding: var(--spacing-3) var(--spacing-4) var(--spacing-4);
   border-top: 1px solid var(--color-border-subtle);
-  background: rgba(255, 255, 255, 0.97);
+  background: color-mix(in srgb, var(--color-bg-panel) 97%, transparent);
   backdrop-filter: blur(8px);
 }
 

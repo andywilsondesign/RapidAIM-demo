@@ -3,6 +3,9 @@
   --stat-card-border: var(--color-border-subtle);
   --stat-card-on-accent: var(--color-bg-panel);
   --stat-card-tint: var(--color-bg-data-surface);
+  --stat-card-min-height: 8.75rem;
+  --stat-card-title-min-height: 3.35rem;
+  --stat-card-meta-min-height: 1.25rem;
 
   position: relative;
   background-color: var(--stat-card-tint);
@@ -10,8 +13,9 @@
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
   padding: var(--spacing-4);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  min-height: var(--stat-card-min-height);
+  grid-template-rows: minmax(var(--stat-card-title-min-height), auto) auto minmax(var(--stat-card-meta-min-height), auto);
   gap: var(--spacing-2);
   min-width: 150px;
 }
@@ -44,9 +48,13 @@
 }
 
 .label {
-  padding-right: 2.25rem;
+  min-height: var(--stat-card-title-min-height);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.hasInfo .label {
+  padding-right: 2.25rem;
 }
 
 .infoSlot {
@@ -67,16 +75,24 @@
 }
 
 .valueRow {
-  display: flex;
+  display: grid;
+  min-height: 2.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-3);
+}
+
+.valueRow > :first-child {
+  min-width: 0;
 }
 
 .trend {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-1);
+  min-width: 4.75rem;
+  justify-content: center;
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
   background-color: var(--stat-card-accent);
@@ -114,8 +130,10 @@
 
 .meta {
   display: flex;
+  min-height: var(--stat-card-meta-min-height);
   flex-direction: column;
   gap: var(--spacing-1);
+  align-self: end;
 }
 
 .metaLine {

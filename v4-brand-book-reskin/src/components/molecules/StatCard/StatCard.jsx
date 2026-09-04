@@ -17,10 +17,11 @@ export const StatCard = ({
   className = '',
 }) => {
   const isPositive = trend > 0;
+  const hasInfo = Boolean(infoTitle && infoDescription);
 
   return (
-    <div className={`${styles.card} ${styles[`card--${tone}`]} ${className}`}>
-      {infoTitle && infoDescription && (
+    <div className={`${styles.card} ${styles[`card--${tone}`]} ${hasInfo ? styles.hasInfo : ''} ${className}`}>
+      {hasInfo && (
         <span className={styles.infoSlot}>
           <InfoDisclosure title={infoTitle} description={infoDescription} className={styles.infoDisclosure} />
         </span>
