@@ -1284,6 +1284,7 @@ function DesktopShell({
   controlCenterProps = {},
   rightRailContent,
   mapNotice,
+  topNotice,
   mapClassName = '',
   mapCenter = [36.647, -119.8],
   mapZoom = 15,
@@ -1307,8 +1308,9 @@ function DesktopShell({
   const selectedSensorId = selectedSensorIdOverride ?? (scopeExperiment && scopeLevel === 'sensor' ? selectedSensor.id : '');
 
   return (
-    <div className={`${styles.desktopShell} ${shellClassName}`}>
+    <div className={`${styles.desktopShell} ${topNotice ? styles.desktopShellWithTopNotice : ''} ${shellClassName}`}>
       <TopNavigationBar {...topNavigationProps} />
+      {topNotice && <div className={styles.desktopTopNotice}>{topNotice}</div>}
       <div className={styles.desktopMain}>
         <ScopeNavigation level={scopeExperiment ? scopeLevel : 'block'} />
         <aside className={`${styles.leftRail} ${parentContext || scopeExperiment ? styles.leftRailWithContext : ''} ${contentHeightPanel ? styles.leftRailContentHeight : ''}`}>{resolvedDetailPanel}</aside>
@@ -2987,55 +2989,65 @@ function MapUnavailableStatesPage() {
   );
 }
 
-function WaitingForDataMapNotice() {
-  const [isOpen, setIsOpen] = useState(true);
+function WaitingForDataTopNotice({ onOpen }) {
   const content = mapUnavailableContent.waitingForData;
   const bannerMessage = (
     <>
       {content.message}
       {' '}
-      <button className={styles.inSituBannerLink} type="button" onClick={() => setIsOpen(true)}>
+      <button className={styles.inSituBannerLink} type="button" onClick={onOpen}>
         {content.resumeAction}
       </button>
     </>
   );
 
   return (
-    <section className={styles.inSituMapNotice} aria-label="Waiting for data map notice">
-      <Alert
-        type="global"
-        variant={content.alertVariant}
-        title={content.badge}
-        message={bannerMessage}
-        className={styles.inSituBanner}
-      />
-      {isOpen && (
-        <div className={styles.inSituLightbox} role="presentation">
-          <div className={styles.inSituMessagePanel} role="dialog" aria-modal="true" aria-labelledby="waiting-data-map-example-title">
-            <div className={styles.inSituMessageHeader}>
-              <Badge variant={content.badgeVariant}>{content.badge}</Badge>
-              <Button variant="ghost" size="sm" type="button" aria-label="Close waiting for data message" onClick={() => setIsOpen(false)}>
-                <span className="material-symbols-rounded" aria-hidden="true">close</span>
-              </Button>
-            </div>
-            <div className={styles.inSituNoticeCopy}>
-              <Typography variant="h3" id="waiting-data-map-example-title">{content.title}</Typography>
-              <Typography variant="body" color="secondary">{content.detail}</Typography>
-            </div>
-            <div className={styles.inSituNoticeActions}>
-              <Button variant="secondary" type="button" onClick={() => setIsOpen(false)}>
-                {content.dismissAction}
-              </Button>
-              <Button variant="secondary" type="button">
-                {content.secondaryAction}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
+    <Alert
+      type="global"
+      variant={content.alertVariant}
+      title={content.badge}
+      message={bannerMessage}
+      className={styles.inSituBanner}
+    />
   );
 }
+
+WaitingForDataTopNotice.propTypes = {
+  onOpen: PropTypes.func.isRequired,
+};
+
+function WaitingForDataMapNotice({ onClose }) {
+  const content = mapUnavailableContent.waitingForData;
+
+  return (
+    <div className={styles.inSituLightbox} role="presentation">
+      <div className={styles.inSituMessagePanel} role="dialog" aria-modal="true" aria-labelledby="waiting-data-map-example-title">
+        <div className={styles.inSituMessageHeader}>
+          <Badge variant={content.badgeVariant}>{content.badge}</Badge>
+          <Button variant="ghost" size="sm" type="button" aria-label="Close waiting for data message" onClick={onClose}>
+            <span className="material-symbols-rounded" aria-hidden="true">close</span>
+          </Button>
+        </div>
+        <div className={styles.inSituNoticeCopy}>
+          <Typography variant="h3" id="waiting-data-map-example-title">{content.title}</Typography>
+          <Typography variant="body" color="secondary">{content.detail}</Typography>
+        </div>
+        <div className={styles.inSituNoticeActions}>
+          <Button variant="secondary" type="button" onClick={onClose}>
+            {content.dismissAction}
+          </Button>
+          <Button variant="secondary" type="button">
+            {content.secondaryAction}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+WaitingForDataMapNotice.propTypes = {
+  onClose: PropTypes.func.isRequired,
+};
 
 function WaitingDataContextPanel() {
   const waitingRows = sensors.slice(0, 4).map((sensor) => ({
@@ -3088,6 +3100,7 @@ function WaitingDataContextPanel() {
 
 function WaitingDataMapExamplePage() {
   const [selectedWaitingSensorId, setSelectedWaitingSensorId] = useState('');
+  const [isWaitingDataNoticeOpen, setIsWaitingDataNoticeOpen] = useState(true);
   const waitingSensors = sensors.slice(0, 5).map((sensor) => ({
     ...sensor,
     count: 0,
@@ -3107,7 +3120,10 @@ function WaitingDataMapExamplePage() {
       selectedSensorIdOverride={selectedWaitingSensorId}
       sensorDisplayMode="gathering"
       onSensorSelect={(sensor) => setSelectedWaitingSensorId(sensor.id)}
-      mapNotice={<WaitingForDataMapNotice />}
+      topNotice={<WaitingForDataTopNotice onOpen={() => setIsWaitingDataNoticeOpen(true)} />}
+      mapNotice={isWaitingDataNoticeOpen ? (
+        <WaitingForDataMapNotice onClose={() => setIsWaitingDataNoticeOpen(false)} />
+      ) : null}
       controlCenterProps={{
         defaultPestFocusOpen: false,
         defaultMapControlsOpen: false,

@@ -257,20 +257,14 @@
   min-height: calc(100vh - 6rem);
 }
 
-.inSituMapNotice {
-  position: absolute;
-  inset: 0;
-  z-index: 780;
-  pointer-events: none;
+.inSituBanner {
+  box-shadow: var(--shadow-sm);
 }
 
-.inSituBanner {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  box-shadow: var(--shadow-sm);
-  pointer-events: auto;
+.inSituBanner.inSituBanner {
+  justify-content: flex-start;
+  background: var(--color-status-amber-bg);
+  color: var(--color-status-amber-on-tint);
 }
 
 .inSituBannerLink {
@@ -294,7 +288,7 @@
 .inSituLightbox {
   position: absolute;
   inset: 0;
-  z-index: 8;
+  z-index: 1700;
   display: grid;
   place-items: center;
   padding: var(--spacing-8);
@@ -412,12 +406,29 @@
   background: var(--color-bg-base);
 }
 
+.desktopShellWithTopNotice {
+  height: 100vh;
+}
+
+.desktopTopNotice {
+  position: relative;
+  z-index: 820;
+  flex: 0 0 auto;
+  background: var(--color-bg-base);
+}
+
 .desktopMain {
   position: relative;
   height: calc(100vh - var(--layout-top-nav-height));
   min-height: 560px;
   overflow: hidden;
   background: var(--color-bg-base);
+}
+
+.desktopShellWithTopNotice .desktopMain {
+  flex: 1;
+  height: auto;
+  min-height: 0;
 }
 
 .shell[data-rapidaim-theme='dark'] .desktopShell :global(.leaflet-container) {
@@ -2151,6 +2162,14 @@
   .desktopMain {
     height: calc(100svh - var(--layout-top-nav-height));
     min-height: 0;
+  }
+
+  .desktopShellWithTopNotice {
+    height: 100svh;
+  }
+
+  .desktopShellWithTopNotice .desktopMain {
+    height: auto;
   }
 
   .leftRail,
