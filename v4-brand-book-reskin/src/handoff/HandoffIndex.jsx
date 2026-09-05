@@ -26,7 +26,7 @@ import { TaskDropdown } from '../components/organisms/TaskDropdown/TaskDropdown'
 import { ScoutingAssignmentModal } from '../components/organisms/ScoutingAssignmentModal/ScoutingAssignmentModal';
 import { ReportModal } from '../components/organisms/ReportModal/ReportModal';
 import { MaintenanceNoteModal } from '../components/organisms/MaintenanceNoteModal/MaintenanceNoteModal';
-import { MapUnavailableState } from '../components/organisms/MapUnavailableState/MapUnavailableState';
+import { MapStateDialog, MapUnavailableState } from '../components/organisms/MapUnavailableState/MapUnavailableState';
 import { mapUnavailableContent } from '../components/organisms/MapUnavailableState/MapUnavailableState.content';
 import { OffscreenBlockAwareness } from '../components/organisms/OffscreenBlockAwareness/OffscreenBlockAwareness';
 import { NewDashboardWelcomeModal } from '../components/organisms/NewDashboardWelcomeModal/NewDashboardWelcomeModal';
@@ -1058,7 +1058,6 @@ const pageGroups = [
     pages: [
       { id: 'experimental-maintenance-mode', label: 'Maintenance Ranking', component: <MaintenanceModePage /> },
       { id: 'experimental-maintenance-sensor', label: 'Maintenance Sensor Detail', component: <MaintenanceSensorDetailPage /> },
-      { id: 'maintenance-note-modal', label: 'Maintenance Note Modal', component: <MaintenanceNoteModalPage /> },
     ],
   },
   {
@@ -1069,6 +1068,7 @@ const pageGroups = [
       { id: 'scouting', label: 'Scouting Modal', component: <ScoutingPage /> },
       { id: 'scouting-mobile', label: 'Scouting Modal Mobile', component: <MobileScoutingPage /> },
       { id: 'report', label: 'AI Report Modal', component: <ReportPage /> },
+      { id: 'maintenance-note-modal', label: 'Maintenance Note Modal', component: <MaintenanceNoteModalPage /> },
       { id: 'maintenance-note-modal-mobile', label: 'Maintenance Note Modal Mobile', component: <MobileMaintenanceNoteModalPage /> },
     ],
   },
@@ -3020,28 +3020,12 @@ function WaitingForDataMapNotice({ onClose }) {
   const content = mapUnavailableContent.waitingForData;
 
   return (
-    <div className={styles.inSituLightbox} role="presentation">
-      <div className={styles.inSituMessagePanel} role="dialog" aria-modal="true" aria-labelledby="waiting-data-map-example-title">
-        <div className={styles.inSituMessageHeader}>
-          <Badge variant={content.badgeVariant}>{content.badge}</Badge>
-          <Button variant="ghost" size="sm" type="button" aria-label="Close waiting for data message" onClick={onClose}>
-            <span className="material-symbols-rounded" aria-hidden="true">close</span>
-          </Button>
-        </div>
-        <div className={styles.inSituNoticeCopy}>
-          <Typography variant="h3" id="waiting-data-map-example-title">{content.title}</Typography>
-          <Typography variant="body" color="secondary">{content.detail}</Typography>
-        </div>
-        <div className={styles.inSituNoticeActions}>
-          <Button variant="secondary" type="button" onClick={onClose}>
-            {content.dismissAction}
-          </Button>
-          <Button variant="secondary" type="button">
-            {content.secondaryAction}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <MapStateDialog
+      content={content}
+      idPrefix="waiting-data-map-example"
+      onClose={onClose}
+      onDismiss={onClose}
+    />
   );
 }
 

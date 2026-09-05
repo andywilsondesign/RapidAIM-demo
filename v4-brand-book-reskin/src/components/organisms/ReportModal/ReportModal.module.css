@@ -69,9 +69,7 @@
 }
 
 .summary {
-  padding: var(--spacing-4);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-base);
+  gap: var(--spacing-3);
 }
 
 .section ul {
