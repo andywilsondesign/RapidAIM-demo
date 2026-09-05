@@ -1,6 +1,7 @@
 .marker {
   --marker-size: 22px;
   --marker-fill: var(--color-status-green);
+  --marker-icon: var(--color-status-green-on-solid);
 
   display: inline-flex;
   width: var(--marker-size);
@@ -27,7 +28,7 @@
 
 .icon {
   fill: none;
-  stroke: #fff;
+  stroke: var(--marker-icon);
   stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -43,22 +44,27 @@
 
 .marker--low {
   --marker-fill: var(--color-status-green);
+  --marker-icon: var(--color-status-green-on-solid);
 }
 
 .marker--idle {
   --marker-fill: var(--color-status-idle);
+  --marker-icon: var(--color-status-idle-on-solid);
 }
 
 .marker--medium {
   --marker-fill: var(--color-status-amber);
+  --marker-icon: var(--color-status-amber-on-solid);
 }
 
 .marker--high {
   --marker-fill: var(--color-status-red);
+  --marker-icon: var(--color-status-red-on-solid);
 }
 
 .marker--offline {
   --marker-fill: var(--color-status-idle);
+  --marker-icon: var(--color-status-idle-on-solid);
 }
 
 .marker--selected {

@@ -6,6 +6,7 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-xl);
   background: var(--color-bg-panel);
+  color: var(--color-text-primary);
   box-shadow: var(--shadow-lg);
 }
 

@@ -198,17 +198,17 @@ const MAINTENANCE_MARKER_STYLES = {
   offline: {
     severity: 'high',
     fill: 'var(--color-status-red)',
-    iconStroke: '#FFFFFF',
+    iconStroke: 'var(--color-status-red-on-solid)',
   },
   warning: {
     severity: 'medium',
     fill: 'var(--color-status-amber)',
-    iconStroke: '#FFFFFF',
+    iconStroke: 'var(--color-status-amber-on-solid)',
   },
   healthy: {
     severity: 'low',
     fill: 'var(--color-status-green)',
-    iconStroke: '#FFFFFF',
+    iconStroke: 'var(--color-status-green-on-solid)',
   },
 };
 

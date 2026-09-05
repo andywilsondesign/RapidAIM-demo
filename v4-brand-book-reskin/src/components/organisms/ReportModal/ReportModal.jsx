@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from '../../atoms/Button/Button';
 import { Typography } from '../../atoms/Typography/Typography';
+import { Alert } from '../../molecules/Alert/Alert';
 import styles from './ReportModal.module.css';
 
 export const ReportModal = ({ report, loading = false, className = '' }) => (
@@ -25,7 +26,11 @@ export const ReportModal = ({ report, loading = false, className = '' }) => (
         <>
           <div className={styles.summary}>
             <Typography variant="caption" color="secondary">{report.context} / {report.generatedAt}</Typography>
-            <Typography variant="body" weight="semibold">{report.summary}</Typography>
+            <Alert
+              variant="warning"
+              type="inline"
+              message={report.summary}
+            />
           </div>
           <ReportSection title="Observations" items={report.observations} />
           <ReportSection title="Recommendations" items={report.recommendations} />

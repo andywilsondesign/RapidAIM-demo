@@ -62,6 +62,23 @@
   overflow: visible;
 }
 
+:global(.leaflet-risk-marker__icon--high) {
+  stroke: var(--color-status-red-on-solid);
+}
+
+:global(.leaflet-risk-marker__icon--medium) {
+  stroke: var(--color-status-amber-on-solid);
+}
+
+:global(.leaflet-risk-marker__icon--low) {
+  stroke: var(--color-status-green-on-solid);
+}
+
+:global(.leaflet-risk-marker__icon--idle),
+:global(.leaflet-risk-marker__icon--offline) {
+  stroke: var(--color-status-idle-on-solid);
+}
+
 :global(.leaflet-risk-marker--selected) {
   filter: drop-shadow(0 0 0.45rem rgba(var(--color-brand-primary-rgb), 0.38)) drop-shadow(0 2px 4px rgba(15, 23, 42, 0.26));
 }

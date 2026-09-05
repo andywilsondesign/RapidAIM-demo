@@ -70,9 +70,9 @@
     --color-map-idle-fill: #94A3B8;
     --color-map-idle-stroke: #64748B;
     --color-map-block-highlight-outer: transparent;
-    --color-map-block-highlight-ring: var(--color-brand-signal);
+    --color-map-block-highlight-ring: rgba(255, 255, 255, 0.9);
     --color-slider-fill: var(--color-brand-primary);
-    --color-slider-rail: #CBD5DC;
+    --color-slider-rail: #FFFFFF;
     --color-slider-thumb: #FFFFFF;
     --color-slider-thumb-border: rgba(8, 8, 26, 0.18);
     
@@ -203,7 +203,7 @@
     --color-map-idle-fill: #566273;
     --color-map-idle-stroke: #A9B1B8;
     --color-map-block-highlight-outer: transparent;
-    --color-map-block-highlight-ring: var(--color-brand-signal);
+    --color-map-block-highlight-ring: rgba(247, 247, 247, 0.9);
     --color-slider-fill: var(--color-brand-signal);
     --color-slider-rail: #4A525A;
     --color-slider-thumb: var(--color-brand-snow);
