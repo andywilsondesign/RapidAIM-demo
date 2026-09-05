@@ -342,6 +342,7 @@
 }
 
 .desktopShell {
+  position: relative;
   display: flex;
   min-width: min(100%, var(--layout-desktop-min-width));
   min-height: 100vh;

@@ -12,6 +12,13 @@ const decorativeBlocks = [
   { className: styles.blockSouth, label: 'South block placeholder' },
 ];
 
+const dialogIconMap = {
+  info: 'info',
+  success: 'check_circle',
+  warning: 'warning',
+  error: 'error',
+};
+
 export const MapUnavailableState = ({
   variant = 'connection',
   className = '',
@@ -80,12 +87,23 @@ export const MapStateDialog = ({
   onSecondaryAction,
 }) => {
   const dialogTitleId = `${idPrefix}-title`;
+  const iconName = content.modalIcon || dialogIconMap[content.alertVariant];
 
   return (
     <div className={styles.messageBackdrop} role="presentation">
       <section className={styles.messagePanel} role="dialog" aria-modal="true" aria-labelledby={dialogTitleId}>
         <header className={styles.messageHeader}>
-          <Typography variant="h4" id={dialogTitleId}>{content.modalTitle || content.title}</Typography>
+          <div className={styles.messageTitleGroup}>
+            {iconName && (
+              <span
+                className={`material-symbols-rounded ${styles.messageTitleIcon}`}
+                aria-hidden="true"
+              >
+                {iconName}
+              </span>
+            )}
+            <Typography variant="h4" id={dialogTitleId}>{content.modalTitle || content.title}</Typography>
+          </div>
           {onClose && (
             <Button variant="ghost" size="sm" type="button" aria-label="Close message" onClick={onClose}>
               <span className="material-symbols-rounded" aria-hidden="true">close</span>
@@ -128,6 +146,8 @@ MapStateDialog.propTypes = {
   content: PropTypes.shape({
     title: PropTypes.string.isRequired,
     modalTitle: PropTypes.string,
+    modalIcon: PropTypes.string,
+    alertVariant: PropTypes.oneOf(['info', 'success', 'warning', 'error']).isRequired,
     detail: PropTypes.string.isRequired,
     primaryAction: PropTypes.string,
     dismissAction: PropTypes.string,

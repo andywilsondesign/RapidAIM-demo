@@ -3107,14 +3107,15 @@ function WaitingDataMapExamplePage() {
       sensorDisplayMode="gathering"
       onSensorSelect={(sensor) => setSelectedWaitingSensorId(sensor.id)}
       topNotice={<WaitingForDataTopNotice onOpen={() => setIsWaitingDataNoticeOpen(true)} />}
-      mapNotice={isWaitingDataNoticeOpen ? (
-        <WaitingForDataMapNotice onClose={() => setIsWaitingDataNoticeOpen(false)} />
-      ) : null}
       controlCenterProps={{
         defaultPestFocusOpen: false,
         defaultMapControlsOpen: false,
       }}
-    />
+    >
+      {isWaitingDataNoticeOpen ? (
+        <WaitingForDataMapNotice onClose={() => setIsWaitingDataNoticeOpen(false)} />
+      ) : null}
+    </DesktopShell>
   );
 }
 

@@ -133,6 +133,10 @@
   background: rgba(0, 0, 0, 0.58);
 }
 
+:global([data-rapidaim-theme='dark']) .messageBackdrop {
+  background: rgba(0, 0, 0, 0.78);
+}
+
 .messagePanel {
   display: flex;
   width: min(38rem, 100%);
@@ -160,6 +164,19 @@
   padding: var(--spacing-4);
   background: var(--color-panel-header-bg);
   color: var(--color-panel-header-text);
+}
+
+.messageTitleGroup {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.messageTitleIcon {
+  flex: 0 0 auto;
+  color: currentColor;
+  font-size: 1.5rem;
 }
 
 .messageHeader button {
