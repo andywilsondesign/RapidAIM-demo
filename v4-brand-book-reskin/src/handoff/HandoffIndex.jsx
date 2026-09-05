@@ -1728,7 +1728,7 @@ function MaintenanceDeviceDetail({ sensor }) {
   return (
     <section className={styles.maintenanceDetailCard} id="maintenance-sensor-overview">
       <Alert
-        className={`${styles.maintenanceAlert} ${sensor.maintenanceState === 'offline' ? styles.maintenanceAlertCritical : styles.maintenanceAlertWarning}`}
+        className={styles.maintenanceAlert}
         title={sensor.maintenanceReason}
         message={sensor.maintenanceDetails}
         variant={sensor.maintenanceState === 'offline' ? 'error' : 'warning'}
@@ -2166,17 +2166,19 @@ function SensorDetailPanel({ scopeExperiment = false, pestFocus = 'all', healthM
 function HealthIssueAlert({ sensor }) {
   const isCritical = sensor.battery <= 10 || sensor.status === 'Offline';
   const issueLabel = isCritical ? 'Critical battery level' : 'Low battery detected';
-  const alertToneClass = isCritical ? styles.healthAlertCritical : styles.healthAlertWarning;
 
   return (
-    <div className={`${styles.healthAlert} ${alertToneClass}`}>
-      <div className={styles.healthAlertContent}>
-        <Typography variant="body-sm" weight="bold">{issueLabel}</Typography>
-        <Typography variant="caption">
+    <Alert
+      type="inline"
+      variant={isCritical ? 'error' : 'warning'}
+      title={issueLabel}
+      message={(
+        <>
           Battery is at {sensor.battery}%, but this sensor is still gathering pest data. <a href="#sensor-health-section">View sensor health</a>.
-        </Typography>
-      </div>
-    </div>
+        </>
+      )}
+      className={styles.healthIssueAlert}
+    />
   );
 }
 

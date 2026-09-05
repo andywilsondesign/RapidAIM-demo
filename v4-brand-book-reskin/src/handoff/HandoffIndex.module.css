@@ -773,35 +773,7 @@
   color: var(--color-brand-primary);
 }
 
-.healthAlert {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-}
-
-.healthAlertContent {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.healthAlertWarning {
-  border: 1px solid var(--color-status-amber-border);
-  background: var(--color-status-amber-bg);
-  color: var(--color-status-amber-on-tint);
-}
-
-.healthAlertCritical {
-  border: 1px solid var(--color-status-red-border);
-  background: var(--color-status-red-bg);
-  color: var(--color-status-red-on-tint);
-}
-
-.healthAlert a {
+.healthIssueAlert a {
   color: currentColor;
   font-weight: var(--font-weight-bold);
   text-decoration: underline;
@@ -1004,18 +976,6 @@
 
 .maintenanceAlert.maintenanceAlert {
   box-shadow: none;
-}
-
-.maintenanceAlertWarning.maintenanceAlertWarning {
-  border: 1px solid var(--color-status-amber-border);
-}
-
-.maintenanceAlertCritical.maintenanceAlertCritical {
-  border: 1px solid var(--color-status-red-border);
-}
-
-.maintenanceAlert > span:first-child {
-  display: none;
 }
 
 .maintenanceHistoryItem {
