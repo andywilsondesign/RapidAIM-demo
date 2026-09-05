@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
 import { Badge } from '../components/atoms/Badge/Badge';
 import { Button } from '../components/atoms/Button/Button';
+import { Checkbox } from '../components/atoms/Checkbox/Checkbox';
 import { RiskMarker } from '../components/atoms/RiskMarker/RiskMarker';
 import { Select } from '../components/atoms/Select/Select';
 import { Typography } from '../components/atoms/Typography/Typography';
@@ -1541,14 +1542,12 @@ function MaintenancePanel({
               <div>
                 <PanelSectionTitle>Sensors</PanelSectionTitle>
               </div>
-              <label className={styles.inlineToggle}>
-                <input
-                  checked={showHealthySensors}
-                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
-                  type="checkbox"
-                />
-                Show healthy sensors
-              </label>
+              <Checkbox
+                checked={showHealthySensors}
+                className={styles.inlineToggle}
+                label="Show healthy sensors"
+                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+              />
             </div>
             {visibleSensors.map((sensor, index) => (
               <MaintenanceListItem
@@ -1784,17 +1783,14 @@ function MaintenanceControlsPanel({
           <div className={styles.maintenanceControlBody}>
             <section className={styles.maintenanceControlSection}>
               <PanelSectionTitle>Filters</PanelSectionTitle>
-              <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
-              <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
-              <label><input type="checkbox" defaultChecked /> Lure due soon</label>
-              <label>
-                <input
-                  checked={showHealthySensors}
-                  onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
-                  type="checkbox"
-                />
-                Show healthy sensors
-              </label>
+              <Checkbox label="Battery below 30%" defaultChecked />
+              <Checkbox label="Poor or intermittent signal" defaultChecked />
+              <Checkbox label="Lure due soon" defaultChecked />
+              <Checkbox
+                checked={showHealthySensors}
+                label="Show healthy sensors"
+                onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+              />
             </section>
             <section className={styles.maintenanceControlSection}>
               <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>
@@ -2846,17 +2842,14 @@ function MobileMaintenanceControlsSheet({ showHealthySensors = false, onShowHeal
       </div>
       <section className={styles.maintenanceControlSection}>
         <PanelSectionTitle>Filters</PanelSectionTitle>
-        <label><input type="checkbox" defaultChecked /> Battery below 30%</label>
-        <label><input type="checkbox" defaultChecked /> Poor or intermittent signal</label>
-        <label><input type="checkbox" defaultChecked /> Lure due soon</label>
-        <label>
-          <input
-            checked={showHealthySensors}
-            onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
-            type="checkbox"
-          />
-          Show healthy sensors
-        </label>
+        <Checkbox label="Battery below 30%" defaultChecked />
+        <Checkbox label="Poor or intermittent signal" defaultChecked />
+        <Checkbox label="Lure due soon" defaultChecked />
+        <Checkbox
+          checked={showHealthySensors}
+          label="Show healthy sensors"
+          onChange={(event) => onShowHealthySensorsChange?.(event.target.checked)}
+        />
       </section>
       <section className={styles.maintenanceControlSection}>
         <PanelSectionTitle>Maintenance Legend</PanelSectionTitle>

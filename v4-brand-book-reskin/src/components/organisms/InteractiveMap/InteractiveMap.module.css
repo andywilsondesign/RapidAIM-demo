@@ -247,9 +247,9 @@
 
 .mapWrapper:global([data-rapidaim-theme='dark']) .blockLabelMarker span,
 :global([data-rapidaim-theme='dark']) .blockLabelMarker span {
-  border-color: var(--color-border-floating-panel);
-  background: color-mix(in srgb, var(--color-brand-snow) 94%, transparent);
-  color: var(--color-brand-ink);
+  border-color: rgba(var(--color-brand-primary-rgb), 0.42);
+  background: color-mix(in srgb, var(--color-brand-steel) 92%, transparent);
+  color: var(--color-brand-snow);
 }
 
 .sensorTooltip {

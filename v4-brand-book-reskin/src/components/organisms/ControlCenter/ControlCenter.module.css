@@ -332,10 +332,10 @@
 }
 
 .slider::-webkit-slider-thumb {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.875rem;
+  height: 1rem;
   appearance: none;
-  margin-top: 0;
+  margin-top: 0.25rem;
   border: 1px solid var(--color-slider-thumb-border);
   border-radius: var(--radius-full);
   background: var(--color-slider-thumb);
@@ -353,8 +353,8 @@
 }
 
 .slider::-moz-range-thumb {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.875rem;
+  height: 1rem;
   border: 1px solid var(--color-slider-thumb-border);
   border-radius: var(--radius-full);
   background: var(--color-slider-thumb);

@@ -69,8 +69,8 @@
     --color-map-risk-low-stroke: #66F27A;
     --color-map-idle-fill: #94A3B8;
     --color-map-idle-stroke: #64748B;
-    --color-map-block-highlight-outer: rgba(8, 8, 26, 0.18);
-    --color-map-block-highlight-ring: rgba(255, 255, 255, 0.88);
+    --color-map-block-highlight-outer: transparent;
+    --color-map-block-highlight-ring: var(--color-brand-signal);
     --color-slider-fill: var(--color-brand-primary);
     --color-slider-rail: #CBD5DC;
     --color-slider-thumb: #FFFFFF;
@@ -202,8 +202,8 @@
     --color-map-risk-low-stroke: #46D58C;
     --color-map-idle-fill: #566273;
     --color-map-idle-stroke: #A9B1B8;
-    --color-map-block-highlight-outer: rgba(234, 170, 70, 0.42);
-    --color-map-block-highlight-ring: rgba(247, 247, 247, 0.9);
+    --color-map-block-highlight-outer: transparent;
+    --color-map-block-highlight-ring: var(--color-brand-signal);
     --color-slider-fill: var(--color-brand-signal);
     --color-slider-rail: #4A525A;
     --color-slider-thumb: var(--color-brand-snow);

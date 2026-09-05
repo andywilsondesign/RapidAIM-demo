@@ -147,6 +147,12 @@
   box-shadow: var(--shadow-lg);
 }
 
+:global([data-rapidaim-theme='dark']) .messagePanel,
+:global([data-rapidaim-theme='dark']) .dialog {
+  background: color-mix(in srgb, var(--color-bg-card) 94%, transparent);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.48);
+}
+
 .messageHeader {
   display: flex;
   width: 100%;
@@ -193,6 +199,7 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   background: var(--color-bg-panel);
+  color: var(--color-text-primary);
   box-shadow: var(--shadow-lg);
 }
 

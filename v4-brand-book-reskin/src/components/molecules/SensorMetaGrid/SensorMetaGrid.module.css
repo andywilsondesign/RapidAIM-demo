@@ -7,7 +7,7 @@
 .item {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   gap: var(--spacing-2);
   min-height: 7.25rem;
   min-width: 0;
@@ -42,6 +42,7 @@
 
 .valueRow {
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: space-between;
   align-self: end;

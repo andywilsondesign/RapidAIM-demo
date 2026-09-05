@@ -589,9 +589,9 @@
   gap: var(--spacing-2);
   max-width: calc(100% - (var(--spacing-4) * 2));
   padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid rgba(255, 255, 255, 0.74);
+  border: 1px solid var(--color-border-floating-panel);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, var(--color-bg-card) 92%, transparent);
   box-shadow: var(--shadow-md);
   color: var(--color-text-primary);
   transform: translateX(-50%);
@@ -907,12 +907,17 @@
 }
 
 .maintenanceToast {
-  border-color: rgba(8, 8, 26, 0.18);
-  background: rgba(255, 255, 255, 0.92);
+  bottom: calc(var(--spacing-8) + var(--spacing-4));
+  border-color: var(--color-border-floating-panel);
+  background: color-mix(in srgb, var(--color-bg-card) 92%, transparent);
 }
 
 .maintenanceToast > span {
   color: var(--maintenance-critical);
+}
+
+:global([data-rapidaim-theme='dark']) .maintenanceToast {
+  background: color-mix(in srgb, var(--color-bg-card) 90%, transparent);
 }
 
 .maintenancePanel {
@@ -996,8 +1001,8 @@
 .maintenanceRankingItem:hover,
 .maintenanceRankingItem:focus-visible,
 .activeMaintenanceListItem {
-  border-color: rgba(8, 8, 26, 0.28);
-  background: rgba(8, 8, 26, 0.045);
+  border-color: rgba(var(--color-brand-primary-rgb), 0.34);
+  background: rgba(var(--color-brand-primary-rgb), 0.06);
   outline: none;
 }
 
@@ -1183,13 +1188,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.maintenanceControlSection input {
-  width: 1rem;
-  height: 1rem;
-  margin: 0;
-  accent-color: var(--maintenance-critical);
-}
-
 .maintenanceLegendItem {
   display: flex;
   align-items: center;
@@ -1235,13 +1233,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
-}
-
-.inlineToggle input {
-  width: 1rem;
-  height: 1rem;
-  margin: 0;
-  accent-color: var(--color-brand-primary);
 }
 
 .maintenanceBoundaryLegend {

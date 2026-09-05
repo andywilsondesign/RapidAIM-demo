@@ -37,10 +37,9 @@ export const MaintenanceNoteModal = ({
           { label: 'General visit note', value: 'note' },
         ]} />
       </FormField>
-      <label className={styles.textareaLabel}>
-        <Typography variant="caption" weight="bold" color="brand">Note</Typography>
-        <textarea rows={compact ? 5 : 6} placeholder="Add field note or maintenance outcome" />
-      </label>
+      <FormField label="Note">
+        <textarea className={styles.textarea} rows={compact ? 5 : 6} placeholder="Add field note or maintenance outcome" />
+      </FormField>
     </div>
     <div className={styles.footer}>
       <Button variant="secondary">Cancel</Button>

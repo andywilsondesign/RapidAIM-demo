@@ -381,15 +381,15 @@ export const InteractiveMap = ({
 }) => {
   const [hoveredBlockId, setHoveredBlockId] = React.useState('');
 
-  const getBlockHighlightPathOptions = (layer) => ({
-    color: BLOCK_HIGHLIGHT_COLORS[layer] || BLOCK_HIGHLIGHT_COLORS.ring,
+  const getBlockHighlightPathOptions = () => ({
+    color: BLOCK_HIGHLIGHT_COLORS.ring,
     fill: false,
     fillOpacity: 0,
     interactive: false,
-    lineCap: 'round',
-    lineJoin: 'round',
+    lineCap: 'butt',
+    lineJoin: 'miter',
     opacity: 1,
-    weight: layer === 'outer' ? 7 : 3,
+    weight: 3,
     dashArray: null,
   });
 
@@ -570,18 +570,12 @@ export const InteractiveMap = ({
         />
 
         {highlightedBlockOverlays.map((block) => (
-          <React.Fragment key={`${block.id}-highlight`}>
-            <Polygon
-              positions={block.highlightPositions}
-              pathOptions={getBlockHighlightPathOptions('outer')}
-              interactive={false}
-            />
-            <Polygon
-              positions={block.highlightPositions}
-              pathOptions={getBlockHighlightPathOptions('ring')}
-              interactive={false}
-            />
-          </React.Fragment>
+          <Polygon
+            key={`${block.id}-highlight`}
+            positions={block.highlightPositions}
+            pathOptions={getBlockHighlightPathOptions()}
+            interactive={false}
+          />
         ))}
 
         {visualBlockOverlays.map((block) => (

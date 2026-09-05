@@ -9,23 +9,23 @@
   --stat-card-gap: var(--spacing-1);
 
   position: relative;
+  display: grid;
+  min-width: 150px;
+  min-height: var(--stat-card-min-height);
+  grid-template-rows: auto auto auto;
+  gap: var(--stat-card-gap);
+  padding: var(--stat-card-padding);
   background-color: var(--stat-card-tint);
   border: 1px solid var(--stat-card-border);
   border-radius: var(--radius-lg);
   color: var(--color-text-primary);
-  padding: var(--stat-card-padding);
-  display: grid;
-  min-height: var(--stat-card-min-height);
-  grid-template-rows: auto auto auto;
-  gap: var(--stat-card-gap);
-  min-width: 150px;
 }
 
 .hasTrend.hasMeta {
   --stat-card-min-height: 7.75rem;
   --stat-card-gap: var(--spacing-2);
 
-  grid-template-rows: auto minmax(2.375rem, 1fr) minmax(var(--stat-card-meta-min-height), auto);
+  grid-template-rows: minmax(2.75rem, auto) minmax(2.5rem, 1fr) minmax(var(--stat-card-meta-min-height), auto);
 }
 
 .card--neutral {
@@ -86,7 +86,7 @@
   display: grid;
   min-height: 2.5rem;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: end;
   justify-content: space-between;
   gap: var(--spacing-3);
 }
