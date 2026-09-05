@@ -4,6 +4,7 @@ import { Badge } from '../../atoms/Badge/Badge';
 import { Button } from '../../atoms/Button/Button';
 import { Select } from '../../atoms/Select/Select';
 import { Typography } from '../../atoms/Typography/Typography';
+import { FormField } from '../../molecules/FormField/FormField';
 import { SegmentedControl } from '../../molecules/SegmentedControl/SegmentedControl';
 import styles from './ScoutingAssignmentModal.module.css';
 
@@ -39,10 +40,8 @@ export const ScoutingAssignmentModal = ({
           <Badge variant="neutral">{pestName}</Badge>
         </div>
 
-        <label className={styles.field}>
-          <Typography variant="caption" weight="bold" color="brand">Assignment Type</Typography>
+        <FormField label="Assignment Type">
           <SegmentedControl
-            ariaLabel="Assignment type"
             value={assignmentType}
             onChange={setAssignmentType}
             options={[
@@ -51,21 +50,18 @@ export const ScoutingAssignmentModal = ({
               { label: compact ? 'Repair' : 'Sensor Repair', value: 'repair' },
             ]}
           />
-        </label>
+        </FormField>
 
         <div className={styles.row}>
-          <label className={styles.field}>
-            <Typography variant="caption" weight="bold" color="brand">Assignee</Typography>
+          <FormField label="Assignee">
             <Select options={[
               { label: 'John Doe (Field Lead)', value: 'john' },
               { label: 'Jane Smith (Technician)', value: 'jane' },
               { label: 'Marcus Vance (Scout)', value: 'marcus' },
             ]} />
-          </label>
-          <label className={styles.field}>
-            <Typography variant="caption" weight="bold" color="brand">Priority</Typography>
+          </FormField>
+          <FormField label="Priority">
             <SegmentedControl
-              ariaLabel="Priority"
               value={priority}
               onChange={setPriority}
               options={[
@@ -74,13 +70,12 @@ export const ScoutingAssignmentModal = ({
                 { label: 'Urgent', value: 'urgent' },
               ]}
             />
-          </label>
+          </FormField>
         </div>
 
-        <label className={styles.field}>
-          <Typography variant="caption" weight="bold" color="brand">Field Notes</Typography>
+        <FormField label="Field Notes">
           <textarea className={styles.textarea} defaultValue="Inspect northeast perimeter and verify trap thresholds." />
-        </label>
+        </FormField>
       </div>
 
       <footer className={styles.footer}>

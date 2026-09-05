@@ -58,14 +58,14 @@
   background: var(--color-bg-base);
 }
 
-.field {
-  display: flex;
+.row > * {
   flex: 1;
-  flex-direction: column;
-  gap: var(--spacing-2);
+  min-width: 0;
 }
 
 .textarea {
+  width: 100%;
+  box-sizing: border-box;
   min-height: 90px;
   resize: vertical;
   border: 1px solid var(--color-border-subtle);

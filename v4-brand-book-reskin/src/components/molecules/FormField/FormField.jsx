@@ -12,22 +12,25 @@ export const FormField = ({
 }) => {
   const generatedId = useId();
   const fieldId = children?.props?.id || `field-${generatedId}`;
+  const labelId = label ? `${fieldId}-label` : undefined;
   const descriptionId = helpText ? `${fieldId}-help` : undefined;
   const errorId = error ? `${fieldId}-error` : undefined;
   const describedBy = [children?.props?.['aria-describedby'], errorId, descriptionId].filter(Boolean).join(' ') || undefined;
+  const labelledBy = [children?.props?.['aria-labelledby'], labelId].filter(Boolean).join(' ') || undefined;
   const labelledChild = React.isValidElement(children)
     ? React.cloneElement(children, {
         id: fieldId,
         'aria-invalid': error ? true : children.props['aria-invalid'],
         'aria-describedby': describedBy,
+        'aria-labelledby': labelledBy,
       })
     : children;
 
   return (
     <div className={`${styles.field} ${className}`}>
       {label && (
-        <label className={styles.label} htmlFor={fieldId}>
-          <Typography variant="body-sm" weight="medium">{label}</Typography>
+        <label className={styles.label} htmlFor={fieldId} id={labelId}>
+          <Typography variant="body-sm" weight="semibold">{label}</Typography>
         </label>
       )}
       

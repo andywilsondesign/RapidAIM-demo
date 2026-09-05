@@ -8,8 +8,9 @@ export const SegmentedControl = ({
   ariaLabel,
   onChange,
   className = '',
+  ...props
 }) => (
-  <div className={`${styles.control} ${className}`} role="group" aria-label={ariaLabel}>
+  <div className={`${styles.control} ${className}`} role="group" aria-label={ariaLabel} {...props}>
     {options.map((option) => (
       <button
         className={`${styles.option} ${option.value === value ? styles.active : ''}`}
@@ -30,7 +31,7 @@ SegmentedControl.propTypes = {
     value: PropTypes.string.isRequired,
   })).isRequired,
   value: PropTypes.string.isRequired,
-  ariaLabel: PropTypes.string.isRequired,
+  ariaLabel: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,
 };
