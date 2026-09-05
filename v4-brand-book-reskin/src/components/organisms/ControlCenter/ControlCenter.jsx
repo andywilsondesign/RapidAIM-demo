@@ -124,16 +124,7 @@ export const ControlCenter = ({
 
               <FormField label="Threshold">
                 <div className={styles.sliderContainer}>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    defaultValue="70"
-                    className={styles.slider}
-                    style={{ '--slider-value': '70%' }}
-                    aria-label="Female Navel Orangeworm threshold"
-                  />
-                  <Typography variant="body-sm" className={styles.sliderValue}>70</Typography>
+                  <ThresholdSlider value={70} label="Female Navel Orangeworm threshold" />
                 </div>
                 <div className={styles.thresholdRec}>
                   <span className="material-symbols-rounded">auto_awesome</span>
@@ -276,16 +267,7 @@ function ThresholdList({ pests }) {
             <Typography variant="body-sm" weight="bold">{pest.label}</Typography>
           </div>
           <div className={styles.sliderContainer}>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              defaultValue={pest.threshold}
-              className={styles.slider}
-              style={{ '--slider-value': `${pest.threshold}%` }}
-              aria-label={`${pest.label} threshold`}
-            />
-            <Typography variant="body-sm" className={styles.sliderValue}>{pest.threshold}</Typography>
+            <ThresholdSlider value={pest.threshold} label={`${pest.label} threshold`} />
           </div>
           <div className={styles.thresholdRec}>
             <span className="material-symbols-rounded">auto_awesome</span>
@@ -303,6 +285,32 @@ function ThresholdList({ pests }) {
     </div>
   );
 }
+
+function ThresholdSlider({ value, label }) {
+  const [currentValue, setCurrentValue] = useState(value);
+
+  return (
+    <>
+      <div className={styles.sliderShell} style={{ '--slider-value': `${currentValue}%` }}>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={currentValue}
+          className={styles.slider}
+          aria-label={label}
+          onChange={(event) => setCurrentValue(Number(event.target.value))}
+        />
+      </div>
+      <Typography variant="body-sm" className={styles.sliderValue}>{currentValue}</Typography>
+    </>
+  );
+}
+
+ThresholdSlider.propTypes = {
+  value: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
+};
 
 function MapLayerSection() {
   return (
