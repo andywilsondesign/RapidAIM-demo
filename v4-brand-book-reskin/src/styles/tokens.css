@@ -75,6 +75,11 @@
     --color-slider-rail: #FFFFFF;
     --color-slider-thumb: #FFFFFF;
     --color-slider-thumb-border: rgba(8, 8, 26, 0.18);
+    --color-segmented-bg: var(--color-bg-base);
+    --color-segmented-hover-bg: var(--color-bg-hover);
+    --color-segmented-hover-text: var(--color-brand-primary);
+    --color-segmented-active-bg: var(--color-brand-primary);
+    --color-segmented-active-text: #FFFFFF;
     
     /* Brand Accent */
     --color-brand-primary: var(--color-brand-charcoal-blue);
@@ -208,6 +213,11 @@
     --color-slider-rail: #4A525A;
     --color-slider-thumb: var(--color-brand-snow);
     --color-slider-thumb-border: rgba(247, 247, 247, 0.22);
+    --color-segmented-bg: var(--color-brand-ink);
+    --color-segmented-hover-bg: var(--color-bg-hover);
+    --color-segmented-hover-text: var(--color-brand-snow);
+    --color-segmented-active-bg: var(--color-brand-steel);
+    --color-segmented-active-text: var(--color-brand-signal);
     --color-border-subtle: rgba(247, 247, 247, 0.16);
     --color-border-floating-panel: rgba(247, 247, 247, 0.22);
     --color-border-focus: var(--color-brand-signal);
