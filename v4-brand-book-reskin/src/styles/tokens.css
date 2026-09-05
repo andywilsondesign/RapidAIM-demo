@@ -71,6 +71,10 @@
     --color-map-idle-stroke: #64748B;
     --color-map-block-highlight-outer: rgba(8, 8, 26, 0.18);
     --color-map-block-highlight-ring: rgba(255, 255, 255, 0.88);
+    --color-slider-fill: var(--color-brand-primary);
+    --color-slider-rail: #CBD5DC;
+    --color-slider-thumb: #FFFFFF;
+    --color-slider-thumb-border: rgba(8, 8, 26, 0.18);
     
     /* Brand Accent */
     --color-brand-primary: var(--color-brand-charcoal-blue);
@@ -200,6 +204,10 @@
     --color-map-idle-stroke: #A9B1B8;
     --color-map-block-highlight-outer: rgba(234, 170, 70, 0.42);
     --color-map-block-highlight-ring: rgba(247, 247, 247, 0.9);
+    --color-slider-fill: var(--color-brand-signal);
+    --color-slider-rail: #4A525A;
+    --color-slider-thumb: var(--color-brand-snow);
+    --color-slider-thumb-border: rgba(247, 247, 247, 0.22);
     --color-border-subtle: rgba(247, 247, 247, 0.16);
     --color-border-floating-panel: rgba(247, 247, 247, 0.22);
     --color-border-focus: var(--color-brand-signal);

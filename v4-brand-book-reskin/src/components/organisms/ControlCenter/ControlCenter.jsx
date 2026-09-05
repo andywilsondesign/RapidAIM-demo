@@ -124,7 +124,15 @@ export const ControlCenter = ({
 
               <FormField label="Threshold">
                 <div className={styles.sliderContainer}>
-                  <input type="range" min="0" max="100" defaultValue="70" className={styles.slider} aria-label="Female Navel Orangeworm threshold" />
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    defaultValue="70"
+                    className={styles.slider}
+                    style={{ '--slider-value': '70%' }}
+                    aria-label="Female Navel Orangeworm threshold"
+                  />
                   <Typography variant="body-sm" className={styles.sliderValue}>70</Typography>
                 </div>
                 <div className={styles.thresholdRec}>
@@ -274,6 +282,7 @@ function ThresholdList({ pests }) {
               max="100"
               defaultValue={pest.threshold}
               className={styles.slider}
+              style={{ '--slider-value': `${pest.threshold}%` }}
               aria-label={`${pest.label} threshold`}
             />
             <Typography variant="body-sm" className={styles.sliderValue}>{pest.threshold}</Typography>
