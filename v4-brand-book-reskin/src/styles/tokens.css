@@ -69,6 +69,8 @@
     --color-map-risk-low-stroke: #66F27A;
     --color-map-idle-fill: #94A3B8;
     --color-map-idle-stroke: #64748B;
+    --color-map-block-highlight-outer: rgba(8, 8, 26, 0.18);
+    --color-map-block-highlight-ring: rgba(255, 255, 255, 0.88);
     
     /* Brand Accent */
     --color-brand-primary: var(--color-brand-charcoal-blue);
@@ -196,6 +198,8 @@
     --color-map-risk-low-stroke: #46D58C;
     --color-map-idle-fill: #566273;
     --color-map-idle-stroke: #A9B1B8;
+    --color-map-block-highlight-outer: rgba(234, 170, 70, 0.42);
+    --color-map-block-highlight-ring: rgba(247, 247, 247, 0.9);
     --color-border-subtle: rgba(247, 247, 247, 0.16);
     --color-border-floating-panel: rgba(247, 247, 247, 0.22);
     --color-border-focus: var(--color-brand-signal);

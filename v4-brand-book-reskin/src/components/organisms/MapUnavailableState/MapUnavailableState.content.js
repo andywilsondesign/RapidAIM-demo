@@ -7,7 +7,9 @@ export const mapUnavailableContent = {
     message: 'We cannot connect to RapidAIM map data right now, and our team has been alerted.',
     detail: 'We are checking the map service and RapidAIM database, and aim to restore access shortly.',
     primaryAction: 'Retry connection',
+    dismissAction: 'Dismiss',
     secondaryAction: 'Contact support',
+    resumeAction: 'More information',
     detailsTitle: 'Connection issue details',
     details: [
       'The dashboard could not load blocks, sensors, or recent detections.',

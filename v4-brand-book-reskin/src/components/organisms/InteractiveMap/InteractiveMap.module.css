@@ -245,15 +245,38 @@
   backdrop-filter: blur(8px) saturate(1.08);
 }
 
+.mapWrapper:global([data-rapidaim-theme='dark']) .blockLabelMarker span,
+:global([data-rapidaim-theme='dark']) .blockLabelMarker span {
+  border-color: var(--color-border-floating-panel);
+  background: color-mix(in srgb, var(--color-brand-snow) 94%, transparent);
+  color: var(--color-brand-ink);
+}
+
 .sensorTooltip {
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
+  background: var(--color-bg-card);
   box-shadow: var(--shadow-md);
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
   font-size: var(--font-size-xs);
   line-height: 1.5;
+}
+
+.sensorTooltip::before {
+  border-top-color: var(--color-bg-card);
+}
+
+:global([data-rapidaim-theme='dark']) .sensorTooltip {
+  border-color: var(--color-border-floating-panel);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+}
+
+:global([data-rapidaim-theme='dark']) .sensorTooltip::before {
+  border-top-color: var(--color-bg-card);
 }
 
 .sensorTooltip strong {

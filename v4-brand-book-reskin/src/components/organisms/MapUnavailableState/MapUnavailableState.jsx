@@ -22,7 +22,7 @@ export const MapUnavailableState = ({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isMessageOpen, setIsMessageOpen] = useState(true);
   const content = mapUnavailableContent[variant];
-  const canDismissMessage = Boolean(content.dismissAction);
+  const resumeAction = content.resumeAction || 'More information';
 
   useEffect(() => {
     setIsMessageOpen(true);
@@ -40,14 +40,10 @@ export const MapUnavailableState = ({
   const bannerMessage = (
     <>
       {content.message}
-      {canDismissMessage && (
-        <>
-          {' '}
-          <button className={styles.bannerLink} type="button" onClick={() => setIsMessageOpen(true)}>
-            {content.resumeAction || 'Review message'}
-          </button>
-        </>
-      )}
+      {' '}
+      <button className={styles.bannerLink} type="button" onClick={() => setIsMessageOpen(true)}>
+        {resumeAction}
+      </button>
     </>
   );
 

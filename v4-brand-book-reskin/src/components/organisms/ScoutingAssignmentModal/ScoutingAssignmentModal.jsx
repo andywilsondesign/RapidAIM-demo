@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge } from '../../atoms/Badge/Badge';
 import { Button } from '../../atoms/Button/Button';
@@ -15,6 +15,8 @@ export const ScoutingAssignmentModal = ({
   className = '',
 }) => {
   const entityParts = entityName.split('/').map((part) => part.trim()).filter(Boolean);
+  const [assignmentType, setAssignmentType] = useState('pest');
+  const [priority, setPriority] = useState('urgent');
 
   return (
     <section className={`${styles.modal} ${compact ? styles.compact : ''} ${className}`} aria-label="Create scouting assignment">
@@ -41,7 +43,8 @@ export const ScoutingAssignmentModal = ({
           <Typography variant="caption" weight="bold" color="brand">Assignment Type</Typography>
           <SegmentedControl
             ariaLabel="Assignment type"
-            value="pest"
+            value={assignmentType}
+            onChange={setAssignmentType}
             options={[
               { label: compact ? 'Pest' : 'Pest Scouting', value: 'pest' },
               { label: compact ? 'Trap' : 'Trap Maintenance', value: 'trap' },
@@ -63,7 +66,8 @@ export const ScoutingAssignmentModal = ({
             <Typography variant="caption" weight="bold" color="brand">Priority</Typography>
             <SegmentedControl
               ariaLabel="Priority"
-              value="urgent"
+              value={priority}
+              onChange={setPriority}
               options={[
                 { label: 'Low', value: 'low' },
                 { label: 'Medium', value: 'medium' },

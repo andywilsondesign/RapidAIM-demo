@@ -130,7 +130,7 @@
   display: grid;
   place-items: center;
   padding: var(--spacing-8);
-  background: rgba(8, 8, 26, 0.48);
+  background: rgba(0, 0, 0, 0.58);
 }
 
 .messagePanel {
@@ -140,9 +140,10 @@
   align-items: flex-start;
   gap: var(--spacing-5);
   padding: var(--spacing-8);
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--color-border-floating-panel);
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.97);
+  background: color-mix(in srgb, var(--color-bg-panel) 97%, transparent);
+  color: var(--color-text-primary);
   box-shadow: var(--shadow-lg);
 }
 
@@ -180,7 +181,7 @@
   display: grid;
   place-items: center;
   padding: var(--spacing-4);
-  background: rgba(8, 8, 26, 0.42);
+  background: rgba(0, 0, 0, 0.58);
 }
 
 .dialog {

@@ -26,8 +26,8 @@ const BLOCK_RISK_COLORS = {
 };
 
 const BLOCK_HIGHLIGHT_COLORS = {
-  outer: 'rgba(8, 8, 26, 0.16)',
-  ring: 'rgba(255, 255, 255, 0.82)',
+  outer: 'var(--color-map-block-highlight-outer, rgba(8, 8, 26, 0.18))',
+  ring: 'var(--color-map-block-highlight-ring, rgba(255, 255, 255, 0.88))',
 };
 
 const BLOCK_HIGHLIGHT_SCALE = 1.14;

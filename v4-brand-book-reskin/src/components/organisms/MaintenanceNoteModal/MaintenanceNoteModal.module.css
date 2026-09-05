@@ -89,6 +89,11 @@
   font: inherit;
 }
 
+.textareaLabel textarea::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 1;
+}
+
 .footer {
   display: flex;
   justify-content: flex-end;

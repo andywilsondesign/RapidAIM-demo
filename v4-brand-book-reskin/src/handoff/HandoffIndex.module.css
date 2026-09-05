@@ -298,7 +298,7 @@
   display: grid;
   place-items: center;
   padding: var(--spacing-8);
-  background: rgba(8, 8, 26, 0.62);
+  background: rgba(0, 0, 0, 0.68);
   pointer-events: auto;
 }
 
@@ -953,6 +953,10 @@
 }
 
 .maintenanceSummaryGrid > div {
+  display: grid;
+  min-height: 7.25rem;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
   padding: var(--spacing-3);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
@@ -962,6 +966,10 @@
 .maintenanceSummaryGrid p,
 .maintenanceSummaryGrid h5 {
   color: var(--color-panel-header-text);
+}
+
+.maintenanceSummaryGrid > div > :last-child {
+  align-self: end;
 }
 
 .maintenancePanelBody {
@@ -1526,7 +1534,6 @@
 
 .pestPressureGrid [class*='card'] {
   --stat-card-min-height: 7.75rem;
-  --stat-card-title-min-height: 2.625rem;
 
   min-width: 0;
   padding: var(--spacing-3);
@@ -2082,6 +2089,22 @@
   border-top: 0;
   background: transparent;
   backdrop-filter: none;
+}
+
+.mobileDetailPanel .maintenancePanel .panelBottomFade {
+  bottom: 4.5rem;
+}
+
+.mobileDetailPanel .maintenancePanel .bottomActionTray {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 4.5rem;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--color-border-subtle);
+  background: color-mix(in srgb, var(--color-bg-panel) 97%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 .mobileControlPanel {

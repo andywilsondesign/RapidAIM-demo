@@ -47,6 +47,13 @@
   text-align: left;
 }
 
+.panel[data-rapidaim-theme='dark'] {
+  border-color: var(--color-border-floating-panel);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
 .panelHeader {
   display: flex;
   align-items: flex-start;
